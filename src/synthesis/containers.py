@@ -30,16 +30,16 @@ class TrainingBundle:
         raw_p_df: pd.DataFrame,
         h_nodes: list[str],
         p_nodes: list[str],
-        age_col: str = "AGE",
-        gender_col: str = "SEXE",
-        h_id_col: str = "H_ID",
+        age_col: str,
+        gender_col: str,
+        h_id_col: str,
     ):  
         processed_h_df,processed_p_df = elementary_attributes.add_elementary_attributes(raw_h_df,raw_p_df,age_col,gender_col,h_id_col)
         cate_code_cols = [col for col in ColumnNames.CATE_CODE_COLS] + [ gender_col ]
         code_to_attr, attr_to_code = encoding.cate_codes(processed_p_df,cate_code_cols)    
         p_mapped = encoding.map_dataframe(attr_to_code,processed_p_df).astype('category')
         h_mapped = encoding.map_dataframe(attr_to_code,processed_h_df).astype('category')
-        config = ModelSchema(code_to_attr,attr_to_code)
+        config = ModelSchema(code_to_attr,attr_to_code,gender_col,h_id_col)
         h_model_nodes = list(
             dict.fromkeys(h_nodes + list(config.elementary_attributes["H"]))
         )

@@ -4,6 +4,7 @@ from pgmpy.models import DiscreteBayesianNetwork
 from src.core.data_structures import ModelSchema
 import pandas as pd
 from collections import Counter
+from src.core.constants import ColumnNames
 from src.utils import encoding,seeding
 from src.synthesis.evidence import Evidence
 from src.synthesis.candidate import CandidatePool
@@ -39,14 +40,14 @@ class Generator:
         self.p_model = p_model
         self.config = config
         self.head_age_to_person_age = encoding.make_code_crosswalk(
-            self.config.Head_age,
-            self.config.p_age,
+            ColumnNames.HEAD_AGE,
+            ColumnNames.AGE_CATE,
             self.config.code_to_attr,
             self.config.attr_to_code
         )
         self.head_gender_to_person_gender = encoding.make_code_crosswalk(
-            self.config.Head_gender,
-            self.config.p_gender,
+            ColumnNames.HEAD_GENDER,
+            self.config.gender_col,
             self.config.code_to_attr,
             self.config.attr_to_code
         )
@@ -65,11 +66,11 @@ class Generator:
         demands,valid_blueprint = self.generate_evidence_batches(h_blueprint)
         candidate_pool = self.simulate_people(demands,pool_multiplier,random_seed,max_workers)
         realizations, failed_h_ids = self.allocate_households(
-            CandidatePool(candidate_pool,self.config.p_age),
+            CandidatePool(candidate_pool,ColumnNames.AGE_CATE),
             valid_blueprint
         )
         remaining = valid_blueprint[
-            valid_blueprint[self.config.H_id].isin(failed_h_ids)
+            valid_blueprint[self.config.h_id_col].isin(failed_h_ids)
         ]
         for _ in range(max_retries):
             if remaining.empty:
@@ -80,13 +81,13 @@ class Generator:
                 demands, pool_multiplier, random_seed, max_workers
             )
             retry_realizations, failed_h_ids = self.allocate_households(
-                CandidatePool(retry_pool,self.config.p_age),
+                CandidatePool(retry_pool,ColumnNames.AGE_CATE),
                 remaining_bp
                 )
             realizations.extend(retry_realizations)
-            remaining = remaining_bp[remaining_bp[self.config.H_id].isin(failed_h_ids)]
+            remaining = remaining_bp[remaining_bp[self.config.h_id_col].isin(failed_h_ids)]
         p_df = pd.DataFrame(realizations).reset_index(drop=True)
-        h_df = valid_blueprint[~valid_blueprint[self.config.H_id].isin(failed_h_ids)].reset_index(drop=True)
+        h_df = valid_blueprint[~valid_blueprint[self.config.h_id_col].isin(failed_h_ids)].reset_index(drop=True)
         return h_df, p_df
         
     def simulate_household(
@@ -110,7 +111,7 @@ class Generator:
             seed=random_seed,
             show_progress=False
         )
-        h_blueprint[self.config.H_id] = h_blueprint.index
+        h_blueprint[self.config.h_id_col] = h_blueprint.index
     
         return h_blueprint
 
@@ -220,7 +221,7 @@ class Generator:
         for h in h_blueprint.itertuples():
             h_dict = h._asdict() # type: ignore
             adults, minors, _ , h_size = self._count_member(h_dict)
-            h_id = h_dict[self.config.H_id]
+            h_id = h_dict[self.config.h_id_col]
             
             temp_persons = []
             used_candidates = []
@@ -231,10 +232,10 @@ class Generator:
             for rank in range(h_size):
                 required_group = self._required_group(rank,adults,minors)
                 evidence_key = Evidence.make_evidence_key(
-                    h_type = h_dict[self.config.H_type],
+                    h_type = h_dict[ColumnNames.H_TYPE],
                     rank = rank,
-                    head_age = h_dict[self.config.Head_age],
-                    head_gender = h_dict[self.config.Head_gender],
+                    head_age = h_dict[ColumnNames.HEAD_AGE],
+                    head_gender = h_dict[ColumnNames.HEAD_GENDER],
                     required_group = required_group,
                     head_age_to_person_age = self.head_age_to_person_age,
                     head_gender_to_person_gender = self.head_gender_to_person_gender
@@ -250,16 +251,16 @@ class Generator:
                     valid_household = False
                     logger.warning(
                         "Allocation failed for household type %s at rank %d, required_group %s. Pool state: %s",
-                        h_dict[self.config.H_type],
+                        h_dict[ColumnNames.H_TYPE],
                         rank,
                         required_group,
                         candidate_pool._age_distribution(evidence_key),
                     )
                     break
-                candidate[self.config.H_id] = h_id
+                candidate[self.config.h_id_col] = h_id
                 temp_persons.append(candidate)
-                used_candidates.append((evidence_key, candidate, self.config.H_id))
-                previous_assigned_age = int(candidate[self.config.p_age])
+                used_candidates.append((evidence_key, candidate, self.config.h_id_col))
+                previous_assigned_age = int(candidate[ColumnNames.AGE_CATE])
             
             if valid_household:
                 realizations.extend(temp_persons)
@@ -270,9 +271,9 @@ class Generator:
         return realizations, invalid_h_ids
     
     def _get_values_from_h_blueprint(self,h_dict):
-        h_type = h_dict[self.config.H_type]
-        head_age = h_dict[self.config.Head_age]
-        head_gender = h_dict[self.config.Head_gender]
+        h_type = h_dict[ColumnNames.H_TYPE]
+        head_age = h_dict[ColumnNames.HEAD_AGE]
+        head_gender = h_dict[ColumnNames.HEAD_GENDER]
         adults,minors,kids,h_size = self._count_member(h_dict)
         return (h_type,head_age,head_gender,adults,minors,kids,h_size)
     
@@ -290,9 +291,9 @@ class Generator:
         Return the number of adults, minor, kids within the household
         and the household size.
         """
-        adults = int(h_dict[self.config.adult_number])
-        minors = int(h_dict[self.config.minor_number])
-        kids = int(h_dict[self.config.kid_number])
+        adults = int(h_dict[ColumnNames.ADULTS])
+        minors = int(h_dict[ColumnNames.MINORS])
+        kids = int(h_dict[ColumnNames.KIDS])
         if not self.p_data_include_kid:
             h_size = adults + minors
         else:
@@ -307,9 +308,9 @@ class Generator:
         max_size = max_rank + 1
 
         h_size = (
-            h_blueprint[self.config.adult_number]
-            + h_blueprint[self.config.minor_number]
-            + h_blueprint[self.config.kid_number]
+            h_blueprint[ColumnNames.ADULTS]
+            + h_blueprint[ColumnNames.MINORS]
+            + h_blueprint[ColumnNames.KIDS]
         )
 
         valid_mask = h_size <= max_size
@@ -339,10 +340,10 @@ def _batch_simulate(key, count, pool_multiplier, p_model, config, random_seed):
     h_type, rank, head_age, head_gender, p_age, p_gender = key
     # Build evidence
     partial = {
-                    config.H_type: h_type, 
+                    config.column_names.H_TYPE: h_type, 
                     config.Member_rank: rank, 
-                    config.Head_age: head_age, 
-                    config.Head_gender: head_gender
+                    config.column_names.HEAD_AGE: head_age, 
+                    config.column_names.HEAD_GENDER: head_gender
                 }
     batch_size = count * pool_multiplier
 

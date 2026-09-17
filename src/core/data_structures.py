@@ -1,11 +1,43 @@
 import pandas as pd
 import numpy as np
-from dataclasses import dataclass,field
+from dataclasses import dataclass
+from src.core.constants import ColumnNames
 import logging
 logger = logging.getLogger(__name__)
 
 
-
+@dataclass(frozen=True)
+class ModelSchema:
+    """
+    This schema stores only names that may differ between source datasets and
+    the category mappings learned during preprocessing.
+    """
+    code_to_attr: dict 
+    attr_to_code: dict 
+    gender_col: str
+    h_id_col: str
+    
+    @property
+    def elementary_attributes(self) -> dict[str, set[str]]:
+        return {
+            "H": {
+                ColumnNames.H_TYPE,
+                ColumnNames.HEAD_AGE,
+                ColumnNames.HEAD_GENDER,
+                ColumnNames.ADULTS,
+                ColumnNames.MINORS,
+                ColumnNames.KIDS,
+            },
+            "P": {
+                ColumnNames.H_TYPE,
+                ColumnNames.HEAD_AGE,
+                ColumnNames.HEAD_GENDER,
+                ColumnNames.MEMBER_RANK,
+                ColumnNames.AGE_CATE,
+                self.gender_col,
+            },
+        }
+        
 @dataclass(frozen=True)
 class CalibrationMatrix:
     """Holds compiled design matrices and marginal targets for calibration."""
@@ -138,45 +170,3 @@ class CalibrationMatrixBuilder:
         return np.array(array)
 
 
-@dataclass(frozen=True)
-class ModelSchema:
-    """
-    Names of columns used by the two-layer Bayesian-network.
-    Training data, fitted models, household samples, and person samples must use
-    these names consistently.
-    """
-    code_to_attr: dict = field(default_factory=dict)
-    attr_to_code: dict = field(default_factory=dict)
-    H_type: str = 'H_type'
-    Head_age: str = 'Head_age'
-    Head_gender: str = 'Head_gender'
-    Member_rank: str = 'Member_rank'
-    p_age: str = 'age_cate'
-    p_gender: str = 'SEXE'
-    H_id: str = 'H_ID'
-    adult_number: str = 'adults'
-    minor_number: str = 'minors'
-    kid_number: str = 'kids'
-    
-    @property
-    def elementary_attributes(self) -> dict:
-        
-        return{
-            'H':{
-            self.H_type,
-            self.Head_gender,
-            self.Head_age,
-            self.adult_number,
-            self.minor_number,
-            self.kid_number
-            },
-            'P': {
-            self.H_type,
-            self.Head_gender,
-            self.Head_age,
-            self.Member_rank,
-            self.p_age,
-            self.p_gender
-        }
-        }
-        
