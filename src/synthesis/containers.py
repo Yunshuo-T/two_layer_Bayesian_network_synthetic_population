@@ -40,19 +40,26 @@ class TrainingBundle:
         p_mapped = encoding.map_dataframe(attr_to_code,processed_p_df).astype('category')
         h_mapped = encoding.map_dataframe(attr_to_code,processed_h_df).astype('category')
         config = BNConfig(code_to_attr,attr_to_code)
+        h_model_nodes = list(
+            dict.fromkeys(h_nodes + list(config.elementary_attributes["H"]))
+        )
+
+        p_model_nodes = list(
+            dict.fromkeys(p_nodes + list(config.elementary_attributes["P"]))
+        )
         forbidden_person_to_household = list(itertools.product(p_nodes, h_nodes))
         forbidden_rank_edges = list(itertools.product(["Member_rank"], h_nodes))
         person_expert_knowledge = ExpertKnowledge(
             forbidden_edges = forbidden_person_to_household + forbidden_rank_edges
         )
         h_spec = TrainData(
-            data=h_mapped[h_nodes],
-            nodes=h_nodes,
+            data=h_mapped[h_model_nodes],
+            nodes=h_model_nodes,
             expert_knowledge=None,
         )
         p_spec = TrainData(
-            data=p_mapped[p_nodes],
-            nodes=p_nodes,
+            data=p_mapped[p_model_nodes],
+            nodes=p_model_nodes,
             expert_knowledge=person_expert_knowledge,
         )
         
