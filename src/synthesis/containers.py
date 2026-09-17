@@ -4,7 +4,7 @@ from pgmpy.estimators import ExpertKnowledge
 import itertools
 from src.preprocessing import elementary_attributes
 from src.core.constants import ColumnNames
-from src.core.data_structures import BNConfig
+from src.core.data_structures import ModelSchema
 from src.utils import encoding
 
 
@@ -21,7 +21,7 @@ class TrainData:
 class TrainingBundle:
     household: TrainData
     person: TrainData
-    config: BNConfig
+    config: ModelSchema
     
     @classmethod
     def construct_bundle(
@@ -39,7 +39,7 @@ class TrainingBundle:
         code_to_attr, attr_to_code = encoding.cate_codes(processed_p_df,cate_code_cols)    
         p_mapped = encoding.map_dataframe(attr_to_code,processed_p_df).astype('category')
         h_mapped = encoding.map_dataframe(attr_to_code,processed_h_df).astype('category')
-        config = BNConfig(code_to_attr,attr_to_code)
+        config = ModelSchema(code_to_attr,attr_to_code)
         h_model_nodes = list(
             dict.fromkeys(h_nodes + list(config.elementary_attributes["H"]))
         )

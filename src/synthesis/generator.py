@@ -1,7 +1,7 @@
 from typing import Any
 from pgmpy.sampling import BayesianModelSampling
 from pgmpy.models import DiscreteBayesianNetwork
-from src.core.data_structures import BNConfig
+from src.core.data_structures import ModelSchema
 import pandas as pd
 from collections import Counter
 from src.utils import encoding,seeding
@@ -26,7 +26,7 @@ class Generator:
         self, 
         h_model: DiscreteBayesianNetwork,
         p_model: DiscreteBayesianNetwork,
-        config: BNConfig,
+        config: ModelSchema,
         p_data_include_kid: bool = True
     ):
         """

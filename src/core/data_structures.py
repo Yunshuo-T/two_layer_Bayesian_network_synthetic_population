@@ -139,7 +139,7 @@ class CalibrationMatrixBuilder:
 
 
 @dataclass(frozen=True)
-class BNConfig:
+class ModelSchema:
     """
     Names of columns used by the two-layer Bayesian-network.
     Training data, fitted models, household samples, and person samples must use

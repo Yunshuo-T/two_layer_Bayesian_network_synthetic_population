@@ -1,6 +1,6 @@
 from pgmpy.estimators import HillClimbSearch
 from pgmpy.models import DiscreteBayesianNetwork
-from src.synthesis.containers import BNConfig,TrainData
+from src.synthesis.containers import ModelSchema,TrainData
 import pandas as pd
 import logging
 import itertools
@@ -12,7 +12,7 @@ logger.setLevel(logging.ERROR)
 
 class Trainer:
     
-    def __init__(self,config:BNConfig) -> None:
+    def __init__(self,config:ModelSchema) -> None:
         self.config = config
     
     def _validate_dataframe(self, data: pd.DataFrame, elementary_attributes: set[str]) -> None:

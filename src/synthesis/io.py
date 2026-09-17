@@ -1,5 +1,5 @@
 import pickle
-from src.synthesis.containers import BNConfig
+from src.synthesis.containers import ModelSchema
 from pathlib import Path
 import pandas as pd 
 
@@ -7,7 +7,7 @@ import pandas as pd
 def save_bn_bundle(
     h_model,
     p_model,
-    config: BNConfig,
+    config: ModelSchema,
     path: str,
 ) -> None:
     bundle = {
