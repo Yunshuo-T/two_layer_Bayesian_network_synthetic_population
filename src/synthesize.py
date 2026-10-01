@@ -3,11 +3,11 @@ from src.core.data_structures import CalibrationInput
 from core.config_schema import AppConfig
 from src.core.data_structures import CalibrationMatrixBuilder as matrix_builder
 from src.calibration.calibrator import CALIBRATOR
-
+from typing import Literal
 
 def run_synthesize(
+    calibration: Literal['ipu','gr','hipf','cross_entropy',None],
     config_path: str = r"config\config.yaml",
-    calibration: str | None = None,
     joint_attributes: list[str] | None = None,
     # save_results: bool = True
 ):
