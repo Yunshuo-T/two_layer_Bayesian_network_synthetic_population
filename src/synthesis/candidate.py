@@ -2,11 +2,15 @@ from collections import Counter
 
 
 class CandidatePool:
+    """A dictionary of individuals synthesized by Person Bayesian model. {set(combination of household values): pd.Dataframe(Individuals)}"""
     def __init__(self, candidate_pool, age_attr) -> None:
         self._age_attr = age_attr
         self._pool = self._sort_age(candidate_pool)
 
     def take_candidate(self, evidence_key, required_group, previous_age):
+        """
+        Take one individual candidate from the pool, according to the evidence key requirement.
+        """
         candidates = self._pool.get(evidence_key, [])
         for i, candidate in enumerate(candidates):
             person_age = int(candidate[self._age_attr])
@@ -15,6 +19,9 @@ class CandidatePool:
         return None
 
     def roll_back(self, used_candidates):
+        """
+        Roll back the taken candidates to the pool if the household does not have full household members.
+        """
         for key, candidate, h_id in used_candidates:
             candidate.pop(h_id, None)
             self._pool[key].append(candidate)

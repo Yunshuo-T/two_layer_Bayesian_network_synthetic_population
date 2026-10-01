@@ -1,6 +1,9 @@
-class ColumnNames:
-    """All column names used by the synthetic population generation."""
+"""
+All column names used by the synthetic population generation.
+"""
 
+
+class ColumnNames:
     HEAD_COLS = ("Head_age", "Head_gender")
     COMPOSITION_COLS = ("adults", "minors", "kids")
 

@@ -6,7 +6,7 @@ import pandas as pd
 from collections import Counter
 from src.core.constants import ColumnNames
 from src.utils import encoding, seeding
-from src.synthesis.evidence import Evidence
+from src.synthesis.evidence import PersonSimulationKey
 from src.synthesis.candidate import CandidatePool
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import logging
@@ -152,7 +152,7 @@ class Generator:
 
             # For each rank in the household
             for rank in range(h_size):
-                key = Evidence.make_evidence_key(
+                key = PersonSimulationKey.make_evidence_key(
                     h_type,
                     rank,
                     head_age,
@@ -191,7 +191,7 @@ class Generator:
         with ProcessPoolExecutor(max_workers=max_workers) as ex:
             futures = [
                 ex.submit(
-                    _batch_simulate,
+                    _batch_sample_persons,
                     key,
                     count,
                     pool_multiplier,
@@ -232,7 +232,7 @@ class Generator:
             # For each rank in the household
             for rank in range(h_size):
                 required_group = self._required_group(rank, adults, minors)
-                evidence_key = Evidence.make_evidence_key(
+                evidence_key = PersonSimulationKey.make_evidence_key(
                     h_type=h_dict[ColumnNames.H_TYPE],
                     rank=rank,
                     head_age=h_dict[ColumnNames.HEAD_AGE],
@@ -264,7 +264,7 @@ class Generator:
             if valid_household:
                 realizations.extend(temp_persons)
             else:
-                # Restore all failed candidates.
+                # Restore all failed candidates to the pool.
                 candidate_pool.roll_back(used_candidates)
 
         return realizations, invalid_h_ids
@@ -280,8 +280,8 @@ class Generator:
         return list(
             map(
                 int,
-                p_model.get_cpds(self.config.Member_rank).state_names[
-                    self.config.Member_rank
+                p_model.get_cpds(ColumnNames.MEMBER_RANK).state_names[
+                    ColumnNames.MEMBER_RANK
                 ],  # type: ignore
             )  # type ignore
         )
@@ -336,7 +336,7 @@ class Generator:
         return "kid"
 
 
-def _batch_simulate(key, count, pool_multiplier, p_model, config, random_seed):
+def _batch_sample_persons(key, count, pool_multiplier, p_model, config, random_seed):
     sampler = BayesianModelSampling(p_model)
     h_type, rank, head_age, head_gender, p_age, p_gender = key
     # Build evidence

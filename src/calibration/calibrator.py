@@ -1,3 +1,4 @@
+"""Calibrators for calibrating results from Bayesian network to match marginals"""
 import logging
 
 logger = logging.getLogger(__name__)

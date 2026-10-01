@@ -1,7 +1,8 @@
-from typing import Any, NamedTuple
+from typing import Any, NamedTuple, Literal
 
 
-class Evidence(NamedTuple):
+class PersonSimulationKey(NamedTuple):
+    """Conditions defining a person-simulation evidence group."""
     h_type: Any
     rank: int
     head_age: Any

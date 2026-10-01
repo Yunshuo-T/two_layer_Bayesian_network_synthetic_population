@@ -20,6 +20,7 @@ class TrainData:
 
 @dataclass
 class TrainingBundle:
+    """A bundle for training data and training configuration"""
     household: TrainData
     person: TrainData
     config: ModelSchema
