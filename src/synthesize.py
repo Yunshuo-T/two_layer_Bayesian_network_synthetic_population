@@ -1,6 +1,6 @@
 from src.synthesis import io, generator
 from src.core.data_structures import CalibrationInput
-from core.config_schema import AppConfig
+from src.core.config_schema import AppConfig
 from src.core.data_structures import CalibrationMatrixBuilder as matrix_builder
 from src.calibration.calibrator import CALIBRATOR
 from typing import Literal

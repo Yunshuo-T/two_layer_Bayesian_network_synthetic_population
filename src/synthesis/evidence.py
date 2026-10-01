@@ -1,4 +1,4 @@
-from typing import Any, NamedTuple, Literal
+from typing import Any, NamedTuple
 
 
 class PersonSimulationKey(NamedTuple):

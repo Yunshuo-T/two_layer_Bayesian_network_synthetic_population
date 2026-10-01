@@ -1,5 +1,5 @@
 from src.synthesis import containers, io, trainer
-from core.config_schema import AppConfig
+from src.core.config_schema import AppConfig
 import pandas as pd
 
 
