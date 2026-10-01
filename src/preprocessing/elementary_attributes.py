@@ -3,7 +3,7 @@ import numpy as np
 from src.core.constants import ColumnNames
 
 
-def classify_age(
+def _add_age_category(
     p_df: pd.DataFrame,
     age_col: str,
     bins: list | None = None,
@@ -22,7 +22,7 @@ def classify_age(
     return p_df
 
 
-def add_member_rank(
+def _add_member_rank(
     p_df: pd.DataFrame,
     h_id_col: str,
     age_col: str,
@@ -36,7 +36,7 @@ def add_member_rank(
     return p_df
 
 
-def add_head_attributes(
+def _add_head_attributes(
     p_df: pd.DataFrame,
     h_id_col: str,
     gender_col: str,
@@ -49,7 +49,7 @@ def add_head_attributes(
     return p_df
 
 
-def calculate_household_composition(
+def _calculate_household_composition(
     p_df: pd.DataFrame,
     h_id_col: str = "H_ID",
 ) -> pd.DataFrame:
@@ -66,13 +66,13 @@ def calculate_household_composition(
     return indicators.groupby(h_id_col, observed=True).sum().reset_index()
 
 
-def classify_household_type(
+def _add_household_type(
     p_df: pd.DataFrame,
     h_id_col: str = "H_ID",
 ) -> pd.DataFrame:
 
     # Aggregate counts per household
-    comp = calculate_household_composition(p_df, h_id_col=h_id_col)
+    comp = _calculate_household_composition(p_df, h_id_col=h_id_col)
     # Determine the Adult Prefix
     prefix = np.select(
         [
@@ -103,12 +103,12 @@ def classify_household_type(
     return p_df.merge(comp[merge_cols], how="left", on=h_id_col)
 
 
-def sync_household_attributes(
+def _sync_household_attributes(
     h_df: pd.DataFrame,
     p_df: pd.DataFrame,
-    h_id_col: str = "H_ID",
+    h_id_col: str,
 ) -> pd.DataFrame:
-    """Extracts derived household-level attributes from p_df and merges them into h_df."""
+    """Extracts household-level attributes from p_df and merges them into h_df."""
     cols = [c for c in ColumnNames.HOUSEHOLD_COLS]
     h_features = p_df[[h_id_col] + cols].drop_duplicates(subset=[h_id_col])
     return h_df.merge(h_features, on=h_id_col, how="left")
@@ -117,19 +117,19 @@ def sync_household_attributes(
 def add_elementary_attributes(
     raw_h_df: pd.DataFrame,
     raw_p_df: pd.DataFrame,
-    age_col: str = "AGE",
-    gender_col: str = "SEXE",
-    h_id_col: str = "H_ID",
+    age_col: str,
+    gender_col: str,
+    h_id_col: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     processed_p_df = (
-        raw_p_df.pipe(classify_age, age_col=age_col)
-        .pipe(add_member_rank, h_id_col=h_id_col, age_col=age_col)
-        .pipe(add_head_attributes, h_id_col=h_id_col, gender_col=gender_col)
-        .pipe(classify_household_type, h_id_col=h_id_col)
+        raw_p_df.pipe(_add_age_category, age_col=age_col)
+        .pipe(_add_member_rank, h_id_col=h_id_col, age_col=age_col)
+        .pipe(_add_head_attributes, h_id_col=h_id_col, gender_col=gender_col)
+        .pipe(_add_household_type, h_id_col=h_id_col)
     )
 
-    processed_h_df = sync_household_attributes(
+    processed_h_df = _sync_household_attributes(
         h_df=raw_h_df,
         p_df=processed_p_df,
         h_id_col=h_id_col,

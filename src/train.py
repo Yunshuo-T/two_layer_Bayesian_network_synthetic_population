@@ -8,13 +8,13 @@ def run_training(config_path: str = r"config\config.yaml"):
     raw_h = pd.read_csv(cfg.train.raw_h_df, low_memory=False)
     raw_p = pd.read_csv(cfg.train.raw_p_df, low_memory=False)
     train_bundle = containers.TrainingBundle.construct_bundle(
-        raw_h,
-        raw_p,
-        cfg.train.h_nodes,
-        cfg.train.p_nodes,
-        cfg.train.age_col,
-        cfg.train.gender_col,
-        cfg.train.h_id_col,
+        raw_h_df=raw_h,
+        raw_p_df=raw_p,
+        h_nodes=cfg.train.h_nodes,
+        p_nodes=cfg.train.p_nodes,
+        age_col=cfg.train.age_col,
+        gender_col=cfg.train.gender_col,
+        h_id_col=cfg.train.h_id_col,
     )
 
     model_train = trainer.Trainer(config=train_bundle.config)
