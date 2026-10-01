@@ -1,29 +1,32 @@
 import pandas as pd
 
 
-def cate_codes(df:pd.DataFrame, attributes:list, explicit_orders: dict = None): # type: ignore
-    df = df.copy() 
+def cate_codes(df: pd.DataFrame, attributes: list, explicit_orders: dict = None):  # type: ignore
+    df = df.copy()
     attr_to_code = {}
     code_to_attr = {}
-    
+
     if explicit_orders is None:
         explicit_orders = {}
 
     for attr in attributes:
         if attr in explicit_orders:
-            cat_type = pd.CategoricalDtype(categories=explicit_orders[attr], ordered=True)
+            cat_type = pd.CategoricalDtype(
+                categories=explicit_orders[attr], ordered=True
+            )
             df[attr] = df[attr].astype(cat_type)
         else:
-            df[attr] = df[attr].astype('category')
-            
+            df[attr] = df[attr].astype("category")
+
         categories = df[attr].cat.categories
         attr_to_code[attr] = {val: i for i, val in enumerate(categories)}
         code_to_attr[attr] = dict(enumerate(categories))
         df[attr] = df[attr].cat.codes
-            
+
     return code_to_attr, attr_to_code
 
-def map_dataframe(map_dict,df):
+
+def map_dataframe(map_dict, df):
     """Map catogorey to its corresponding code, vice versa.
 
     Args:
@@ -60,9 +63,6 @@ def make_code_crosswalk(
                 f"{source_attr!r} does not exist in {target_attr!r}."
             )
 
-        mapping[source_code] = (
-            attr_to_code[target_attr][semantic_value]
-        )
+        mapping[source_code] = attr_to_code[target_attr][semantic_value]
 
     return mapping
-

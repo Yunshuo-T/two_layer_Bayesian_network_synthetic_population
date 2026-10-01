@@ -1,5 +1,6 @@
 from typing import Any, NamedTuple
 
+
 class Evidence(NamedTuple):
     h_type: Any
     rank: int
@@ -17,8 +18,8 @@ class Evidence(NamedTuple):
         head_gender: Any,
         required_group: str,
         head_age_to_person_age: dict,
-        head_gender_to_person_gender: dict
-        ):
+        head_gender_to_person_gender: dict,
+    ):
         """Construct an EvidenceKey for simulating individuals"""
         p_age = None
         p_gender = None
