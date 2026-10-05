@@ -97,7 +97,7 @@ if st.button("Generate population"):
         run_synthesize(
             calibration=(
                 None if calibration_method == "None" else calibration_method
-            ),
+            ), # type: ignore
             config_path=CONFIG_PATH,
         )
     st.success("Population generation completed.")

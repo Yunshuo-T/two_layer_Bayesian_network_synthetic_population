@@ -59,7 +59,7 @@ def run_synthesize(
             **cfg.calibration.kwargs
         )
         h_id = cfg.train.h_id_col
-        h_bn["weight"] = calibration_result.weights
+        h_bn["weight"] = calibration_result.weights # FIXME  household rows can have a different order, assigning weights to the wrong households.can be fixed by storing IDs in CalibrationMatrix
         p_bn["weight"] = p_bn[h_id].map(h_bn.set_index(h_id)["weight"])
         io.save_csv(h_bn, cfg.paths.output_dir, "h_calibrated")
         io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_calibrated")

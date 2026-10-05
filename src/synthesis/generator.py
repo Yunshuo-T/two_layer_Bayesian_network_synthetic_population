@@ -341,10 +341,10 @@ def _batch_sample_persons(key, count, pool_multiplier, p_model, config, random_s
     h_type, rank, head_age, head_gender, p_age, p_gender = key
     # Build evidence
     partial = {
-        config.column_names.H_TYPE: h_type,
-        config.Member_rank: rank,
-        config.column_names.HEAD_AGE: head_age,
-        config.column_names.HEAD_GENDER: head_gender,
+        ColumnNames.H_TYPE: h_type,
+        ColumnNames.MEMBER_RANK: rank,
+        ColumnNames.HEAD_AGE: head_age,
+        ColumnNames.HEAD_GENDER: head_gender,
     }
     batch_size = count * pool_multiplier
 
