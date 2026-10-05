@@ -1,5 +1,5 @@
 import pickle
-from src.synthesis.containers import ModelSchema
+from synpop.schema import ModelSchema
 from pathlib import Path
 import pandas as pd
 

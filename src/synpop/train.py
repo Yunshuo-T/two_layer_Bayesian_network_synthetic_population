@@ -1,13 +1,16 @@
-from src.synthesis import containers, io, trainer
-from src.core.config_schema import AppConfig
+from synpop import io
+from synpop.config import AppConfig
 import pandas as pd
+
+from synpop.training import trainer
+
 
 
 def run_training(config_path: str = r"config\config.yaml"):
     cfg = AppConfig.load(config_path)
     raw_h = pd.read_csv(cfg.train.raw_h_df, low_memory=False)
     raw_p = pd.read_csv(cfg.train.raw_p_df, low_memory=False)
-    train_bundle = containers.TrainingBundle.construct_bundle(
+    train_bundle = trainer.TrainingBundle.construct_bundle(
         raw_h_df=raw_h,
         raw_p_df=raw_p,
         h_nodes=cfg.train.h_nodes,

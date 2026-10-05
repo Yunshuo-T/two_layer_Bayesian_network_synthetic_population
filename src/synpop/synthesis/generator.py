@@ -1,27 +1,16 @@
 from typing import Any
 from pgmpy.sampling import BayesianModelSampling
 from pgmpy.models import DiscreteBayesianNetwork
-from src.core.data_structures import ModelSchema
 import pandas as pd
 from collections import Counter
-from src.core.constants import ColumnNames
-from src.utils import encoding, seeding
-from src.synthesis.evidence import PersonSimulationKey
-from src.synthesis.candidate import CandidatePool
+from synpop.schema import ColumnNames,ModelSchema
+from synpop.synthesis.evidence import PersonSimulationKey
+from synpop.synthesis.candidate import CandidatePool
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from synpop.utils import encoding,seeding
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
-logger.propagate = False
-consol_handler = logging.StreamHandler()
-consol_handler.setLevel(logging.ERROR)
-file_handler = logging.FileHandler("running.log")
-file_handler.setLevel(logging.WARNING)
-logger.addHandler(file_handler)
-logger.addHandler(consol_handler)
-logging.getLogger("pgmpy").setLevel(logging.CRITICAL + 1)
-
 
 class Generator:
     def __init__(
@@ -349,10 +338,10 @@ def _batch_sample_persons(key, count, pool_multiplier, p_model, config, random_s
     batch_size = count * pool_multiplier
 
     if p_gender is not None:
-        partial[config.p_gender] = p_gender
+        partial[config.gender_col] = p_gender
 
     if p_age is not None:
-        partial[config.p_age] = p_age
+        partial[ColumnNames.AGE_CATE] = p_age
         # Create a batch
 
     evidence_df = pd.DataFrame([partial] * batch_size)

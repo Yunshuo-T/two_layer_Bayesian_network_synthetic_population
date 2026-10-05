@@ -1,8 +1,8 @@
 import streamlit as st
 from omegaconf import OmegaConf
 
-from src.train import run_training
-from src.synthesize import run_synthesize
+from synpop.train import run_training
+from synpop.synthesize import run_synthesize
 
 
 CONFIG_PATH = "config/config.yaml"

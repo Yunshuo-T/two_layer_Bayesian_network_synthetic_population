@@ -1,13 +1,29 @@
-from pgmpy.estimators import HillClimbSearch
+
+from dataclasses import dataclass
+
+from pgmpy.estimators import ExpertKnowledge, HillClimbSearch
 from pgmpy.models import DiscreteBayesianNetwork
-from src.synthesis.containers import ModelSchema, TrainData
+from synpop.training import elementary_attributes
+from synpop.schema import ColumnNames, ModelSchema
 import pandas as pd
 import logging
 import itertools
 from typing import Any
 
+from synpop.utils import encoding
+
 logger = logging.getLogger("pgmpy")
 logger.setLevel(logging.ERROR)
+
+
+@dataclass
+class TrainData:
+    """Holds the prepared dataset, target nodes,
+    and structural constraints for household or individual model."""
+
+    data: pd.DataFrame
+    nodes: list[str]
+    expert_knowledge: ExpertKnowledge | None = None
 
 
 class Trainer:
@@ -161,3 +177,63 @@ class Trainer:
         df_cpd.to_csv(f"{path}.csv")
 
         return df_cpd
+
+
+@dataclass
+class TrainingBundle:
+    """A bundle for training data and training configuration"""
+    household: TrainData
+    person: TrainData
+    config: ModelSchema
+
+    @classmethod
+    def construct_bundle(
+        cls,
+        raw_h_df: pd.DataFrame,
+        raw_p_df: pd.DataFrame,
+        h_nodes: list[str],
+        p_nodes: list[str],
+        age_col: str,
+        gender_col: str,
+        h_id_col: str,
+    ):
+        processed_h_df, processed_p_df = (
+            elementary_attributes.add_elementary_attributes(
+                raw_h_df, raw_p_df, age_col, gender_col, h_id_col
+            )
+        )
+        cate_code_cols = [col for col in ColumnNames.CATE_CODE_COLS] + [gender_col]
+        code_to_attr, attr_to_code = encoding.cate_codes(processed_p_df, cate_code_cols)
+        p_mapped = encoding.map_dataframe(attr_to_code, processed_p_df).astype(
+            "category"
+        )
+        h_mapped = encoding.map_dataframe(attr_to_code, processed_h_df).astype(
+            "category"
+        )
+        config = ModelSchema(code_to_attr, attr_to_code, gender_col, h_id_col)
+        h_model_nodes = list(
+            dict.fromkeys(h_nodes + list(config.elementary_attributes["H"]))
+        )
+
+        p_model_nodes = list(
+            dict.fromkeys(p_nodes + list(config.elementary_attributes["P"]))
+        )
+        forbidden_person_to_household = list(itertools.product(p_nodes, h_nodes))
+        forbidden_rank_edges = list(itertools.product(["Member_rank"], h_nodes))
+        person_expert_knowledge = ExpertKnowledge(
+            forbidden_edges=forbidden_person_to_household + forbidden_rank_edges
+        )
+        h_spec = TrainData(
+            data=h_mapped[h_model_nodes],
+            nodes=h_model_nodes,
+            expert_knowledge=None,
+        )
+        p_spec = TrainData(
+            data=p_mapped[p_model_nodes],
+            nodes=p_model_nodes,
+            expert_knowledge=person_expert_knowledge,
+        )
+
+        return cls(h_spec, p_spec, config)
+
+

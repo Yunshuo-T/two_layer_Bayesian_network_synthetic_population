@@ -1,23 +1,7 @@
-"""
-The configurations for the pipeline.
-"""
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass,field
 from pathlib import Path
-from omegaconf import OmegaConf
 from typing import Any
-
-
-@dataclass
-class TrainConfig:
-    raw_h_df: str
-    raw_p_df: str
-    h_nodes: list[str]
-    p_nodes: list[str]
-    age_col: str
-    gender_col: str
-    h_id_col: str
-    score: str
+from omegaconf import OmegaConf
 
 
 @dataclass
@@ -51,6 +35,18 @@ class PathConfig:
 
 
 @dataclass
+class TrainConfig:
+    raw_h_df: str
+    raw_p_df: str
+    h_nodes: list[str]
+    p_nodes: list[str]
+    age_col: str
+    gender_col: str
+    h_id_col: str
+    score: str
+
+
+@dataclass
 class AppConfig:
     train: TrainConfig
     synthesis: SynthesisConfig
@@ -68,8 +64,3 @@ class AppConfig:
         Path(cfg.paths.dags_dir).mkdir(parents=True, exist_ok=True)  # type: ignore
 
         return cfg  # type: ignore
-
-
-if __name__ == "__main__":
-    cfg = AppConfig.load()
-    print(cfg.calibration.kwargs)

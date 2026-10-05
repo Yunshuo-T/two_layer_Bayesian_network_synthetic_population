@@ -2,7 +2,7 @@
 import logging
 
 logger = logging.getLogger(__name__)
-from src.core.data_structures import CalibrationMatrix, CalibrationResult
+from synpop.calibration.matrix import CalibrationMatrix, CalibrationResult
 from scipy.optimize import minimize
 from scipy.special import logsumexp
 from abc import ABC, abstractmethod

@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils import encoding
+from synpop.utils import encoding
 
 
 class Validation:

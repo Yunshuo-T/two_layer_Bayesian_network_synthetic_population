@@ -6,44 +6,9 @@ The structures of input and output data for the pipeline.
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass
-from src.core.constants import ColumnNames
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass(frozen=True)
-class ModelSchema:
-    """
-    This schema stores only names that may differ between source datasets and
-    the category mappings learned during preprocessing.
-    """
-
-    code_to_attr: dict
-    attr_to_code: dict
-    gender_col: str
-    h_id_col: str
-
-    @property
-    def elementary_attributes(self) -> dict[str, set[str]]:
-        return {
-            "H": {
-                ColumnNames.H_TYPE,
-                ColumnNames.HEAD_AGE,
-                ColumnNames.HEAD_GENDER,
-                ColumnNames.ADULTS,
-                ColumnNames.MINORS,
-                ColumnNames.KIDS,
-            },
-            "P": {
-                ColumnNames.H_TYPE,
-                ColumnNames.HEAD_AGE,
-                ColumnNames.HEAD_GENDER,
-                ColumnNames.MEMBER_RANK,
-                ColumnNames.AGE_CATE,
-                self.gender_col,
-            },
-        }
 
 
 @dataclass(frozen=True)

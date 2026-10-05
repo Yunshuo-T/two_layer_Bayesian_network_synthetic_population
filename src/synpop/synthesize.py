@@ -1,9 +1,11 @@
-from src.synthesis import io, generator
-from src.core.data_structures import CalibrationInput
-from src.core.config_schema import AppConfig
-from src.core.data_structures import CalibrationMatrixBuilder as matrix_builder
-from src.calibration.calibrator import CALIBRATOR
+from synpop import io
+from synpop.calibration.matrix import CalibrationInput
+from synpop.config import AppConfig
+from synpop.calibration.matrix import CalibrationMatrixBuilder as matrix_builder
+from synpop.calibration.calibrator import CALIBRATOR
 from typing import Literal
+
+from synpop.synthesis import generator
 
 def run_synthesize(
     calibration: Literal['ipu','gr','hipf','cross_entropy',None],

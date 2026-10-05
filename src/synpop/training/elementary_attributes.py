@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from src.core.constants import ColumnNames
+from synpop.schema import ColumnNames
 
 
 def _add_age_category(
