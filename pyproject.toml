@@ -20,6 +20,7 @@ authors = [{name = "Yunshuo Tang", email = "551835@mail.muni.cz"}]
 description = "Two-layer Bayesian model for synthetic population generation."
 readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
 keywords = ["Bayesian network", "synthetic population","simulation based"]
 
 [tool.setuptools.packages.find]
