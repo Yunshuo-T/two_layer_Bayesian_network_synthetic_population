@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=80", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -26,3 +26,4 @@ keywords = ["Bayesian network", "synthetic population","simulation based"]
 where = ["src"]
 include = ["synpop", "synpop.*"]
 namespaces = true
+[tool.setuptools_scm]
