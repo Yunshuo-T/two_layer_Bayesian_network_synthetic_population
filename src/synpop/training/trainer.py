@@ -1,14 +1,14 @@
-
-from dataclasses import dataclass
-
-from pgmpy.estimators import ExpertKnowledge, HillClimbSearch
-from pgmpy.models import DiscreteBayesianNetwork
-from synpop.training import elementary_attributes
-from synpop.schema import ColumnNames, ModelSchema
-import pandas as pd
 import logging
 import itertools
 from typing import Any
+import pandas as pd
+from dataclasses import dataclass
+from pgmpy.estimators import ExpertKnowledge, HillClimbSearch
+from pgmpy.models import DiscreteBayesianNetwork
+
+from synpop.training import elementary_attributes
+from synpop.schema import ColumnNames, ModelSchema
+
 
 from synpop.utils import encoding
 
@@ -182,6 +182,7 @@ class Trainer:
 @dataclass
 class TrainingBundle:
     """A bundle for training data and training configuration"""
+
     household: TrainData
     person: TrainData
     config: ModelSchema
@@ -235,5 +236,3 @@ class TrainingBundle:
         )
 
         return cls(h_spec, p_spec, config)
-
-

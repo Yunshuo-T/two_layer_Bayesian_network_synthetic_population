@@ -1,7 +1,8 @@
 import pickle
-from synpop.schema import ModelSchema
 from pathlib import Path
 import pandas as pd
+
+from synpop.schema import ModelSchema
 
 
 def save_bn_bundle(

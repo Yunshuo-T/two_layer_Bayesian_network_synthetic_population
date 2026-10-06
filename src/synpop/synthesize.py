@@ -1,14 +1,15 @@
+from typing import Literal
+
 from synpop import io
 from synpop.calibration.matrix import CalibrationInput
 from synpop.config import AppConfig
 from synpop.calibration.matrix import CalibrationMatrixBuilder as matrix_builder
 from synpop.calibration.calibrator import CALIBRATOR
-from typing import Literal
-
 from synpop.synthesis import generator
 
+
 def run_synthesize(
-    calibration: Literal['ipu','gr','hipf','cross_entropy',None],
+    calibration: Literal["ipu", "gr", "hipf", "cross_entropy", None],
     config_path: str = r"config\config.yaml",
     joint_attributes: list[str] | None = None,
     # save_results: bool = True
@@ -58,10 +59,12 @@ def run_synthesize(
         calibration_result = calibrator(calibration_matrix).fit(
             max_iter=cfg.calibration.max_iterations,
             tolerance=cfg.calibration.tolerance,
-            **cfg.calibration.kwargs
+            **cfg.calibration.kwargs,
         )
         h_id = cfg.train.h_id_col
-        h_bn["weight"] = calibration_result.weights # FIXME  household rows can have a different order, assigning weights to the wrong households.can be fixed by storing IDs in CalibrationMatrix
+        h_bn["weight"] = (
+            calibration_result.weights
+        )  # FIXME  household rows can have a different order, assigning weights to the wrong households.can be fixed by storing IDs in CalibrationMatrix
         p_bn["weight"] = p_bn[h_id].map(h_bn.set_index(h_id)["weight"])
         io.save_csv(h_bn, cfg.paths.output_dir, "h_calibrated")
         io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_calibrated")

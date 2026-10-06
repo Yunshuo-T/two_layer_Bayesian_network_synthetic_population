@@ -3,6 +3,7 @@ from collections import Counter
 
 class CandidatePool:
     """A dictionary of individuals synthesized by Person Bayesian model. {set(combination of household values): pd.Dataframe(Individuals)}"""
+
     def __init__(self, candidate_pool, age_attr) -> None:
         self._age_attr = age_attr
         self._pool = self._sort_age(candidate_pool)

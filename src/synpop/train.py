@@ -1,9 +1,8 @@
-from synpop import io
-from synpop.config import AppConfig
 import pandas as pd
 
+from synpop import io
+from synpop.config import AppConfig
 from synpop.training import trainer
-
 
 
 def run_training(config_path: str = r"config\config.yaml"):

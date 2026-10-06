@@ -1,16 +1,18 @@
+import logging
+import pandas as pd
 from typing import Any
+from collections import Counter
 from pgmpy.sampling import BayesianModelSampling
 from pgmpy.models import DiscreteBayesianNetwork
-import pandas as pd
-from collections import Counter
-from synpop.schema import ColumnNames,ModelSchema
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+from synpop.schema import ColumnNames, ModelSchema
 from synpop.synthesis.evidence import PersonSimulationKey
 from synpop.synthesis.candidate import CandidatePool
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from synpop.utils import encoding,seeding
-import logging
+from synpop.utils import encoding, seeding
 
 logger = logging.getLogger(__name__)
+
 
 class Generator:
     def __init__(

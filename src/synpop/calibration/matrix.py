@@ -2,7 +2,6 @@
 The structures of input and output data for the pipeline.
 """
 
-
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass

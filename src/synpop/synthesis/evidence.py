@@ -3,6 +3,7 @@ from typing import Any, NamedTuple
 
 class PersonSimulationKey(NamedTuple):
     """Conditions defining a person-simulation evidence group."""
+
     h_type: Any
     rank: int
     head_age: Any

@@ -5,7 +5,6 @@ The configurations for the pipeline.
 from dataclasses import dataclass
 
 
-
 class ColumnNames:
     HEAD_COLS = ("Head_age", "Head_gender")
     COMPOSITION_COLS = ("adults", "minors", "kids")
