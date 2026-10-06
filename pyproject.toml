@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bayesian-synpop"
+dynamic = ["version"]
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "pgmpy==1.0.0",
+    "omegaconf",
+    "streamlit",
+    "pygraphviz",
+]
+requires-python = ">=3.12"
+authors = [{name = "Yunshuo Tang", email = "551835@mail.muni.cz"}]
+description = "Two-layer Bayesian model for synthetic population generation."
+readme = "README.md"
+license = "MIT"
+keywords = ["Bayesian network", "synthetic population","simulation based"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["synpop", "synpop.*"]
+namespaces = true
