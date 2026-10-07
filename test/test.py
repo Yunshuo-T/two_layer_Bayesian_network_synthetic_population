@@ -196,7 +196,7 @@ class TestElementaryAttributes:
 
     def test_custom_age_bins(self):
         result = _add_age_category(
-            pd.DataFrame({"age": [0, 10, 11, 20]}), "age", bins=[-1, 10, 20]
+            pd.DataFrame({"age": [0, 10, 11, 20]}), "age", bin=[-1, 10, 20]
         )
         assert result[ColumnNames.AGE_CATE].tolist() == [0, 0, 1, 1]
 

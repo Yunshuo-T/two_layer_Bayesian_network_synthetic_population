@@ -23,6 +23,14 @@ license = "MIT"
 license-files = ["LICENSE"]
 keywords = ["Bayesian network", "synthetic population","simulation based"]
 
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+python_files = ["test.py", "test_*.py", "*_test.py"]
+testpaths = ["test.py"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["synpop", "synpop.*"]

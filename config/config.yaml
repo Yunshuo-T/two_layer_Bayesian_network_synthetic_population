@@ -1,6 +1,6 @@
 train:
-  raw_h_df: "french_h.csv"
-  raw_p_df: "french_p.csv"
+  raw_h_df: "C:/Users/tang/database/SynPop/synthetic_populations/input/H_sample_5%.xlsx"
+  raw_p_df: "C:/Users/tang/database/SynPop/synthetic_populations/input/P_sample_5%.xlsx"
   h_nodes: ["TYPL", "VOIT"]
   p_nodes: ["SEXE", "CS1", "DIPL_15", "EMPL", "ETUD", "STAT_CONJ"]
   age_col: "AGE"

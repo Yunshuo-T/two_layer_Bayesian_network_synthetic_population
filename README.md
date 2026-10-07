@@ -56,4 +56,21 @@ calibration:
 The output will be two `.csv` files for household and household members.
 
 # Usage example
-Need to complete 
+Need to complete
+
+## Testing
+
+Install the package with the test dependencies in your Python environment:
+
+```console
+python -m pip install -e ".[test]"
+```
+
+Run the pytest suite from the project root:
+
+```console
+python -m pytest -q
+```
+
+Tests live in `test.py` and use small example datasets and temporary directories.
+To run one group, use e.g. `python -m pytest test.py::TestEncoding -q`.

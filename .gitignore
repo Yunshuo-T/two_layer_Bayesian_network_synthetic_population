@@ -9,7 +9,7 @@ __pycache__/
 build/
 dist/
 
-# Virtual environments and secrets
+# Virtual environments
 .venv/
 venv/
 .env
@@ -22,3 +22,6 @@ running.log
 
 # Local editor settings
 .vscode/
+
+#local experiments
+threshold/

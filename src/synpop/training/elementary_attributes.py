@@ -1,26 +1,42 @@
 import pandas as pd
+from pandas.api.types import is_string_dtype, is_object_dtype
 import numpy as np
-
 from synpop.schema import ColumnNames
 
 
 def _add_age_category(
     p_df: pd.DataFrame,
     age_col: str,
-    bins: list | None = None,
+    bin: list | None = None,
 ) -> pd.DataFrame:
+    """
+    Classify the age of household members into age categories.
+    The age information of the original dataframe can be integers or existing 
+    age categories. If you want to use existing age categories, you still need to 
+    give the age category bin. 
+    Args:
+        p_df (pd.DataFrame): The dataframe of household members.
+        age_col (str): The column name indicating the member age.
+        bin (list | None, optional): The target age categories for classifying the age of household members. Default: bins = [-1, 5, 17, 29, 39, 49, 59, 69, 79, float("inf")]
 
-    if bins is None:
-        bins = [-1, 5, 17, 29, 39, 49, 59, 69, 79, float("inf")]
-    labels = list(range(len(bins) - 1))
-    p_df[age_col] = p_df[age_col].astype(int)
-    p_df[ColumnNames.AGE_CATE] = pd.cut(
-        p_df[age_col],
-        bins=bins,
+    Returns:
+        pd.DataFrame: _description_
+    """
+    df = p_df.copy()
+    if bin is None:
+        bin = [-1, 5, 17, 29, 39, 49, 59, 69, 79, float("inf")]
+    labels = list(range(len(bin) - 1))
+    # if the age info is existing category, extract the left age from the interval.
+    if is_string_dtype(df[age_col]) or is_object_dtype(df[age_col]):
+        df[age_col] = df[age_col].astype(str).str.extract(r'(\d+)')[0]
+    df[age_col] = df[age_col].astype(int)
+    df[ColumnNames.AGE_CATE] = pd.cut(
+        df[age_col],
+        bins=bin,
         labels=labels,
     ).astype(int)
 
-    return p_df
+    return df
 
 
 def _add_member_rank(
@@ -51,6 +67,8 @@ def _add_head_attributes(
 
 
 def _calculate_household_composition(
+    # TODO consider using the household dataframe to classify the household composition, to prevent the situation the the household member data excludes children.
+    # TODO Can ask the p_df inherit the information from h_df, specify the composition cols. 
     p_df: pd.DataFrame,
     h_id_col: str = "H_ID",
 ) -> pd.DataFrame:
