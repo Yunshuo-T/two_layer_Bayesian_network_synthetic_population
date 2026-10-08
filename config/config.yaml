@@ -4,6 +4,7 @@ train:
   h_nodes: ["TYPL", "VOIT"]
   p_nodes: ["SEXE", "CS1", "DIPL_15", "EMPL", "ETUD", "STAT_CONJ"]
   age_col: "AGE"
+  age_bin: [-1, 5, 17, 29, 39, 49, 59, 69, 79, float("inf")]
   gender_col: "SEXE"
   h_id_col: "H_ID"
   score: "aic-d"

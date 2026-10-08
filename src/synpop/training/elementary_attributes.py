@@ -139,10 +139,12 @@ def add_elementary_attributes(
     age_col: str,
     gender_col: str,
     h_id_col: str,
+    age_bin:list|None = None,
+    
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     processed_p_df = (
-        raw_p_df.pipe(_add_age_category, age_col=age_col)
+        raw_p_df.pipe(_add_age_category, age_col=age_col,bin=age_bin)
         .pipe(_add_member_rank, h_id_col=h_id_col, age_col=age_col)
         .pipe(_add_head_attributes, h_id_col=h_id_col, gender_col=gender_col)
         .pipe(_add_household_type, h_id_col=h_id_col)
