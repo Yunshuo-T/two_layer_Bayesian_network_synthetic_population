@@ -7,8 +7,12 @@ from synpop.training import trainer
 
 def run_training(config_path: str = r"config\config.yaml"):
     cfg = AppConfig.load(config_path)
-    raw_h = pd.read_csv(cfg.train.raw_h_df, low_memory=False)
-    raw_p = pd.read_csv(cfg.train.raw_p_df, low_memory=False)
+    if cfg.train.raw_h_df.endswith('.csv'):
+        raw_h = pd.read_csv(cfg.train.raw_h_df, low_memory=False)
+        raw_p = pd.read_csv(cfg.train.raw_p_df, low_memory=False)
+    else:
+        raw_h = pd.read_excel(cfg.train.raw_h_df)
+        raw_p = pd.read_excel(cfg.train.raw_p_df)
     train_bundle = trainer.TrainingBundle.construct_bundle(
         raw_h_df=raw_h,
         raw_p_df=raw_p,
