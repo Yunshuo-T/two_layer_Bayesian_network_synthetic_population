@@ -197,10 +197,12 @@ class TrainingBundle:
         age_col: str,
         gender_col: str,
         h_id_col: str,
+        composition_cols: dict[str, str] | None = None,
     ):
         processed_h_df, processed_p_df = (
             elementary_attributes.add_elementary_attributes(
-                raw_h_df, raw_p_df, age_col, gender_col, h_id_col
+                raw_h_df, raw_p_df, age_col, gender_col, h_id_col,
+                composition_cols=composition_cols,
             )
         )
         cate_code_cols = [col for col in ColumnNames.CATE_CODE_COLS] + [gender_col]

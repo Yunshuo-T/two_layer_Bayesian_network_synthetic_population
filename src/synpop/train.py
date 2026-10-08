@@ -17,6 +17,7 @@ def run_training(config_path: str = r"config\config.yaml"):
         age_col=cfg.train.age_col,
         gender_col=cfg.train.gender_col,
         h_id_col=cfg.train.h_id_col,
+        composition_cols=cfg.train.composition_cols,
     )
 
     model_train = trainer.Trainer(config=train_bundle.config)

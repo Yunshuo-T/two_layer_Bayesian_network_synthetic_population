@@ -8,6 +8,7 @@ train:
   gender_col: "SEXE"
   h_id_col: "H_ID"
   score: "aic-d"
+  composition_cols: {"adults":"H_persons_1899","minors":"H_persons_0617","kids":"H_persons_0005"} # In the order of adults, minor and children, one or more cols can be supplied
 
 synthesis:
   num_households: 1500

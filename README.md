@@ -7,15 +7,22 @@ This package consists of model training, population synthesis and calibration th
 Model training requires attributes and arguments:
 ```
 train:
-  raw_h_df: "french_h.csv"
-  raw_p_df: "french_p.csv"
+  raw_h_df: "C:/Users/tang/database/SynPop/synthetic_populations/input/H_sample_5%.xlsx"
+  raw_p_df: "C:/Users/tang/database/SynPop/synthetic_populations/input/P_sample_5%.xlsx"
   h_nodes: ["TYPL", "VOIT"]
   p_nodes: ["SEXE", "CS1", "DIPL_15", "EMPL", "ETUD", "STAT_CONJ"]
   age_col: "AGE"
+  age_bin: [-1, 5, 17, 29, 39, 49, 59, 69, 79, float("inf")]
   gender_col: "SEXE"
   h_id_col: "H_ID"
   score: "aic-d"
-```
+  composition_cols: {"adults":"H_persons_1899",     "minors":"H_persons_0617","kids":"H_persons_0005"} 
+
+These groups correspond to ages 18+, 6–17, and 0–5 with the default age bins.
+Supplied counts must cover all three groups for every household represented in
+the person data. They take precedence even when some children have no person
+records. The original source count columns are retained in the household output.
+
 ## Population synthesis input 
 ```
 synthesis:
@@ -72,5 +79,5 @@ Run the pytest suite from the project root:
 python -m pytest -q
 ```
 
-Tests live in `test.py` and use small example datasets and temporary directories.
-To run one group, use e.g. `python -m pytest test.py::TestEncoding -q`.
+Tests live in `test/test.py` and use small example datasets and temporary directories.
+To run one group, use e.g. `python -m pytest test/test.py::TestEncoding -q`.

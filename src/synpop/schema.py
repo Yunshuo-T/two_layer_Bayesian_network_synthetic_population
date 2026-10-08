@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 class ColumnNames:
     HEAD_COLS = ("Head_age", "Head_gender")
-    COMPOSITION_COLS = ("adults", "minors", "kids")
 
     AGE_CATE = "age_cate"
     MEMBER_RANK = "Member_rank"

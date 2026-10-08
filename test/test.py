@@ -27,11 +27,6 @@ from synpop.schema import ColumnNames, ModelSchema
 from synpop.synthesis.candidate import CandidatePool
 from synpop.synthesis.evidence import PersonSimulationKey
 from synpop.synthesis.generator import Generator, _batch_sample_persons
-from synpop.training.elementary_attributes import (
-    _add_age_category,
-    _add_household_type,
-    add_elementary_attributes,
-)
 from synpop.training.trainer import Trainer, TrainingBundle
 from synpop.utils.encoding import cate_codes, make_code_crosswalk, map_dataframe
 from synpop.utils.seeding import random_seeds
@@ -183,51 +178,8 @@ class TestEncoding:
             make_code_crosswalk("head", "person", {"head": {0: "F"}}, {"person": {"M": 0}})
 
 
-class TestElementaryAttributes:
-    @pytest.mark.parametrize(
-        ("age", "expected"),
-        [(0, 0), (5, 0), (6, 1), (17, 1), (18, 2), (29, 2), (30, 3),
-         (39, 3), (40, 4), (49, 4), (50, 5), (59, 5), (60, 6), (69, 6),
-         (70, 7), (79, 7), (80, 8), (105, 8)],
-    )
-    def test_age_category_boundaries(self, age, expected):
-        result = _add_age_category(pd.DataFrame({"age": [str(age)]}), "age")
-        assert result.loc[0, ColumnNames.AGE_CATE] == expected
 
-    def test_custom_age_bins(self):
-        result = _add_age_category(
-            pd.DataFrame({"age": [0, 10, 11, 20]}), "age", bin=[-1, 10, 20]
-        )
-        assert result[ColumnNames.AGE_CATE].tolist() == [0, 0, 1, 1]
 
-    @pytest.mark.parametrize(
-        ("ages", "expected"),
-        [([2], "single"), ([2, 3], "couple"), ([2, 3, 4], "only_adults"),
-         ([2, 0], "single_with_kid"), ([2, 1], "single_with_minor"),
-         ([2, 1, 0], "single_with_children"), ([0, 1], "other_with_children")],
-    )
-    def test_household_types_and_composition(self, ages, expected):
-        people = pd.DataFrame({"household_id": [10] * len(ages), ColumnNames.AGE_CATE: ages})
-        result = _add_household_type(people, h_id_col="household_id")
-        assert result[ColumnNames.H_TYPE].tolist() == [expected] * len(ages)
-        assert result[ColumnNames.ADULTS].eq(sum(age >= 2 for age in ages)).all()
-        assert result[ColumnNames.MINORS].eq(ages.count(1)).all()
-        assert result[ColumnNames.KIDS].eq(ages.count(0)).all()
-
-    def test_preprocessing_ranks_members_and_syncs_household_features(self, raw_data):
-        households, people = add_elementary_attributes(
-            *raw_data, age_col="age", gender_col="gender", h_id_col="household_id"
-        )
-        family = people[people["household_id"] == 20]
-        assert family["age"].tolist() == [40, 12, 4]
-        assert family[ColumnNames.MEMBER_RANK].tolist() == [0, 1, 2]
-        assert family[ColumnNames.HEAD_AGE].tolist() == [4, 4, 4]
-        assert family[ColumnNames.HEAD_GENDER].tolist() == ["F", "F", "F"]
-        household = households.set_index("household_id").loc[20]
-        assert household[ColumnNames.H_TYPE] == "single_with_children"
-        assert household[[ColumnNames.ADULTS, ColumnNames.MINORS, ColumnNames.KIDS]].tolist() == [1, 1, 1]
-        assert households["household_id"].tolist() == [30, 10, 20]
-        assert set(ColumnNames.HOUSEHOLD_COLS).issubset(households.columns)
 
 
 class TestEvidenceAndCandidates:
@@ -466,6 +418,24 @@ class TestValidation:
 
 
 class TestTraining:
+    def test_training_bundle_uses_custom_household_composition(self):
+        households = pd.DataFrame(
+            {"id": [10], "adult_count": [2], "minor_count": [1], "kid_count": [1]}
+        )
+        people = pd.DataFrame({"id": [10, 10], "age": [40, 30], "gender": ["F", "M"]})
+        bundle = TrainingBundle.construct_bundle(
+            households, people, h_nodes=[], p_nodes=[], age_col="age",
+            gender_col="gender", h_id_col="id",
+            composition_cols={"adults": "adult_count", "minors": "minor_count", "kids": "kid_count"},
+        )
+        assert bundle.household.data["adults"].tolist() == [2]
+        assert bundle.household.data["minors"].tolist() == [1]
+        assert bundle.household.data["kids"].tolist() == [1]
+        type_map = bundle.config.code_to_attr[ColumnNames.H_TYPE]
+        assert type_map[bundle.household.data[ColumnNames.H_TYPE].iloc[0]] == "couple_with_children"
+        assert bundle.person.data[ColumnNames.H_TYPE].nunique() == 1
+        assert len(bundle.person.data) == 2
+
     def test_training_bundle_prepares_categories_and_required_nodes(self, raw_data):
         bundle = TrainingBundle.construct_bundle(
             *raw_data, h_nodes=["tenure", "tenure"], p_nodes=["occupation", "gender"],
@@ -529,7 +499,7 @@ class TestTraining:
 class TestConfigAndIO:
     def test_config_load_creates_directories_and_resolves_interpolation(self, tmp_path):
         # Load a temporary copy; the repository config's output paths are not used.
-        source = Path(__file__).parent / "config" / "config.yaml"
+        source = Path(__file__).resolve().parents[1] / "config" / "config.yaml"
         config = OmegaConf.load(source)
         config.paths.output_dir = str(tmp_path / "output")
         config.calibration.kwargs.bounds = [0.001, 50.0]

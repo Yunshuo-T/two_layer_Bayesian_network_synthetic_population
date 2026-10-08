@@ -45,6 +45,7 @@ class TrainConfig:
     gender_col: str
     h_id_col: str
     score: str
+    composition_cols: dict[str, str] | None = None
 
 
 @dataclass

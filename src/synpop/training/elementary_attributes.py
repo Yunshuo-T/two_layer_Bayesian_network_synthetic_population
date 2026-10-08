@@ -67,12 +67,17 @@ def _add_head_attributes(
 
 
 def _calculate_household_composition(
-    # TODO consider using the household dataframe to classify the household composition, to prevent the situation the the household member data excludes children.
-    # TODO Can ask the p_df inherit the information from h_df, specify the composition cols. 
     p_df: pd.DataFrame,
     h_id_col: str = "H_ID",
+    h_df: pd.DataFrame | None = None,
+    composition_cols: dict[str,str] | None = None,
 ) -> pd.DataFrame:
+    """Use household counts when available in household dataframe, otherwise count person age categories in person dataframe.
 
+    ``composition_cols`` maps ``adults``, ``minors`` and ``kids`` to their
+    household source columns.
+    """
+    
     indicators = pd.DataFrame(
         {
             h_id_col: p_df[h_id_col],
@@ -81,17 +86,45 @@ def _calculate_household_composition(
             ColumnNames.KIDS: (p_df[ColumnNames.AGE_CATE] == 0).astype(int),
         }
     )
+    
+    composition = indicators.groupby(h_id_col, observed=True).sum().reset_index()
+    
+    if composition_cols:
+        if h_df is None:
+            raise ValueError("The household dataframe cannot be None when composition cols are supplied.")
+        else:
+            household_counts = h_df[
+                [h_id_col, *composition_cols.values()]
+            ].rename(
+                columns={
+                    source: target
+                    for target, source in composition_cols.items()
+                }
+            )
 
-    return indicators.groupby(h_id_col, observed=True).sum().reset_index()
+            composition = composition.drop(
+                columns=list(composition_cols)
+            ).merge(
+                household_counts,
+                on=h_id_col,
+                how="left",
+                validate="one_to_one",
+            )
+
+    return composition 
 
 
 def _add_household_type(
     p_df: pd.DataFrame,
     h_id_col: str = "H_ID",
+    h_df: pd.DataFrame | None = None,
+    composition_cols: dict[str, str] | None = None,
 ) -> pd.DataFrame:
 
     # Aggregate counts per household
-    comp = _calculate_household_composition(p_df, h_id_col=h_id_col)
+    comp = _calculate_household_composition(
+        p_df, h_id_col=h_id_col, h_df=h_df, composition_cols=composition_cols
+    )
     # Determine the Adult Prefix
     prefix = np.select(
         [
@@ -119,7 +152,9 @@ def _add_household_type(
         ColumnNames.MINORS,
         ColumnNames.KIDS,
     ]
-    return p_df.merge(comp[merge_cols], how="left", on=h_id_col)
+    return p_df.drop(columns=merge_cols[1:], errors="ignore").merge(
+        comp[merge_cols], how="left", on=h_id_col, validate="many_to_one"
+    )
 
 
 def _sync_household_attributes(
@@ -130,7 +165,9 @@ def _sync_household_attributes(
     """Extracts household-level attributes from p_df and merges them into h_df."""
     cols = [c for c in ColumnNames.HOUSEHOLD_COLS]
     h_features = p_df[[h_id_col] + cols].drop_duplicates(subset=[h_id_col])
-    return h_df.merge(h_features, on=h_id_col, how="left")
+    return h_df.drop(columns=cols, errors="ignore").merge(
+        h_features, on=h_id_col, how="left", validate="many_to_one"
+    )
 
 
 def add_elementary_attributes(
@@ -139,15 +176,26 @@ def add_elementary_attributes(
     age_col: str,
     gender_col: str,
     h_id_col: str,
-    age_bin:list|None = None,
-    
+    age_bin: list | None = None,
+    composition_cols: dict[str, str] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Derive training features, preferring household composition counts.
+
+    For custom count column names, supply a mapping such as
+    ``{"adults": "H_persons_1899", "minors": "H_persons_0617",
+    "kids": "H_persons_0005"}``. Canonical names are detected automatically.
+    """
 
     processed_p_df = (
-        raw_p_df.pipe(_add_age_category, age_col=age_col,bin=age_bin)
+        raw_p_df.pipe(_add_age_category, age_col=age_col, bin=age_bin)
         .pipe(_add_member_rank, h_id_col=h_id_col, age_col=age_col)
         .pipe(_add_head_attributes, h_id_col=h_id_col, gender_col=gender_col)
-        .pipe(_add_household_type, h_id_col=h_id_col)
+        .pipe(
+            _add_household_type,
+            h_id_col=h_id_col,
+            h_df=raw_h_df,
+            composition_cols=composition_cols,
+        )
     )
 
     processed_h_df = _sync_household_attributes(

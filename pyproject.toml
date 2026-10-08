@@ -29,7 +29,7 @@ test = ["pytest"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 python_files = ["test.py", "test_*.py", "*_test.py"]
-testpaths = ["test.py"]
+testpaths = ["test"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
