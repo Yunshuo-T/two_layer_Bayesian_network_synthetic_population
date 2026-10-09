@@ -21,6 +21,8 @@ def run_training(config_path: str = r"config\config.yaml"):
         age_col=cfg.train.age_col,
         gender_col=cfg.train.gender_col,
         h_id_col=cfg.train.h_id_col,
+        expert_knowledge=cfg.train.expert_knowledge,
+        age_bin=cfg.train.age_bin,
         composition_cols=cfg.train.composition_cols,
     )
 

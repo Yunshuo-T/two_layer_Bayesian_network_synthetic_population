@@ -179,6 +179,49 @@ class Trainer:
         return df_cpd
 
 
+def _construct_config(
+    processed_h_df: pd.DataFrame,
+    processed_p_df: pd.DataFrame,
+    gender_col,
+    h_id_col,
+):
+    cate_code_cols = [col for col in ColumnNames.CATE_CODE_COLS] + [gender_col]
+    code_to_attr, attr_to_code = encoding.cate_codes(processed_p_df, cate_code_cols)
+    p_mapped = encoding.map_dataframe(attr_to_code, processed_p_df).astype("category")
+    h_mapped = encoding.map_dataframe(attr_to_code, processed_h_df).astype("category")
+    config = ModelSchema(code_to_attr, attr_to_code, gender_col, h_id_col)
+    return p_mapped, h_mapped, config
+
+
+def _resolve_model_nodes(user_nodes: list[str], elementary_nodes: set[str]) -> list[str]:
+    return list(dict.fromkeys([*user_nodes, *sorted(elementary_nodes)]))
+
+
+def _build_expert_knowledge(
+    p_nodes: list[str],
+    elementary_attributes: dict[str, set[str]],
+    user_expert_knowledge: dict,
+):
+    forbidden_edges = itertools.product(
+        [*p_nodes, ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE],
+        elementary_attributes["H"],
+    )
+    person_config = user_expert_knowledge["person"]
+    household_config = user_expert_knowledge["household"]
+    
+    person_expert_knowledge = ExpertKnowledge(
+        forbidden_edges=list(forbidden_edges)
+        + (person_config["forbidden_edges"] or []),
+        required_edges=person_config["required_edges"] or [],
+    )
+    household_expert_knowledge = ExpertKnowledge(
+        forbidden_edges=household_config["forbidden_edges"] or [],
+        required_edges=household_config["required_edges"] or [],
+    )
+
+    return household_expert_knowledge, person_expert_knowledge
+
+
 @dataclass
 class TrainingBundle:
     """A bundle for training data and training configuration"""
@@ -197,6 +240,7 @@ class TrainingBundle:
         age_col: str,
         gender_col: str,
         h_id_col: str,
+        expert_knowledge: dict,
         age_bin: list | None = None,
         composition_cols: dict[str, str] | None = None,
     ):
@@ -211,33 +255,25 @@ class TrainingBundle:
                 composition_cols=composition_cols,
             )
         )
-        cate_code_cols = [col for col in ColumnNames.CATE_CODE_COLS] + [gender_col]
-        code_to_attr, attr_to_code = encoding.cate_codes(processed_p_df, cate_code_cols)
-        p_mapped = encoding.map_dataframe(attr_to_code, processed_p_df).astype(
-            "category"
+        p_mapped, h_mapped, config = _construct_config(
+            processed_h_df=processed_h_df,
+            processed_p_df=processed_p_df,
+            gender_col=gender_col,
+            h_id_col=h_id_col,
         )
-        h_mapped = encoding.map_dataframe(attr_to_code, processed_h_df).astype(
-            "category"
-        )
-        config = ModelSchema(code_to_attr, attr_to_code, gender_col, h_id_col)
-        h_model_nodes = list(
-            dict.fromkeys(h_nodes + list(config.elementary_attributes["H"]))
+        h_model_nodes = _resolve_model_nodes(h_nodes, config.elementary_attributes["H"])
+        p_model_nodes = _resolve_model_nodes(p_nodes, config.elementary_attributes["P"])
+
+        household_expert_knowledge, person_expert_knowledge = _build_expert_knowledge(
+            p_nodes=p_nodes,
+            elementary_attributes=config.elementary_attributes,
+            user_expert_knowledge=expert_knowledge,
         )
 
-        p_model_nodes = list(
-            dict.fromkeys(p_nodes + list(config.elementary_attributes["P"]))
-        )
-        # TODO add feature to enable adding the customized expert_knowledge
-        forbidden_edges = itertools.product([*p_nodes, ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE],config.elementary_attributes["H"])
-        
-        person_expert_knowledge = ExpertKnowledge(
-            forbidden_edges = forbidden_edges
-
-        )
         h_spec = TrainData(
             data=h_mapped[h_model_nodes],
             nodes=h_model_nodes,
-            expert_knowledge=None,
+            expert_knowledge=household_expert_knowledge,
         )
         p_spec = TrainData(
             data=p_mapped[p_model_nodes],
