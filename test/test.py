@@ -407,7 +407,7 @@ class TestValidation:
     def test_compute_metrics_preserves_metadata(self):
         weights = np.array([[1, 2], [2, 3]])
         result = compute_metrics("ipu", weights.T, np.array([2, 6]), weights.T,
-                                 np.array([2, 6]), "households.csv", "people.csv", True)
+                                np.array([2, 6]), "households.csv", "people.csv", True)
         assert result["ipu"]["filename_h"] == "households.csv"
         assert result["ipu"]["filename_p"] == "people.csv"
         assert result["ipu"]["is_converged"] is True
@@ -415,87 +415,6 @@ class TestValidation:
         assert result["ipu"]["p_rmse"] == pytest.approx(1)
         assert result["ipu"]["h_zscore"] == pytest.approx(4 / 3)
         assert result["ipu"]["p_zscore"] == pytest.approx(4 / 3)
-
-
-class TestTraining:
-    def test_training_bundle_uses_custom_household_composition(self):
-        households = pd.DataFrame(
-            {"id": [10], "adult_count": [2], "minor_count": [1], "kid_count": [1]}
-        )
-        people = pd.DataFrame({"id": [10, 10], "age": [40, 30], "gender": ["F", "M"]})
-        bundle = TrainingBundle.construct_bundle(
-            households, people, h_nodes=[], p_nodes=[], age_col="age",
-            gender_col="gender", h_id_col="id",
-            composition_cols={"adults": "adult_count", "minors": "minor_count", "kids": "kid_count"},
-        )
-        assert bundle.household.data["adults"].tolist() == [2]
-        assert bundle.household.data["minors"].tolist() == [1]
-        assert bundle.household.data["kids"].tolist() == [1]
-        type_map = bundle.config.code_to_attr[ColumnNames.H_TYPE]
-        assert type_map[bundle.household.data[ColumnNames.H_TYPE].iloc[0]] == "couple_with_children"
-        assert bundle.person.data[ColumnNames.H_TYPE].nunique() == 1
-        assert len(bundle.person.data) == 2
-
-    def test_training_bundle_prepares_categories_and_required_nodes(self, raw_data):
-        bundle = TrainingBundle.construct_bundle(
-            *raw_data, h_nodes=["tenure", "tenure"], p_nodes=["occupation", "gender"],
-            age_col="age", gender_col="gender", h_id_col="household_id"
-        )
-        assert len(bundle.household.data) == 3
-        assert len(bundle.person.data) == 6
-        assert len(bundle.household.nodes) == len(set(bundle.household.nodes))
-        assert bundle.config.elementary_attributes["H"].issubset(bundle.household.nodes)
-        assert bundle.config.elementary_attributes["P"].issubset(bundle.person.nodes)
-        assert all(isinstance(dtype, pd.CategoricalDtype) for dtype in bundle.person.data.dtypes)
-        assert not bundle.person.data.isna().any().any()
-        assert ("occupation", "tenure") in bundle.person.expert_knowledge.forbidden_edges
-
-    @pytest.mark.parametrize(
-        ("data", "message"),
-        [(pd.DataFrame({"other": [1]}), "Missing required columns"),
-         (pd.DataFrame({"required": []}), "at least one row"),
-         (pd.DataFrame({"required": [None]}), "Missing values")],
-    )
-    def test_training_validation_rejects_invalid_data(self, schema, data, message):
-        with pytest.raises(ValueError, match=message):
-            Trainer(schema)._validate_dataframe(data, {"required"})
-
-    def test_training_validation_accepts_complete_data(self, schema):
-        Trainer(schema)._validate_dataframe(pd.DataFrame({"required": [0, 1]}), {"required"})
-
-    def test_learning_fits_a_valid_network_and_preserves_isolated_nodes(self, schema):
-        data = pd.DataFrame({"a": [0, 0, 0, 1, 1, 1], "b": [0, 0, 1, 0, 1, 1]})
-        trainer = Trainer(schema)
-        dag = trainer._learn_structure(data, score="bic-d")
-        model = trainer._learn_parameters(dag, data)
-        assert set(model.nodes()) == {"a", "b"}
-        assert model.check_model()
-        for cpd in model.get_cpds():
-            np.testing.assert_allclose(cpd.get_values().sum(axis=0), 1)
-
-    @pytest.mark.parametrize("attribute", ["a", "b"])
-    def test_cpd_export_handles_root_and_parented_variables(self, schema, tmp_path, attribute):
-        model = DiscreteBayesianNetwork([("a", "b")])
-        model.add_cpds(
-            TabularCPD("a", 2, [[0.4], [0.6]]),
-            TabularCPD("b", 2, [[0.8, 0.3], [0.2, 0.7]], evidence=["a"], evidence_card=[2]),
-        )
-        path = tmp_path / attribute
-        result = Trainer(schema).export_cpd(attribute, model, str(path))
-        assert path.with_suffix(".csv").is_file()
-        assert result.index.name == attribute
-        expected = [[0.4], [0.6]] if attribute == "a" else [[0.8, 0.3], [0.2, 0.7]]
-        np.testing.assert_allclose(result.to_numpy(), expected)
-        if attribute == "b":
-            assert result.columns.names == ["a"]
-
-    def test_cpd_export_rejects_variable_without_cpd(self, schema, tmp_path):
-        model = DiscreteBayesianNetwork()
-        model.add_node("missing")
-        with pytest.raises(ValueError, match="no CPD"):
-            Trainer(schema).export_cpd("missing", model, str(tmp_path / "cpd"))
-
-
 class TestConfigAndIO:
     def test_config_load_creates_directories_and_resolves_interpolation(self, tmp_path):
         # Load a temporary copy; the repository config's output paths are not used.

@@ -8,8 +8,6 @@ from pgmpy.models import DiscreteBayesianNetwork
 
 from synpop.training import elementary_attributes
 from synpop.schema import ColumnNames, ModelSchema
-
-
 from synpop.utils import encoding
 
 logger = logging.getLogger("pgmpy")
@@ -193,7 +191,9 @@ def _construct_config(
     return p_mapped, h_mapped, config
 
 
-def _resolve_model_nodes(user_nodes: list[str], elementary_nodes: set[str]) -> list[str]:
+def _resolve_model_nodes(
+    user_nodes: list[str], elementary_nodes: set[str]
+) -> list[str]:
     return list(dict.fromkeys([*user_nodes, *sorted(elementary_nodes)]))
 
 
@@ -208,7 +208,7 @@ def _build_expert_knowledge(
     )
     person_config = user_expert_knowledge["person"]
     household_config = user_expert_knowledge["household"]
-    
+
     person_expert_knowledge = ExpertKnowledge(
         forbidden_edges=list(forbidden_edges)
         + (person_config["forbidden_edges"] or []),
