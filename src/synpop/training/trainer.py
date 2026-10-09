@@ -227,10 +227,12 @@ class TrainingBundle:
         p_model_nodes = list(
             dict.fromkeys(p_nodes + list(config.elementary_attributes["P"]))
         )
-        forbidden_person_to_household = list(itertools.product(p_nodes, h_nodes))
-        forbidden_rank_edges = list(itertools.product(["Member_rank"], h_nodes))
+        # TODO add feature to enable adding the customized expert_knowledge
+        forbidden_edges = itertools.product([*p_nodes, ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE],config.elementary_attributes["H"])
+        
         person_expert_knowledge = ExpertKnowledge(
-            forbidden_edges=forbidden_person_to_household + forbidden_rank_edges
+            forbidden_edges = forbidden_edges
+
         )
         h_spec = TrainData(
             data=h_mapped[h_model_nodes],

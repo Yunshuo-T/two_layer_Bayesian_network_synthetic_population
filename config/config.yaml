@@ -2,7 +2,7 @@ train:
   raw_h_df: "C:/Users/tang/database/SynPop/synthetic_populations/input/H_sample_5%.xlsx"
   raw_p_df: "C:/Users/tang/database/SynPop/synthetic_populations/input/P_sample_5%.xlsx"
   h_nodes: ["H_motor_v", "H_venr_bike"] # Excluding the count of members even though they might be in the household dataframe 
-  p_nodes: ["P_gender", "P_age", "P_work", "P_education", "driver_license", "prepaid_tickets"]
+  p_nodes: ["P_gender", "P_work", "P_education", "driver_license", "prepaid_tickets"] # Exclude the origin age column
   age_col: "P_age"
   age_bin: [-1, 5, 17, 29, 39, 49, 59, 69, 79, float("inf")]
   gender_col: "P_gender"
