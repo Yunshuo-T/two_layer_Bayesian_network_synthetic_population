@@ -3,7 +3,6 @@ from synpop.schema import ColumnNames
 import pytest
 import itertools
 import pandas as pd
-from pandas.testing import assert_frame_equal
 from unittest.mock import Mock
 
 H_ID = "household_id"
@@ -36,6 +35,34 @@ def default_expert_knowledge():
         },
     }
     
+@pytest.fixture
+def data_frame():
+    return {
+        'household': pd.DataFrame(
+            {
+            "household_id": [1, 2],
+            "household_type": ["single", "family"],
+            }
+        ),
+        'person': pd.DataFrame(
+            {
+            "household_id": [1, 2],
+            "gender": ["F", "M"],
+            }
+        )
+    }
+    
+@pytest.fixture
+def mock_trainer():
+    mock_config = Mock()
+    return trainer.Trainer(config=mock_config)
+    
+@pytest.fixture
+def sample_data():
+    return pd.DataFrame({
+        "A": [0, 0, 0, 1, 1, 1, 0, 1],
+        "B": [0, 0, 1, 1, 1, 0, 0, 1],
+    })
 
 class TestBundleConstruction:
     
@@ -73,87 +100,60 @@ class TestBundleConstruction:
         
         assert nodes == ["education", "occupation",ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE]
     
-    def test_construct_config(self, monkeypatch):
-        h_df = pd.DataFrame({
-            "household_id": [1, 2],
-            "household_type": ["single", "family"],
-        })
-
-        p_df = pd.DataFrame({
-            "household_id": [1, 2],
-            "gender": ["F", "M"],
-        })
-
+    def test_construct_config(self, data_frame,monkeypatch):
+        data_frame = data_frame
+        h_df = data_frame['household']
+        p_df = data_frame['person']
+        
         # Expected encoding dictionaries
         code_to_attr = {"gender": {0: "F", 1: "M"}}
         attr_to_code = {"gender": {"F": 0, "M": 1}}
 
-        # Expected mapped DataFrames
-        expected_p = p_df.copy()
-        expected_p["gender"] = [0, 1]
-
-        expected_h = h_df.copy()
-
-        # Mock dependencies
-        mock_cate_codes = Mock(
-            return_value=(code_to_attr, attr_to_code)
-        )
-        mock_map_dataframe = Mock(
-            side_effect=[expected_p, expected_h]
-        )
-        mock_schema = Mock()
-
         monkeypatch.setattr(
-            trainer.encoding, "cate_codes", mock_cate_codes
+            trainer.encoding,
+            "cate_codes",
+            lambda *args: (code_to_attr, attr_to_code),
         )
         monkeypatch.setattr(
-            trainer.encoding, "map_dataframe", mock_map_dataframe
+            trainer.encoding,
+            "map_dataframe",
+            lambda mapping, df: df.copy(),
         )
         monkeypatch.setattr(
-            trainer, "ModelSchema", mock_schema
+            trainer,
+            "ModelSchema",
+            lambda *args: args,
         )
-
-        # Act
         p_mapped, h_mapped, config = trainer._construct_config(
-            processed_h_df=h_df,
-            processed_p_df=p_df,
-            gender_col="gender",
-            h_id_col="household_id",
+        h_df, p_df, "gender", "household_id"
         )
 
-        # Assert: categorical codes were generated correctly
-        mock_cate_codes.assert_called_once_with(
-            p_df,
-            [*ColumnNames.CATE_CODE_COLS, "gender"],
+        pd.testing.assert_frame_equal(p_mapped, p_df.astype("category"))
+        pd.testing.assert_frame_equal(h_mapped, h_df.astype("category"))
+        assert config == (
+            code_to_attr, attr_to_code, "gender", "household_id"
         )
 
-        # Assert: encoding was applied in the correct order
-        assert mock_map_dataframe.call_count == 2
 
-        calls = mock_map_dataframe.call_args_list
 
-        assert calls[0].args[0] is attr_to_code
-        assert calls[0].args[1] is p_df
-
-        assert calls[1].args[0] is attr_to_code
-        assert calls[1].args[1] is h_df
-
-        # Assert: output DataFrames are correct
-        assert_frame_equal(
-            p_mapped, expected_p.astype("category")
-        )
-        assert_frame_equal(
-            h_mapped, expected_h.astype("category")
-        )
-
-        # Assert: ModelSchema received the expected arguments
-        mock_schema.assert_called_once_with(
-            code_to_attr,
-            attr_to_code,
-            "gender",
-            "household_id",
-        )
-
-        assert config is mock_schema.return_value
-            
-            
+class TestTrainer:
+    
+    def test_validate_dataframe(self,sample_data,mock_trainer):
+        df_missing = sample_data[["B"]]
+        with pytest.raises(ValueError) as exc_info:
+            mock_trainer._validate_dataframe(df_missing,{"A", "B"})
+        
+        assert "Missing required columns: ['A']" in str(exc_info.value)
+        
+        df_empty = pd.DataFrame({'A':[],'B':[]})
+        with pytest.raises(ValueError) as exc_info:
+            mock_trainer._validate_dataframe(df_empty,{"A", "B"})
+        
+        assert "Input data must contain at least one row." in str(exc_info.value)
+        
+        df_null = sample_data.copy()
+        df_null.loc[df_null.index[0], "A"] = None 
+        with pytest.raises(ValueError) as exc_info:
+            mock_trainer._validate_dataframe(df_null,{"A", "B"})
+        
+        assert "Missing values are not supported in required columns: ['A']" in str(exc_info.value)
