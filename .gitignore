@@ -24,5 +24,4 @@ running.log
 # Local editor settings
 .vscode/
 
-#local experiments
-threshold/
+
