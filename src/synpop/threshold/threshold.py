@@ -30,7 +30,7 @@ def two_layer_joint_distribution(h_model:DiscreteBayesianNetwork,p_model:Discret
     
     h_keep = [node for node in h_model.nodes if node not in set(h_exclude)]
     p_keep = [node for node in p_model.nodes if node not in set(p_exclude)]
-    print(p_keep)
+    
     h_factor = VariableElimination(h_model).query(variables=h_keep,joint=True)
     p_factor = VariableElimination(p_model).query(variables=p_keep,joint=True)
     
@@ -40,16 +40,28 @@ def two_layer_joint_distribution(h_model:DiscreteBayesianNetwork,p_model:Discret
 
     return _factor_to_dataframe(joint_factor)# type: ignore
 
-def export_train_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,joint_attributes:list,age_col:str)-> pd.DataFrame:
+def export_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,joint_attributes:list,age_col:str)-> pd.DataFrame:
+    """
+    A helper function to export joint distribution of household and individual dataset.
 
+    Args:
+        h_df (pd.DataFrame): Household dataframe
+        p_df (pd.DataFrame): Individual dataframe 
+        joint_attributes (list): The attributes that need to be joint from the two datasets
+        age_col (str): the column name of the individual age.
+
+    Returns:
+        pd.DataFrame: A dataframe containing the joint distribution
+    """
     joined_df = pd.merge(
         p_df,
         h_df,
         how='outer',
         on='H_ID'
     )
-    
-    joined_df = _add_age_category(joined_df,age_col='P_age')
+    if not (ColumnNames in p_df.columns):
+        joined_df = _add_age_category(joined_df,age_col)
+    joint_attributes.append(ColumnNames.AGE_CATE)
     joint_attributes.remove(age_col)
     return joined_df[joint_attributes].value_counts(normalize=True).reset_index(name='probability')
     
