@@ -8,6 +8,7 @@ import itertools
 import pandas as pd
 from pathlib import Path
 from synpop.schema import ColumnNames
+from synpop.training.elementary_attributes import _add_age_category
 
 
 def _factor_to_dataframe(factor:DiscreteFactor, value_col:str ="probability") -> pd.DataFrame:
@@ -38,6 +39,20 @@ def two_layer_joint_distribution(h_model:DiscreteBayesianNetwork,p_model:Discret
     joint_factor.normalize(inplace=True)# type: ignore
 
     return _factor_to_dataframe(joint_factor)# type: ignore
+
+def export_train_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,joint_attributes:list,age_col:str)-> pd.DataFrame:
+
+    joined_df = pd.merge(
+        p_df,
+        h_df,
+        how='outer',
+        on='H_ID'
+    )
+    
+    joined_df = _add_age_category(joined_df,age_col='P_age')
+    joint_attributes.remove(age_col)
+    return joined_df[joint_attributes].value_counts(normalize=True).reset_index(name='probability')
+    
 
 if __name__ == "__main__":
     bundle = io.load_bn_bundle(r'output\bn_bundle.pkl')
