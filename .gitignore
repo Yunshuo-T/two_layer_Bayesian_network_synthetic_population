@@ -1,6 +1,7 @@
 # Data and generated results
 input/
 output/
+config/
 
 # Python builds and caches
 __pycache__/
@@ -24,4 +25,6 @@ running.log
 # Local editor settings
 .vscode/
 
+#files
+script.ipynb
 
