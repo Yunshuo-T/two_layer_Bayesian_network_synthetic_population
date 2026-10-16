@@ -4,6 +4,7 @@ import pytest
 import itertools
 import pandas as pd
 from unittest.mock import Mock
+from pgmpy.estimators import ExpertKnowledge
 
 H_ID = "household_id"
 AGE = "age"
@@ -65,6 +66,37 @@ def sample_data():
     })
 
 class TestBundleConstruction:
+
+    def test_configured_required_edge_is_a_node_pair(
+        self, p_nodes, elementary_attrs, default_expert_knowledge
+    ):
+        default_expert_knowledge["person"]["required_edges"] = [
+            [ColumnNames.AGE_CATE, "education"]
+        ]
+        _, person_knowledge = trainer._build_expert_knowledge(
+            p_nodes=p_nodes,
+            elementary_attributes=elementary_attrs,
+            user_expert_knowledge=default_expert_knowledge,
+        )
+
+        assert person_knowledge.required_edges == {
+            (ColumnNames.AGE_CATE, "education")
+        }
+
+    def test_malformed_configured_edge_is_rejected(
+        self, p_nodes, elementary_attrs, default_expert_knowledge
+    ):
+        default_expert_knowledge["person"]["required_edges"] = [
+            "('age_cate'",
+            "P_work)",
+        ]
+
+        with pytest.raises(ValueError, match="Invalid edge.*person.required_edges"):
+            trainer._build_expert_knowledge(
+                p_nodes=p_nodes,
+                elementary_attributes=elementary_attrs,
+                user_expert_knowledge=default_expert_knowledge,
+            )
     
     def test__build_expert_knowledge_default(
         self,
@@ -137,6 +169,20 @@ class TestBundleConstruction:
 
 
 class TestTrainer:
+
+    def test_required_edge_with_unknown_node_is_rejected(self, sample_data):
+        config = Mock()
+        config.elementary_attributes = {"P": set()}
+        model_trainer = trainer.Trainer(config=config)
+        train_data = trainer.TrainData(
+            data=sample_data,
+            nodes=["A", "B"],
+            expert_knowledge=ExpertKnowledge(required_edges=[("A", "missing")]),
+        )
+
+        with pytest.raises(ValueError, match="absent from the P training data.*missing"):
+            model_trainer.train_model(train_data, type="P")
+
     
     def test_validate_dataframe(self,sample_data,mock_trainer):
         df_missing = sample_data[["B"]]

@@ -126,6 +126,18 @@ class Trainer:
         self._validate_dataframe(
             train_data.data, self.config.elementary_attributes[type]
         )
+        if train_data.expert_knowledge is not None:
+            unknown_nodes = {
+                node
+                for edge in train_data.expert_knowledge.required_edges
+                for node in edge
+                if node not in train_data.data.columns
+            }
+            if unknown_nodes:
+                raise ValueError(
+                    f"Required edges reference columns absent from the {type} training data: "
+                    f"{sorted(unknown_nodes)}"
+                )
         dag = self._learn_structure(
             train_data.data,
             score=score,
@@ -197,6 +209,29 @@ def _resolve_model_nodes(
     return list(dict.fromkeys([*user_nodes, *sorted(elementary_nodes)]))
 
 
+def _configured_edges(config: dict, model: str, kind: str) -> list[tuple[str, str]]:
+    """Read configured edges as pairs before passing them to pgmpy."""
+    edges = config[model][kind]
+    if edges is None:
+        return []
+    if not isinstance(edges, (list, tuple, set)):
+        raise ValueError(f"{model}.{kind} must be a list of [source, target] pairs.")
+
+    result = []
+    for edge in edges:
+        if (
+            not isinstance(edge, (list, tuple))
+            or len(edge) != 2
+            or not all(isinstance(node, str) and node for node in edge)
+        ):
+            raise ValueError(
+                f"Invalid edge {edge!r} in {model}.{kind}; "
+                "use [source, target] with two column names."
+            )
+        result.append((edge[0], edge[1]))
+    return result
+
+
 def _build_expert_knowledge(
     p_nodes: list[str],
     elementary_attributes: dict[str, set[str]],
@@ -206,17 +241,14 @@ def _build_expert_knowledge(
         [*p_nodes, ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE],
         elementary_attributes["H"],
     )
-    person_config = user_expert_knowledge["person"]
-    household_config = user_expert_knowledge["household"]
-
     person_expert_knowledge = ExpertKnowledge(
         forbidden_edges=list(forbidden_edges)
-        + (person_config["forbidden_edges"] or []),
-        required_edges=person_config["required_edges"] or [],
+        + _configured_edges(user_expert_knowledge, "person", "forbidden_edges"),
+        required_edges=_configured_edges(user_expert_knowledge, "person", "required_edges"),
     )
     household_expert_knowledge = ExpertKnowledge(
-        forbidden_edges=household_config["forbidden_edges"] or [],
-        required_edges=household_config["required_edges"] or [],
+        forbidden_edges=_configured_edges(user_expert_knowledge, "household", "forbidden_edges"),
+        required_edges=_configured_edges(user_expert_knowledge, "household", "required_edges"),
     )
 
     return household_expert_knowledge, person_expert_knowledge

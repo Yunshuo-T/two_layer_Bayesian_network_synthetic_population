@@ -48,3 +48,6 @@ def run_training(config_path: str = r"config\config.yaml"):
         config=train_bundle.config,
         path=cfg.paths.bundle_file,
     )
+
+if __name__ == "__main__":
+    run_training()
