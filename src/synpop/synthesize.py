@@ -69,3 +69,8 @@ def run_synthesize(
         io.save_csv(h_bn, cfg.paths.output_dir, "h_calibrated")
         io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_calibrated")
         return calibration_result
+
+if __name__ == "__main__":
+    run_synthesize(
+        calibration=None
+    )

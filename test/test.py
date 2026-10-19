@@ -203,6 +203,17 @@ class TestEvidenceAndCandidates:
     def test_candidate_age_constraints(self, group, age, previous_age, expected):
         assert CandidatePool._matches(group, age, previous_age) is expected
 
+    @pytest.mark.parametrize(
+        ("group", "age", "previous_age", "expected"),
+        [("adult", 1, None, True), ("adult", 0, None, False),
+         ("minor", 0, 1, True), ("minor", 1, None, False),
+         ("minor", 0, -1, False), ("kid", 0, None, False)],
+    )
+    def test_candidate_age_constraints_without_kids(
+        self, group, age, previous_age, expected
+    ):
+        assert CandidatePool._matches(group, age, previous_age, False) is expected
+
     def test_candidates_are_taken_oldest_first_and_consumed(self):
         pool = CandidatePool({"key": [{"age": 2}, {"age": 6}, {"age": 4}]}, "age")
         assert pool.take_candidate("key", "adult", None) == {"age": 6}
@@ -263,7 +274,14 @@ class TestGenerator:
             assert person["gender"] == 1
             assert person[ColumnNames.MEMBER_RANK] == 0
 
-    def test_successful_allocation_assigns_members_to_households(self, generator, blueprint):
+    @pytest.mark.parametrize(
+        ("include_kids", "expected_ages"),
+        [(True, [5, 1, 0]), (False, [5, 0])],
+    )
+    def test_successful_allocation_assigns_members_to_households(
+        self, generator, blueprint, include_kids, expected_ages
+    ):
+        generator.p_data_include_kid = include_kids
         demands, _ = generator.generate_evidence_batches(blueprint)
         candidates = {
             key: [{ColumnNames.AGE_CATE: key.p_age} for _ in range(count)]
@@ -273,10 +291,10 @@ class TestGenerator:
             CandidatePool(candidates, ColumnNames.AGE_CATE), blueprint
         )
         assert failed == set()
-        assert len(people) == 6
+        assert len(people) == 2 * len(expected_ages)
         for household_id in [10, 20]:
             members = [person for person in people if person["household_id"] == household_id]
-            assert [person[ColumnNames.AGE_CATE] for person in members] == [5, 1, 0]
+            assert [person[ColumnNames.AGE_CATE] for person in members] == expected_ages
 
     def test_failed_allocation_rolls_back_partial_household(self, generator, blueprint):
         key = PersonSimulationKey(0, 0, 0, 0, 5, 1)

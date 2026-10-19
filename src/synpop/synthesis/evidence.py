@@ -21,6 +21,7 @@ class PersonSimulationKey(NamedTuple):
         required_group: str,
         head_age_to_person_age: dict,
         head_gender_to_person_gender: dict,
+        p_data_include_kid: bool = True,
     ):
         """Construct an EvidenceKey for simulating individuals"""
         p_age = None
@@ -31,7 +32,7 @@ class PersonSimulationKey(NamedTuple):
             p_gender = head_gender_to_person_gender[head_gender]
 
         elif required_group == "minor":
-            p_age = 1
+            p_age = 1 if p_data_include_kid else 0
 
         elif required_group == "kid":
             p_age = 0

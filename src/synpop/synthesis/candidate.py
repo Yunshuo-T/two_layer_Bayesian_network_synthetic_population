@@ -8,14 +8,18 @@ class CandidatePool:
         self._age_attr = age_attr
         self._pool = self._sort_age(candidate_pool)
 
-    def take_candidate(self, evidence_key, required_group, previous_age):
+    def take_candidate(
+        self, evidence_key, required_group, previous_age, p_data_include_kid=True
+    ):
         """
         Take one individual candidate from the pool, according to the evidence key requirement.
         """
         candidates = self._pool.get(evidence_key, [])
         for i, candidate in enumerate(candidates):
             person_age = int(candidate[self._age_attr])
-            if self._matches(required_group, person_age, previous_age):
+            if self._matches(
+                required_group, person_age, previous_age, p_data_include_kid
+            ):
                 return candidates.pop(i)
         return None
 
@@ -34,16 +38,22 @@ class CandidatePool:
         }
 
     @staticmethod
-    def _matches(required_group: str, age: int, previous_age: int | None) -> bool:
-        if (
-            previous_age is not None and age > previous_age
-        ):  # Its age should not older than the age of previous rank
+    def _matches(
+        required_group: str,
+        age: int,
+        previous_age: int | None,
+        p_data_include_kid: bool = True,
+    ) -> bool:
+        # Members are assigned in descending age order.
+        if previous_age is not None and age > previous_age:
             return False
+
+        minor_age = 1 if p_data_include_kid else 0
         if required_group == "adult":
-            return age > 1
+            return age > minor_age
         if required_group == "minor":
-            return age == 1
-        return age == 0
+            return age == minor_age
+        return p_data_include_kid and age == 0
 
     def _age_distribution(self, evidence_key):
         candidates = self._pool.get(evidence_key, [])

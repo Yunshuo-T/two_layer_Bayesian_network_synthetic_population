@@ -151,6 +151,7 @@ class Generator:
                     self._required_group(rank, adults, minors),
                     self.head_age_to_person_age,
                     self.head_gender_to_person_gender,
+                    self.p_data_include_kid,
                 )
 
                 demands[key] += demand_count
@@ -231,10 +232,14 @@ class Generator:
                     required_group=required_group,
                     head_age_to_person_age=self.head_age_to_person_age,
                     head_gender_to_person_gender=self.head_gender_to_person_gender,
+                    p_data_include_kid=self.p_data_include_kid,
                 )
 
                 candidate = candidate_pool.take_candidate(
-                    evidence_key, required_group, previous_assigned_age
+                    evidence_key,
+                    required_group,
+                    previous_assigned_age,
+                    self.p_data_include_kid,
                 )
                 if candidate is None:
                     invalid_h_ids.add(h_id)

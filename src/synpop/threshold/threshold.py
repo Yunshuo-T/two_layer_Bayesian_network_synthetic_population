@@ -59,7 +59,7 @@ def export_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,joint_attribut
         how='outer',
         on='H_ID'
     )
-    if not (ColumnNames in p_df.columns):
+    if not (ColumnNames.AGE_CATE in p_df.columns):
         joined_df = _add_age_category(joined_df,age_col)
     joint_attributes.append(ColumnNames.AGE_CATE)
     joint_attributes.remove(age_col)
