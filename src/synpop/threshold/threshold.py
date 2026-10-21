@@ -22,7 +22,7 @@ def _factor_to_dataframe(factor:DiscreteFactor, value_col:str ="probability") ->
     return df
 
 
-def two_layer_joint_distribution(h_model:DiscreteBayesianNetwork,p_model:DiscreteBayesianNetwork) -> pd.DataFrame:
+def export_model_joint_distribution(h_model:DiscreteBayesianNetwork,p_model:DiscreteBayesianNetwork) -> pd.DataFrame:
     ele_attributes = (ColumnNames.HEAD_AGE,ColumnNames.HEAD_GENDER,ColumnNames.H_TYPE,)
     
     h_exclude = (ColumnNames.ADULTS,ColumnNames.MINORS,ColumnNames.KIDS,)
@@ -40,7 +40,7 @@ def two_layer_joint_distribution(h_model:DiscreteBayesianNetwork,p_model:Discret
 
     return _factor_to_dataframe(joint_factor)# type: ignore
 
-def export_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,joint_attributes:list,age_col:str)-> pd.DataFrame:
+def export_dataframe_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,joint_attributes:list,age_col:str)-> pd.DataFrame:
     """
     A helper function to export joint distribution of household and individual dataset.
 
@@ -68,5 +68,5 @@ def export_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,joint_attribut
 
 if __name__ == "__main__":
     bundle = io.load_bn_bundle(r'output\bn_bundle.pkl')
-    df = two_layer_joint_distribution(h_model=bundle['h_model'],p_model=bundle['p_model'])
+    df = export_model_joint_distribution(h_model=bundle['h_model'],p_model=bundle['p_model'])
     df.to_csv(r"output/refacotr_bn_joint.csv")
