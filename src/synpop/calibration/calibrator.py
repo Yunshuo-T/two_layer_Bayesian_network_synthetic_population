@@ -17,14 +17,14 @@ class BaseCalibrator(ABC):
 
     def __init__(self, data: CalibrationMatrix):
         self.data = data
+        self.X = data.X 
+        self.t = data.t 
         self.w = np.copy(data.w_initial)
         self.mean_relative_error = 0.0
         self.is_converged = False
 
     def check_convergence(self, tolerance: float) -> bool:
-        t = self.data.t
-        X = self.data.X
-        relative_errors = np.abs((X.T @ self.w -t)/t)
+        relative_errors = np.abs((self.X.T @ self.w -self.t)/self.t)
         self.mean_relative_error = float(np.mean(relative_errors))
         # Using the maximum relative error as the convergence indicator
         return bool(np.max(relative_errors) < tolerance) 
@@ -72,17 +72,17 @@ class GR(BaseCalibrator):
             )
 
     def _update(self, lam, F, F_prime, m_x, learning_rate: float = 0.01):
-        u = np.dot(self.data.X, lam)  # (s,)
+        u = np.dot(self.X, lam)  # (s,)
         # \phi(\lambda) = \sum_{k \in s} d_k (F(x_k^T \lambda) - 1) x_k (Eq. 4.4)
-        phi = np.dot(self.d * (F(u) - 1), self.data.X)  # (J,)
+        phi = np.dot(self.d * (F(u) - 1), self.X)  # (J,)
         diff = m_x - phi
         # \phi'(\lambda) = \sum_{k \in s} d_k F'(x_k^T \lambda) x_k x_k^T (Eq. 4.6)
         w_prime = self.d * F_prime(u)
-        phi_prime = np.dot(self.data.X.T, w_prime[:, np.newaxis] * self.data.X)
+        phi_prime = np.dot(self.X.T, w_prime[:, np.newaxis] * self.X)
         phi_prime_inverse = np.linalg.pinv(phi_prime)
         # \lambda_{i+1} = \lambda_i + \phi'(\lambda_i)^{-1} (m_x - \phi(\lambda_i)) (Eq. 4.5)
         lam = lam + learning_rate * np.dot(phi_prime_inverse, diff)
-        self.u = np.dot(self.data.X, lam)
+        self.u = np.dot(self.X, lam)
         self.w = self.d * F(self.u)
         return lam
 
@@ -105,9 +105,9 @@ class GR(BaseCalibrator):
         Returns:
             np.ndarray: _description_
         """
-        J = self.data.X.shape[1]  # (s, J)
+        J = self.X.shape[1]  # (s, J)
         lam = np.zeros(J)  # (J,)
-        m_x = self.data.t - np.dot(self.w, self.data.X)  # (J,)
+        m_x = self.t - np.dot(self.w, self.X)  # (J,)
         F, F_prime = self._get_cali_method(method, bounds)
         for i in range(max_iter):
             lam = self._update(lam, F, F_prime, m_x)
@@ -142,15 +142,15 @@ class IPU(BaseCalibrator):
     """
 
     def _update(self):
-        for j in range(self.data.X.shape[1]):
-            current_marginals = np.dot(self.data.X[:, j], self.w)
+        for j in range(self.X.shape[1]):
+            current_marginals = np.dot(self.X[:, j], self.w)
             rho = np.divide(
-                self.data.t[j],
+                self.t[j],
                 current_marginals,
-                out=np.ones_like(self.data.t[j], dtype=float),
+                out=np.ones_like(self.t[j], dtype=float),
                 where=current_marginals != 0,
             )
-            self.w = np.where(self.data.X[:, j] == 0, self.w, self.w * rho)
+            self.w = np.where(self.X[:, j] == 0, self.w, self.w * rho)
 
     def fit(self, max_iter: int = 100, tolerance: float = 1e-8, **kwargs):
         for i in range(max_iter):
