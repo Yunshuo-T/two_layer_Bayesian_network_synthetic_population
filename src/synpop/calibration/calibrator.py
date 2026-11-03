@@ -67,11 +67,9 @@ class GR(BaseCalibrator):
                 return A * (U - F(u)) * (F(u) - L) / (U - L)
 
             return F, F_prime
-        error_msg = (
+        raise ValueError(
             "The calibration methods should be in 'linear', 'raking', or 'logit'."
-        )
-        logger.error(error_msg)
-        raise
+            )
 
     def _update(self, lam, F, F_prime, m_x, learning_rate: float = 0.01):
         u = np.dot(self.data.X, lam)  # (s,)
@@ -112,10 +110,7 @@ class GR(BaseCalibrator):
         m_x = self.data.t - np.dot(self.w, self.data.X)  # (J,)
         F, F_prime = self._get_cali_method(method, bounds)
         for i in range(max_iter):
-            try:
-                lam = self._update(lam, F, F_prime, m_x)
-            except Exception as e:
-                logger.error(e)
+            lam = self._update(lam, F, F_prime, m_x)
 
             if self.check_convergence(tolerance):
                 logger.info(
@@ -126,8 +121,8 @@ class GR(BaseCalibrator):
                     self.w, self.is_converged, i + 1, self.mean_relative_error
                 )
 
-        logger.error(
-            f"GR did not converge. Final relative absolute error is: {self.mean_relative_error:.6f}"
+        logger.warning(
+            f"GR did not converge after {max_iter} iterations. Final relative absolute error is: {self.mean_relative_error:.6f}"
         )
         return CalibrationResult(
             self.w, self.is_converged, max_iter, self.mean_relative_error
@@ -159,21 +154,18 @@ class IPU(BaseCalibrator):
 
     def fit(self, max_iter: int = 100, tolerance: float = 1e-8, **kwargs):
         for i in range(max_iter):
-            try:
-                self._update()
-                if self.check_convergence(tolerance):
-                    logger.info(
-                        f"IPU Converged after {i+1} iterations. Final relative absolute error is: {self.mean_relative_error:.6f}"
-                    )
-                    self.is_converged = True
-                    return CalibrationResult(
-                        self.w, self.is_converged, i + 1, self.mean_relative_error
-                    )
-            except Exception as e:
-                logger.error(f"IPU:{e}")
+            self._update()
+            if self.check_convergence(tolerance):
+                logger.info(
+                    f"IPU Converged after {i+1} iterations. Final relative absolute error is: {self.mean_relative_error:.6f}"
+                )
+                self.is_converged = True
+                return CalibrationResult(
+                    self.w, self.is_converged, i + 1, self.mean_relative_error
+                )
 
-        logger.error(
-            f"IPU did not converge. Final relative absolute error: {self.mean_relative_error:.6f}"
+        logger.warning(
+            f"IPU did not converge after {max_iter} iterations. Final relative absolute error: {self.mean_relative_error:.6f}"
         )
         return CalibrationResult(
             self.w, self.is_converged, max_iter, self.mean_relative_error
@@ -229,7 +221,7 @@ class HIPF(BaseCalibrator):
             - 1
         )
 
-        def newton_raphson(tolerance):
+        def _newton_raphson(tolerance):
             d = 1
             while True:
                 g_d = np.sum(coef * self.w * (d**self.data.h_sizes))
@@ -245,7 +237,7 @@ class HIPF(BaseCalibrator):
                     return d
                 d -= step
 
-        d = newton_raphson(tolerance)
+        d = _newton_raphson(tolerance)
 
         try:
             c = self.data.total_individuals / np.sum(
@@ -254,15 +246,13 @@ class HIPF(BaseCalibrator):
             ratio = c * (d**self.data.h_sizes)
             self.w = self.w * ratio
         except Exception:
-            logger.error("Failed adjusting the persons-per-household ratio")
-
+            logger.exception("Failed adjusting the persons-per-household ratio")
+            raise
+    
     def fit(self, max_iter: int = 100, tolerance: float = 1e-8, **kwargs):
         for i in range(max_iter):
-            try:
-                self._update_by_marginals()
-                self._adjust_weight(tolerance)
-            except Exception as e:
-                logger.error(f"HIPF:{e}")
+            self._update_by_marginals()
+            self._adjust_weight(tolerance)
             if self.check_convergence(tolerance):
                 logger.info(
                     f"HIPF Converged after {i+1} iterations. Final relative absolute error is: {self.mean_relative_error:.6f}"
@@ -271,8 +261,8 @@ class HIPF(BaseCalibrator):
                 return CalibrationResult(
                     self.w, self.is_converged, i + 1, self.mean_relative_error
                 )
-        logger.error(
-            f"HIPF did not converge. Final relative absolute error: {self.mean_relative_error:.6f}"
+        logger.warning(
+            f"HIPF did not converge after {max_iter} iterations. Final relative absolute error: {self.mean_relative_error:.6f}"
         )
         return CalibrationResult(
             self.w, self.is_converged, max_iter, self.mean_relative_error
