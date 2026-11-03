@@ -18,16 +18,16 @@ class BaseCalibrator(ABC):
     def __init__(self, data: CalibrationMatrix):
         self.data = data
         self.w = np.copy(data.w_initial)
-        self.relative_abs_error = 0.0
+        self.mean_relative_error = 0.0
         self.is_converged = False
 
     def check_convergence(self, tolerance: float) -> bool:
         t = self.data.t
         X = self.data.X
-        current_error = np.sum(np.abs(np.dot(X.T, self.w) / t - 1)) / len(t)
-        delta = np.abs(self.relative_abs_error - current_error)
-        self.relative_abs_error = current_error
-        return bool(delta < tolerance)
+        relative_errors = np.abs((X.T @ self.w -t)/t)
+        self.mean_relative_error = float(np.mean(relative_errors))
+        # Using the maximum relative error as the convergence indicator
+        return bool(np.max(relative_errors) < tolerance) 
 
     @abstractmethod
     def fit(
@@ -119,18 +119,18 @@ class GR(BaseCalibrator):
 
             if self.check_convergence(tolerance):
                 logger.info(
-                    f"GR converged after {i+1} iterations. Final relative absolute error is: {self.relative_abs_error:.6f}"
+                    f"GR converged after {i+1} iterations. Final relative absolute error is: {self.mean_relative_error:.6f}"
                 )
                 self.is_converged = True
                 return CalibrationResult(
-                    self.w, self.is_converged, i + 1, self.relative_abs_error
+                    self.w, self.is_converged, i + 1, self.mean_relative_error
                 )
 
         logger.error(
-            f"GR did not converge. Final relative absolute error is: {self.relative_abs_error:.6f}"
+            f"GR did not converge. Final relative absolute error is: {self.mean_relative_error:.6f}"
         )
         return CalibrationResult(
-            self.w, self.is_converged, max_iter, self.relative_abs_error
+            self.w, self.is_converged, max_iter, self.mean_relative_error
         )
 
 
@@ -163,20 +163,20 @@ class IPU(BaseCalibrator):
                 self._update()
                 if self.check_convergence(tolerance):
                     logger.info(
-                        f"IPU Converged after {i+1} iterations. Final relative absolute error is: {self.relative_abs_error:.6f}"
+                        f"IPU Converged after {i+1} iterations. Final relative absolute error is: {self.mean_relative_error:.6f}"
                     )
                     self.is_converged = True
                     return CalibrationResult(
-                        self.w, self.is_converged, i + 1, self.relative_abs_error
+                        self.w, self.is_converged, i + 1, self.mean_relative_error
                     )
             except Exception as e:
                 logger.error(f"IPU:{e}")
 
         logger.error(
-            f"IPU did not converge. Final relative absolute error: {self.relative_abs_error:.6f}"
+            f"IPU did not converge. Final relative absolute error: {self.mean_relative_error:.6f}"
         )
         return CalibrationResult(
-            self.w, self.is_converged, max_iter, self.relative_abs_error
+            self.w, self.is_converged, max_iter, self.mean_relative_error
         )
 
 
@@ -265,17 +265,17 @@ class HIPF(BaseCalibrator):
                 logger.error(f"HIPF:{e}")
             if self.check_convergence(tolerance):
                 logger.info(
-                    f"HIPF Converged after {i+1} iterations. Final relative absolute error is: {self.relative_abs_error:.6f}"
+                    f"HIPF Converged after {i+1} iterations. Final relative absolute error is: {self.mean_relative_error:.6f}"
                 )
                 self.is_converged = True
                 return CalibrationResult(
-                    self.w, self.is_converged, i + 1, self.relative_abs_error
+                    self.w, self.is_converged, i + 1, self.mean_relative_error
                 )
         logger.error(
-            f"HIPF did not converge. Final relative absolute error: {self.relative_abs_error:.6f}"
+            f"HIPF did not converge. Final relative absolute error: {self.mean_relative_error:.6f}"
         )
         return CalibrationResult(
-            self.w, self.is_converged, max_iter, self.relative_abs_error
+            self.w, self.is_converged, max_iter, self.mean_relative_error
         )
 
 
@@ -341,12 +341,12 @@ class CrossEntropy(BaseCalibrator):
             self.w = optimal_p_hat * self.total_target_weights
 
             return CalibrationResult(
-                self.w, self.is_converged, result.nit, self.relative_abs_error
+                self.w, self.is_converged, result.nit, self.mean_relative_error
             )
         else:
             logger.error(f"CE failed to converge: {result.message}")
             return CalibrationResult(
-                self.w, self.is_converged, max_iter, self.relative_abs_error
+                self.w, self.is_converged, max_iter, self.mean_relative_error
             )
 
 
