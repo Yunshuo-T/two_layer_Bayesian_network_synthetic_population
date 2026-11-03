@@ -8,6 +8,8 @@ from scipy.optimize import minimize
 from scipy.special import logsumexp
 from abc import ABC, abstractmethod
 import numpy as np
+from scipy.optimize import brentq
+from scipy.special import logsumexp
 
 # TODO Transform np.array to sparse matrix to improve the computation
 
@@ -17,17 +19,17 @@ class BaseCalibrator(ABC):
 
     def __init__(self, data: CalibrationMatrix):
         self.data = data
-        self.X = data.X 
-        self.t = data.t 
+        self.X = data.X
+        self.t = data.t
         self.w = np.copy(data.w_initial)
         self.mean_relative_error = 0.0
         self.is_converged = False
 
     def check_convergence(self, tolerance: float) -> bool:
-        relative_errors = np.abs((self.X.T @ self.w -self.t)/self.t)
+        relative_errors = np.abs((self.X.T @ self.w - self.t) / self.t)
         self.mean_relative_error = float(np.mean(relative_errors))
         # Using the maximum relative error as the convergence indicator
-        return bool(np.max(relative_errors) < tolerance) 
+        return bool(np.max(relative_errors) < tolerance)
 
     @abstractmethod
     def fit(
@@ -69,7 +71,7 @@ class GR(BaseCalibrator):
             return F, F_prime
         raise ValueError(
             "The calibration methods should be in 'linear', 'raking', or 'logit'."
-            )
+        )
 
     def _update(self, lam, F, F_prime, m_x, learning_rate: float = 0.01):
         u = np.dot(self.X, lam)  # (s,)
@@ -204,51 +206,58 @@ class HIPF(BaseCalibrator):
                 self.w *= average_ratio
 
     def _adjust_weight(self, tolerance):
-        # n is the household total number,
-        # v is the individuals total number,
         """
-        Using Newton-Raphson method
-
+        Adjust household weights to match target household and
+        individual totals by minimizing relative entropy.
+        Solve for t = log(d), where:
+            f'_h = c * exp(t * p_h) * f_h
         Args:
             tolerance (_type_): _description_
 
         Returns:
             _type_: _description_
         """
-        coef = (
-            self.data.h_sizes
-            * (self.data.total_households / self.data.total_individuals)
-            - 1
-        )
-
-        def _newton_raphson(tolerance):
-            d = 1
-            while True:
-                g_d = np.sum(coef * self.w * (d**self.data.h_sizes))
-                g_prime_d = np.sum(
-                    self.data.h_sizes * coef * self.w * (d ** (self.data.h_sizes - 1))
-                )
-                if abs(g_prime_d) < 1e-12:
-                    logger.warning("Newton-Raphson: Derivative approached zero.")
-                    return d
-                step = g_d / g_prime_d  # d_k = d_{k-1} + g(d)/g'(d)
-
-                if abs(step) < tolerance:
-                    return d
-                d -= step
-
-        d = _newton_raphson(tolerance)
-
-        try:
-            c = self.data.total_individuals / np.sum(
-                self.data.h_sizes * self.w * (d**self.data.h_sizes)
+        p = self.data.h_sizes
+        w = self.w
+        n = self.data.total_households
+        nu = self.data.total_individuals
+        if not np.all(np.isfinite(w)) or np.any(w < 0):
+            raise ValueError("Weights must be finite and nonnegative.")
+        active = w > 0
+        if not np.any(active):
+            raise ValueError("All household weights are zero.")
+        sizes = p[active]
+        log_w = np.log(w[active])
+        target_mean = nu / n
+        if not sizes.min() < target_mean < sizes.max():
+            raise ValueError(
+                "Target mean must be strictly between the minimum "
+                "and maximum supported household sizes."
             )
-            ratio = c * (d**self.data.h_sizes)
-            self.w = self.w * ratio
-        except Exception:
-            logger.exception("Failed adjusting the persons-per-household ratio")
-            raise
-    
+
+        def g(t: float) -> float:
+            """Adjusted mean household size minus target mean."""
+            z = log_w + sizes * t
+            probabilities = np.exp(z - logsumexp(z))
+            return float(np.dot(sizes, probabilities) - target_mean)
+
+        # Find an interval for Brent's method.
+        lower, upper = -1.0, 1.0
+
+        for _ in range(60):
+            if g(lower) <= 0 <= g(upper):
+                break
+            lower *= 2
+            upper *= 2
+        else:
+            raise RuntimeError("Could not bracket the root.")
+        # Brent's method
+        t = brentq(g, lower, upper, xtol=tolerance)
+        z = log_w + sizes * t
+        adjusted_w = np.zeros_like(w)
+        adjusted_w[active] = n * np.exp(z - logsumexp(z))
+        self.w = adjusted_w
+
     def fit(self, max_iter: int = 100, tolerance: float = 1e-8, **kwargs):
         for i in range(max_iter):
             self._update_by_marginals()
