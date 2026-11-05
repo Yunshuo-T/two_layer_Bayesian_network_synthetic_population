@@ -4,12 +4,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 from synpop.calibration.matrix import CalibrationMatrix, CalibrationResult
-from scipy.optimize import minimize
+from scipy.optimize import minimize,brentq
 from scipy.special import logsumexp
 from abc import ABC, abstractmethod
 import numpy as np
-from scipy.optimize import brentq
-from scipy.special import logsumexp
 
 # TODO Transform np.array to sparse matrix to improve the computation
 
@@ -182,7 +180,7 @@ class HIPF(BaseCalibrator):
         ERSA conference papers ersa11p305, European Regional Science Association.
         """
         super().__init__(data)
-
+        self.f = 1
     def _update_by_marginals(self):
         for i in range(len(self.data.h_m_ar)):
             current_marginal = np.dot(self.data.x_h[:, i], self.w)
@@ -220,7 +218,7 @@ class HIPF(BaseCalibrator):
         p = self.data.h_sizes
         w = self.w
         n = self.data.total_households
-        nu = self.data.total_individuals
+        v = self.data.total_individuals
         if not np.all(np.isfinite(w)) or np.any(w < 0):
             raise ValueError("Weights must be finite and nonnegative.")
         active = w > 0
@@ -228,7 +226,7 @@ class HIPF(BaseCalibrator):
             raise ValueError("All household weights are zero.")
         sizes = p[active]
         log_w = np.log(w[active])
-        target_mean = nu / n
+        target_mean = v / n
         if not sizes.min() < target_mean < sizes.max():
             raise ValueError(
                 "Target mean must be strictly between the minimum "
@@ -237,7 +235,7 @@ class HIPF(BaseCalibrator):
 
         def g(t: float) -> float:
             """Adjusted mean household size minus target mean."""
-            z = log_w + sizes * t
+            z = log_w + sizes * t # z_h = ln w_h + p_h * t
             probabilities = np.exp(z - logsumexp(z))
             return float(np.dot(sizes, probabilities) - target_mean)
 
