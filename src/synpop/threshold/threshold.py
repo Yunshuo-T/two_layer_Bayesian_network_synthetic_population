@@ -63,7 +63,7 @@ def export_dataframe_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,join
         joined_df = _add_age_category(joined_df,age_col)
     joint_attributes.append(ColumnNames.AGE_CATE)
     joint_attributes.remove(age_col)
-    return joined_df[joint_attributes].value_counts(normalize=True).reset_index(name='probability')
+    return joined_df[joint_attributes].value_counts(normalize=True).reset_index(name='prob')
     
 
 if __name__ == "__main__":

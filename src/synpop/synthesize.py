@@ -37,8 +37,8 @@ def run_synthesize(
         max_retries=cfg.synthesis.max_retries,
     )
 
-    io.save_csv(h_bn, cfg.paths.output_dir, "h_bn")
-    io.save_csv(p_bn, cfg.paths.output_dir, "p_bn")
+    io.save_csv(h_bn, cfg.paths.output_dir, "h_bn_10x")
+    io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_10x")
 
     if calibration:
         calibration_input = CalibrationInput(
