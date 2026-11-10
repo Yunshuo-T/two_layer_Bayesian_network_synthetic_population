@@ -62,33 +62,30 @@ class CalibrationMatrixBuilder:
         """
         h_marginal_attributes = inputs.h_marginals
         p_marginal_attributes = inputs.p_marginals
+        total_households = cls._marginal_consistency(inputs.h_marginals, inputs.h_attrs)
+        total_individuals = cls._marginal_consistency(inputs.p_marginals, inputs.p_attrs)
+        
         h_df, h_cols = cls._sample_convert(
             inputs.h_df, h_marginal_attributes, inputs.h_id_col, joint_attributes
         )
         p_df, p_cols = cls._sample_convert(
             inputs.p_df, p_marginal_attributes, inputs.h_id_col, joint_attributes
         )
-        h_sizes = np.array(inputs.p_df.groupby(inputs.h_id_col).size().to_list())
-        comb_df = h_df.join(p_df, how="outer").fillna(0)
-
-        zero_cells = comb_df.sum(axis=0)[comb_df.sum(axis=0) == 0]
-        if not zero_cells.empty:
-            zero_cells = zero_cells.index.to_list()
-            logger.info(
-                f"The categories {zero_cells} are absent from sample. Dropping them from sample and marginals."
+        
+        if not h_df.index.equals(p_df.index):
+            raise ValueError(
+                "Household and individual datasets must have the same household IDs"
             )
-            h_df = h_df.drop(columns=[col for col in zero_cells if col in h_df.columns])
-            p_df = p_df.drop(columns=[col for col in zero_cells if col in p_df.columns])
-
-            h_cols = h_df.columns.to_list()
-            p_cols = p_df.columns.to_list()
+            
+        h_df = cls._drop_empty_columns(h_df, inputs.h_marginals)
+        p_df = cls._drop_empty_columns(p_df, inputs.p_marginals)
         h_m_ar = cls._marginal_to_array(inputs.h_marginals, h_cols)
         p_m_ar = cls._marginal_to_array(inputs.p_marginals, p_cols)
         x_h = h_df.to_numpy()
         x_p = p_df.to_numpy()
-        total_households = sum(inputs.h_marginals[inputs.h_attrs[0]].values())
-        total_individuals = sum(inputs.p_marginals[inputs.p_attrs[0]].values())
+        h_sizes = np.array(inputs.p_df.groupby(inputs.h_id_col).size().to_list())
         w_initial = np.ones(len(h_df)) * (total_households / len(h_df))
+        
         return CalibrationMatrix(
             x_h,
             x_p,
@@ -105,9 +102,9 @@ class CalibrationMatrixBuilder:
         """
 
         Args:
-            df (pd.DataFrame): The dataframe contains household or individual data in a format that the rows are instances,
-            columns are attribtes, values are categories. It must not have NaN value.
-            joint_attributes (list): [[attribute_A,attribute_B]]. The socio-demagraphic attributes such as gender, income etc.
+            df (pd.DataFrame): The dataframe contains household or individual data in a format that the rows are records,
+            columns are attributes, values are categories. It must not have NaN value.
+            joint_attributes (list): [[attribute_A,attribute_B]]. The category of the attributes should not contain underscore. The socio-demagraphic attributes such as gender, income etc.
             The order of the attributes must be consistent.
 
         """
@@ -134,24 +131,53 @@ class CalibrationMatrixBuilder:
         df_transformed = df.set_index(H_index)[marginal_attributes.keys()].copy()
         for attr in marginal_attributes:
             df_transformed[attr] = pd.Categorical(
-                df_transformed[attr], marginal_attributes[attr]
+                df_transformed[attr].astype("string"), marginal_attributes[attr]
             )
-        df_transformed = pd.get_dummies(df_transformed)
-        col_name = df_transformed.columns.to_list()
-        df_transformed = df_transformed.groupby(level=0).sum()
+        attributes = list(marginal_attributes)
+        indicators = pd.concat(
+            [pd.get_dummies(df_transformed[attr]) for attr in attributes],
+            axis=1,
+            keys=attributes,
+            names=["attribute", "category"],
+        )
+        counts = indicators.groupby(level=0).sum()
 
-        return df_transformed, col_name
+        return counts, counts.columns.to_list()
 
     @staticmethod
-    def _marginal_to_array(marginals: dict, col_name: list) -> np.ndarray:
-        array = []
-        for col in col_name:
-            key, subkey = col.rsplit("_", 1)
-            value = marginals[key].get(subkey)
-            if value:
-                array.append(value)
-            else:
-                subkey = int(subkey)
-                value = marginals[key].get(subkey, 10e-6)
-                array.append(value)
-        return np.array(array)
+    def _marginal_to_array(marginals: dict, columns: list) -> np.ndarray:
+        return np.array([
+            marginals[attribute][category]
+            for attribute, category in columns
+        ])
+
+    @staticmethod
+    def _marginal_consistency(marginals:dict, attrs:list[str]):
+        reference = attrs[0]
+        total = sum(marginals[reference].values())
+
+        for attr in attrs[1:]:
+            attr_total = sum(marginals[attr].values())
+            if attr_total != total:
+                raise ValueError(
+                    f"Marginal {attr!r} has totals {attr_total}, "
+                    f"but {reference!r} has totals {total}."
+                )
+        return total
+    
+    @staticmethod
+    def _drop_empty_columns(
+        counts: pd.DataFrame, marginals: dict,
+    ) -> pd.DataFrame:
+        empty_cols = counts.columns[counts.sum(axis=0).eq(0)].to_list()
+        if not empty_cols:
+            return counts
+
+        unsupported = [
+            (attr, category)
+            for attr, category in empty_cols
+            if marginals[attr][category] != 0
+        ]
+        if unsupported:
+            logger.info("Dropping empty %s columns with zero targets: %s", empty_cols)
+        return counts.drop(columns=empty_cols)
