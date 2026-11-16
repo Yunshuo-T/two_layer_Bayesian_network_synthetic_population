@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 from synpop.calibration.matrix import CalibrationMatrix, CalibrationResult
 from scipy.optimize import minimize,brentq
-from scipy.special import logsumexp
+from scipy.special import logsumexp, softmax
 from abc import ABC, abstractmethod
 import numpy as np
 
@@ -24,10 +24,11 @@ class BaseCalibrator(ABC):
         self.is_converged = False
 
     def check_convergence(self, tolerance: float) -> bool:
-        relative_errors = np.abs((self.X.T @ self.w - self.t) / self.t)
-        self.mean_relative_error = float(np.mean(relative_errors))
-        # Using the maximum relative error as the convergence indicator
-        return bool(np.max(relative_errors) < tolerance)
+        """Check each marginal, using absolute count error for zero targets."""
+        scales = np.where(self.t == 0, 1.0, np.abs(self.t))
+        errors = np.abs(self.X.T @ self.w - self.t) / scales
+        self.mean_relative_error = float(np.mean(errors))
+        return bool(np.max(errors) < tolerance)
 
     @abstractmethod
     def fit(
@@ -236,7 +237,7 @@ class HIPF(BaseCalibrator):
         def g(t: float) -> float:
             """Adjusted mean household size minus target mean."""
             z = log_w + sizes * t # z_h = ln w_h + p_h * t
-            probabilities = np.exp(z - logsumexp(z))
+            probabilities = np.exp(z - logsumexp(z)) # type: ignore
             return float(np.dot(sizes, probabilities) - target_mean)
 
         # Find an interval for Brent's method.
@@ -310,6 +311,14 @@ class CrossEntropy(BaseCalibrator):
         return obj_val, grad
 
     def fit(self, max_iter=100, tolerance=1e-8, alpha=1e-3, **kwargs):
+        """Fit the weights and assess convergence against the marginal targets.
+
+        Positive alpha allows target deviations to penalize large multipliers.
+        Set alpha to zero for unregularized fitting.
+        """
+        if not np.isfinite(alpha) or alpha < 0:
+            raise ValueError("alpha must be finite and nonnegative.")
+
         h_m_scaled = self.data.h_m_ar / self.total_target_weights
         p_m_scaled = self.data.p_m_ar / self.total_target_weights
         initial_lambda = np.zeros(len(h_m_scaled) + len(p_m_scaled))
@@ -323,28 +332,29 @@ class CrossEntropy(BaseCalibrator):
             tol=tolerance,
             options={"maxiter": max_iter},
         )
-        self.is_converged = result.success
+        self.w = np.copy(self.data.w_initial)
+        if np.all(np.isfinite(result.x)):
+            log_weights = self.log_q + self.X @ result.x
+            if np.all(np.isfinite(log_weights)):
+                self.w = self.total_target_weights * softmax(log_weights)
 
-        if result.success:
-            logger.info("CE converged successfully!")
-            optimal_lambda = result.x
-            lambda_h = optimal_lambda[: len(h_m_scaled)]
-            lambda_p = optimal_lambda[len(h_m_scaled) :]
-
-            final_exponent = (self.data.x_h @ lambda_h) + (self.data.x_p @ lambda_p)
-            final_ln_Z = logsumexp(self.log_q + final_exponent)
-
-            optimal_p_hat = np.exp(self.log_q + final_exponent - final_ln_Z)
-            self.w = optimal_p_hat * self.total_target_weights
-
-            return CalibrationResult(
-                self.w, self.is_converged, result.nit, self.mean_relative_error
+        if not result.success:
+            logger.warning(
+                "CE optimizer stopped after %d iterations: %s", result.nit, result.message
             )
+
+        self.is_converged = self.check_convergence(tolerance)
+        if self.is_converged:
+            logger.info("CE matched the marginals after %d iterations.", result.nit)
         else:
-            logger.error(f"CE failed to converge: {result.message}")
-            return CalibrationResult(
-                self.w, self.is_converged, max_iter, self.mean_relative_error
+            logger.warning(
+                "CE missed the marginal tolerance after %d iterations. Mean marginal error: %.6g",
+                result.nit,
+                self.mean_relative_error,
             )
+        return CalibrationResult(
+            self.w, self.is_converged, result.nit, self.mean_relative_error
+        )
 
 
 CALIBRATOR = {

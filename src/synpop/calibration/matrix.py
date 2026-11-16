@@ -77,8 +77,6 @@ class CalibrationMatrixBuilder:
                 "Household and individual datasets must have the same household IDs"
             )
             
-        h_df = cls._drop_empty_columns(h_df, inputs.h_marginals)
-        p_df = cls._drop_empty_columns(p_df, inputs.p_marginals)
         h_m_ar = cls._marginal_to_array(inputs.h_marginals, h_cols)
         p_m_ar = cls._marginal_to_array(inputs.p_marginals, p_cols)
         x_h = h_df.to_numpy()
@@ -122,10 +120,7 @@ class CalibrationMatrixBuilder:
         H_index: str,
         joint_attributes: list | None = None,
     ) -> tuple[pd.DataFrame, list]:
-        """Conver microdata samples to a tabular format that the columns are the categories
-        of each attributes, and rows of the count of each category within one household.
-
-        """
+        """Return per-household category counts and the columns present in the sample."""
         if joint_attributes:
             df = cls._joint_category(df, joint_attributes)
         df_transformed = df.set_index(H_index)[marginal_attributes.keys()].copy()
@@ -141,7 +136,7 @@ class CalibrationMatrixBuilder:
             names=["attribute", "category"],
         )
         counts = indicators.groupby(level=0).sum()
-
+        counts = cls._drop_empty_columns(counts, marginal_attributes)
         return counts, counts.columns.to_list()
 
     @staticmethod

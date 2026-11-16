@@ -5,6 +5,7 @@ write only inside pytest's temporary directories.
 """
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -319,11 +320,18 @@ class TestCalibration:
         assert matrix.total_households == 6
         assert matrix.total_individuals == 10
 
-    def test_categories_absent_from_sample_are_dropped(self, calibration_input):
-        calibration_input.h_marginals["tenure"]["vacant"] = 1
+    @pytest.mark.parametrize("absent_target", [0, 1])
+    def test_categories_absent_from_sample_are_dropped(self, calibration_input, absent_target):
+        calibration_input.h_marginals["tenure"]["vacant"] = absent_target
+        calibration_input.p_marginals["gender"]["unknown"] = absent_target
         matrix = CalibrationMatrixBuilder.build(calibration_input)
+
         assert matrix.x_h.shape == (2, 2)
+        assert matrix.x_p.shape == (2, 2)
         np.testing.assert_array_equal(matrix.h_m_ar, [4, 2])
+        np.testing.assert_array_equal(matrix.p_m_ar, [4, 6])
+        assert matrix.total_households == 6 + absent_target
+        assert matrix.total_individuals == 10 + absent_target
 
     def test_joint_categories_are_counted_per_household(self):
         df = pd.DataFrame({"id": [10, 10, 20], "a": ["x", "x", "y"], "b": [1, 2, 1]})
@@ -387,6 +395,51 @@ class TestCalibration:
                 - calibrator._objective(multipliers - offset, *args)[0]
             ) / (2 * step)
         np.testing.assert_allclose(gradient, numerical, rtol=1e-6, atol=1e-8)
+
+    @pytest.mark.parametrize("rented_target", [0, 2])
+    def test_cross_entropy_reports_marginal_error(self, calibration_input, rented_target):
+        calibration_input.h_marginals["tenure"]["rented"] = rented_target
+        calibration_input.p_marginals["gender"]["M"] = 4 + rented_target
+        matrix = CalibrationMatrixBuilder.build(calibration_input)
+
+        result = CrossEntropy(matrix).fit(tolerance=1e-6)
+
+        actual = matrix.X.T @ result.weights
+        errors = np.abs(actual - matrix.t) / np.maximum(matrix.t, 1)
+        assert np.max(errors) > 1e-6
+        assert not result.is_converged
+        assert result.final_error == pytest.approx(np.mean(errors))
+
+    @pytest.mark.parametrize(
+        ("weight_ratio", "expected_weights", "is_converged"),
+        [(2.0, [4, 2], True), (1.5, [3.6, 2.4], False)],
+    )
+    def test_cross_entropy_uses_candidate_after_optimizer_failure(
+        self, calibration_input, monkeypatch, weight_ratio, expected_weights, is_converged
+    ):
+        matrix = CalibrationMatrixBuilder.build(calibration_input)
+        optimizer_result = SimpleNamespace(
+            x=np.array([np.log(weight_ratio), 0, 0, 0]),
+            nit=6,
+            success=False,
+            message="Precision loss",
+        )
+        monkeypatch.setattr(
+            "synpop.calibration.calibrator.minimize", lambda **kwargs: optimizer_result
+        )
+
+        result = CrossEntropy(matrix).fit(alpha=0, max_iter=100)
+
+        np.testing.assert_allclose(result.weights, expected_weights)
+        assert result.is_converged is is_converged
+        assert result.iterations == 6
+
+    @pytest.mark.parametrize("alpha", [-0.1, np.inf, np.nan])
+    def test_cross_entropy_rejects_invalid_regularization(self, calibration_input, alpha):
+        matrix = CalibrationMatrixBuilder.build(calibration_input)
+
+        with pytest.raises(ValueError, match="alpha must be finite and nonnegative"):
+            CrossEntropy(matrix).fit(alpha=alpha)
 
 
 class TestValidation:
