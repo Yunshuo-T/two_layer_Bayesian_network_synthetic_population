@@ -1,14 +1,38 @@
-from scipy.stats import poisson
-THRESHOLD = 10e-6
 from synpop import io
 from pgmpy.inference import VariableElimination
 from pgmpy.models import DiscreteBayesianNetwork
 from pgmpy.factors.discrete import DiscreteFactor
-import itertools
 import pandas as pd
-from pathlib import Path
+from collections.abc import Mapping
+from typing import Any
 from synpop.schema import ColumnNames
 from synpop.training.elementary_attributes import _add_age_category
+
+
+def make_probability_lookup(
+    distribution: pd.DataFrame,
+    probability_col: str = "probability",
+) -> tuple[dict[tuple[Any, ...], float], list[str]]:
+    """Build a reusable household-person probability lookup.
+    All columns except probability_col define the individual type. Missing
+    combinations return 0.0; missing required attributes raise KeyError.
+    """
+    attributes = [col for col in distribution.columns if col != probability_col]
+    if distribution.duplicated(subset=attributes).any():
+        raise ValueError("The probability table contains duplicate individual types.")
+    probabilities = dict(
+        zip(
+            distribution[attributes].itertuples(index=False, name=None),
+            distribution[probability_col],
+        )
+    )
+    return probabilities, attributes
+
+def lookup(probabilities, attributes, h_dict: Mapping[str, Any], candidate: Mapping[str, Any]) -> float:
+    values = {**h_dict, **candidate}
+    key = tuple(values[attr] for attr in attributes)
+    return float(probabilities.get(key, 0.0))
+
 
 
 def _factor_to_dataframe(factor:DiscreteFactor, value_col:str ="probability") -> pd.DataFrame:

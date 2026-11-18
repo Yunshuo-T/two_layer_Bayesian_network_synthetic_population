@@ -35,6 +35,7 @@ def run_synthesize(
         random_seed=cfg.synthesis.random_seed,
         pool_multiplier=cfg.synthesis.pool_multiplier,
         max_retries=cfg.synthesis.max_retries,
+        threshold=cfg.synthesis.threshold
     )
 
     io.save_csv(h_bn, cfg.paths.output_dir, "h_bn_10x")

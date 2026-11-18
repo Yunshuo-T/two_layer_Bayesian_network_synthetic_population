@@ -5,12 +5,12 @@ from collections import Counter
 from pgmpy.sampling import BayesianModelSampling
 from pgmpy.models import DiscreteBayesianNetwork
 from concurrent.futures import ProcessPoolExecutor, as_completed
-
+from synpop.threshold.threshold import make_probability_lookup
 from synpop.schema import ColumnNames, ModelSchema
 from synpop.synthesis.evidence import PersonSimulationKey
 from synpop.synthesis.candidate import CandidatePool
 from synpop.utils import encoding, seeding
-
+from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +21,7 @@ class Generator:
         p_model: DiscreteBayesianNetwork,
         config: ModelSchema,
         p_data_include_kid: bool = True,
-    ):
+    ) -> None:
         """
         Initialize the Bayesian-network workflow.
 
@@ -46,6 +46,19 @@ class Generator:
         self.p_data_include_kid = p_data_include_kid
         self.h_sampler = BayesianModelSampling(h_model)
         self.p_sampler = BayesianModelSampling(p_model)
+        csv_path = (
+            Path(__file__).resolve().parents[1]
+            / "threshold"
+            / "individual_distribution"
+            / "model_distribution.csv"
+        )
+
+        distribution = pd.read_csv(csv_path, index_col=0)
+
+        self.probabilities, self.probability_attributes = make_probability_lookup(
+            distribution,
+            probability_col="prob",
+        )
 
     def synthesize(
         self,
@@ -54,14 +67,17 @@ class Generator:
         max_retries: int = 10,
         random_seed: int | None = None,
         max_workers: int | None = None,
-    ):
+        threshold: int = 0
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
         h_blueprint = self.simulate_household(num_households, random_seed=random_seed)
         demands, valid_blueprint = self.generate_evidence_batches(h_blueprint)
         candidate_pool = self.simulate_people(
             demands, pool_multiplier, random_seed, max_workers
         )
         realizations, failed_h_ids = self.allocate_households(
-            CandidatePool(candidate_pool, ColumnNames.AGE_CATE), valid_blueprint
+            threshold,
+            CandidatePool(candidate_pool, ColumnNames.AGE_CATE), 
+            valid_blueprint
         )
         remaining = valid_blueprint[
             valid_blueprint[self.config.h_id_col].isin(failed_h_ids)
@@ -75,7 +91,9 @@ class Generator:
                 demands, pool_multiplier, random_seed, max_workers
             )
             retry_realizations, failed_h_ids = self.allocate_households(
-                CandidatePool(retry_pool, ColumnNames.AGE_CATE), remaining_bp
+                threshold,
+                CandidatePool(retry_pool, ColumnNames.AGE_CATE), 
+                remaining_bp
             )
             realizations.extend(retry_realizations)
             remaining = remaining_bp[
@@ -110,7 +128,9 @@ class Generator:
 
         return h_blueprint
 
-    def generate_evidence_batches(self, h_blueprint: pd.DataFrame):
+    def generate_evidence_batches(
+        self, h_blueprint: pd.DataFrame
+    ) -> tuple[Counter[PersonSimulationKey], pd.DataFrame]:
         """
         Aggregate person-sampling requirements from simulated household records.
 
@@ -118,8 +138,7 @@ class Generator:
             h_blueprint: Sampled household records.
 
         Returns:
-            A tuple of evidence-demand counts, rank-to-model-state mapping, and
-            the maximum supported rank.
+            A tuple of evidence-demand counts and the valid household blueprint.
         """
         max_rank = max(self._rank_states(self.p_model))
         demands = Counter()
@@ -201,9 +220,10 @@ class Generator:
 
     def allocate_households(
         self,
+        threshold: int,
         candidate_pool: CandidatePool,
         h_blueprint: pd.DataFrame,
-    ):
+    ) -> tuple[list[dict[str, Any]], set[Any]]:
         """
         Allocate compatible sampled people to households.
         Candidate people are removed from pools after assigned.
@@ -236,11 +256,16 @@ class Generator:
                 )
 
                 candidate = candidate_pool.take_candidate(
-                    evidence_key,
-                    required_group,
-                    previous_assigned_age,
-                    self.p_data_include_kid,
+                    h_dict=h_dict,
+                    threshold=threshold,
+                    evidence_key=evidence_key,
+                    required_group=required_group,
+                    previous_age=previous_assigned_age,
+                    probabilities=self.probabilities,
+                    attributes=self.probability_attributes,
+                    p_data_include_kid=self.p_data_include_kid,
                 )
+                
                 if candidate is None:
                     invalid_h_ids.add(h_id)
                     valid_household = False
@@ -265,14 +290,16 @@ class Generator:
 
         return realizations, invalid_h_ids
 
-    def _get_values_from_h_blueprint(self, h_dict):
+    def _get_values_from_h_blueprint(
+        self, h_dict
+    ) -> tuple[Any, Any, Any, int, int, int, int]:
         h_type = h_dict[ColumnNames.H_TYPE]
         head_age = h_dict[ColumnNames.HEAD_AGE]
         head_gender = h_dict[ColumnNames.HEAD_GENDER]
         adults, minors, kids, h_size = self._count_member(h_dict)
         return (h_type, head_age, head_gender, adults, minors, kids, h_size)
 
-    def _rank_states(self, p_model):
+    def _rank_states(self, p_model) -> list[int]:
         return list(
             map(
                 int,
@@ -282,7 +309,7 @@ class Generator:
             )  # type ignore
         )
 
-    def _count_member(self, h_dict):
+    def _count_member(self, h_dict) -> tuple[int, int, int, int]:
         """
         Return the number of adults, minor, kids within the household
         and the household size.
@@ -332,7 +359,9 @@ class Generator:
         return "kid"
 
 
-def _batch_sample_persons(key, count, pool_multiplier, p_model, config, random_seed):
+def _batch_sample_persons(
+    key, count, pool_multiplier, p_model, config, random_seed
+) -> tuple[PersonSimulationKey, list[dict[str, Any]]]:
     sampler = BayesianModelSampling(p_model)
     h_type, rank, head_age, head_gender, p_age, p_gender = key
     # Build evidence
@@ -360,4 +389,4 @@ def _batch_sample_persons(key, count, pool_multiplier, p_model, config, random_s
         seed=random_seed,
     )
 
-    return key, batch_samples.to_dict("records")  # Return (key, list_of_records)
+    return key, batch_samples.to_dict("records")  # type: ignore # Return (key, list_of_records)
