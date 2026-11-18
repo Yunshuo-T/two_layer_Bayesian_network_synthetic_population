@@ -310,7 +310,7 @@ class CrossEntropy(BaseCalibrator):
 
         return obj_val, grad
 
-    def fit(self, max_iter=100, tolerance=1e-8, alpha=1e-3, **kwargs):
+    def fit(self, max_iter=1000, tolerance=1e-8, alpha=1e-8, **kwargs):
         """Fit the weights and assess convergence against the marginal targets.
 
         Positive alpha allows target deviations to penalize large multipliers.

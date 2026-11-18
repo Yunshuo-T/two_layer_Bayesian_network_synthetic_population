@@ -13,7 +13,7 @@ class Validation:
     def __init__(self, syn_w: np.ndarray, marginals: np.ndarray):
         self.w = syn_w
         self.o_m = marginals
-        self.e_m = np.sum(self.w, axis=0)
+        self.e_m = self.w
 
     def root_mean_squared_error(self):
         """RMSE for marginal distributions."""

@@ -55,7 +55,7 @@ calibration:
   h_attributes: ["TYPL", "VOIT"]
   kwargs:
     method: "logit" #'linear', 'raking', or 'logit'
-    bounds: (0.001,50.0)  # The bounds for logit method. Defaults to (0.1,5.0).
+    bounds: [0.001, 50.0]  # Logit weight multiplier bounds
     alpha: 1e-3 # For CrossEntropy 
 ```
 

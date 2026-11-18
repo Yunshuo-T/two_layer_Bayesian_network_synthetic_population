@@ -54,7 +54,10 @@ class CalibrationInput:
 class CalibrationMatrixBuilder:
     @classmethod
     def build(
-        cls, inputs: CalibrationInput, joint_attributes: list | None = None
+        cls, 
+        inputs: CalibrationInput, 
+        joint_attributes: list | None = None,
+        weight_col: str| None = None
     ) -> CalibrationMatrix:
         """Convert the sample data and marginal data into n-dimension array.
         Concatenate household and individual array to one single array.For two-layer
@@ -82,7 +85,10 @@ class CalibrationMatrixBuilder:
         x_h = h_df.to_numpy()
         x_p = p_df.to_numpy()
         h_sizes = np.array(inputs.p_df.groupby(inputs.h_id_col).size().to_list())
-        w_initial = np.ones(len(h_df)) * (total_households / len(h_df))
+        if weight_col:
+            w_initial = h_df[weight_col]
+        else:
+            w_initial = np.ones(len(h_df)) * (total_households / len(h_df))
         
         return CalibrationMatrix(
             x_h,
