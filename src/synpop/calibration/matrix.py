@@ -86,7 +86,7 @@ class CalibrationMatrixBuilder:
         x_p = p_df.to_numpy()
         h_sizes = np.array(inputs.p_df.groupby(inputs.h_id_col).size().to_list())
         if weight_col:
-            w_initial = h_df[weight_col]
+            w_initial = h_df[weight_col].to_numpy()
         else:
             w_initial = np.ones(len(h_df)) * (total_households / len(h_df))
         
