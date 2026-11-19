@@ -1,4 +1,4 @@
-,H_motor_v,driver_license,H_venr_bike,age_cate,P_gender,prepaid_tickets,P_education,P_work,prob
+,H_motor_v,driver_license,H_venr_bike,age_cate,P_gender,prepaid_tickets,P_education,P_work,probability
 0,0,0,0,0,0,0,Unfinished Elementary School,"employee, employer, self-employed or assisting",6.27E-06
 1,0,0,0,0,0,0,Unfinished Elementary School,"household member, preschool child, other dependents",3.55E-05
 2,0,0,0,0,0,0,Unfinished Elementary School,non-working pensioner,0

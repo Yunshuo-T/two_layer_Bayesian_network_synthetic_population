@@ -6,6 +6,7 @@ from omegaconf import OmegaConf
 
 @dataclass
 class SynthesisConfig:
+    total_population: int
     num_households: int
     pool_multiplier: int
     max_retries: int

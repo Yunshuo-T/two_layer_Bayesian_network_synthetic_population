@@ -52,16 +52,17 @@ class Generator:
             / "individual_distribution"
             / "model_distribution.csv"
         )
-
+        print(csv_path)
         distribution = pd.read_csv(csv_path, index_col=0)
 
         self.probabilities, self.probability_attributes = make_probability_lookup(
             distribution,
-            probability_col="prob",
+            probability_col="probability",
         )
 
     def synthesize(
         self,
+        total_population: int,
         num_households: int,
         pool_multiplier: int = 50,
         max_retries: int = 10,
@@ -75,9 +76,10 @@ class Generator:
             demands, pool_multiplier, random_seed, max_workers
         )
         realizations, failed_h_ids = self.allocate_households(
-            threshold,
-            CandidatePool(candidate_pool, ColumnNames.AGE_CATE), 
-            valid_blueprint
+            total_population=total_population,
+            threshold=threshold,
+            candidate_pool=CandidatePool(candidate_pool, ColumnNames.AGE_CATE), 
+            h_blueprint=valid_blueprint
         )
         remaining = valid_blueprint[
             valid_blueprint[self.config.h_id_col].isin(failed_h_ids)
@@ -91,9 +93,10 @@ class Generator:
                 demands, pool_multiplier, random_seed, max_workers
             )
             retry_realizations, failed_h_ids = self.allocate_households(
-                threshold,
-                CandidatePool(retry_pool, ColumnNames.AGE_CATE), 
-                remaining_bp
+                threshold=threshold,
+                candidate_pool=CandidatePool(retry_pool, ColumnNames.AGE_CATE), 
+                h_blueprint=remaining_bp,
+                total_population=total_population
             )
             realizations.extend(retry_realizations)
             remaining = remaining_bp[
@@ -220,6 +223,7 @@ class Generator:
 
     def allocate_households(
         self,
+        total_population: int,
         threshold: int,
         candidate_pool: CandidatePool,
         h_blueprint: pd.DataFrame,
@@ -258,6 +262,7 @@ class Generator:
                 candidate = candidate_pool.take_candidate(
                     h_dict=h_dict,
                     threshold=threshold,
+                    total_population=total_population,
                     evidence_key=evidence_key,
                     required_group=required_group,
                     previous_age=previous_assigned_age,

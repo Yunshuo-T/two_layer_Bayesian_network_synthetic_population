@@ -1,5 +1,5 @@
 from typing import Literal
-
+import logging
 from synpop import io
 from synpop.calibration.matrix import CalibrationInput
 from synpop.config import AppConfig
@@ -7,6 +7,8 @@ from synpop.calibration.matrix import CalibrationMatrixBuilder as matrix_builder
 from synpop.calibration.calibrator import CALIBRATOR
 from synpop.synthesis import generator
 
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
 
 def run_synthesize(
     calibration: Literal["ipu", "gr", "hipf", "cross_entropy", None],
@@ -30,6 +32,7 @@ def run_synthesize(
     )
 
     h_bn, p_bn = two_layer_bn.synthesize(
+        total_population=cfg.synthesis.total_population,
         num_households=cfg.synthesis.num_households,
         max_workers=cfg.synthesis.max_workers,
         random_seed=cfg.synthesis.random_seed,
@@ -38,8 +41,8 @@ def run_synthesize(
         threshold=cfg.synthesis.threshold
     )
 
-    io.save_csv(h_bn, cfg.paths.output_dir, "h_bn_10x")
-    io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_10x")
+    io.save_csv(h_bn, cfg.paths.output_dir, "h_bn_t1")
+    io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_t1")
 
     if calibration:
         calibration_input = CalibrationInput(

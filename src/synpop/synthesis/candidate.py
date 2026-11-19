@@ -13,6 +13,7 @@ class CandidatePool:
         self,
         h_dict,
         threshold,
+        total_population,
         evidence_key,
         required_group,
         previous_age,
@@ -30,7 +31,7 @@ class CandidatePool:
                 required_group, person_age, previous_age, p_data_include_kid
             ):
                 prob = lookup(probabilities, attributes, h_dict, candidate)
-                if prob < threshold:
+                if prob < threshold * (1/total_population):
                     continue
                 return candidates.pop(i)
         return None
