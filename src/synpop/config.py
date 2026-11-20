@@ -12,7 +12,7 @@ class SynthesisConfig:
     max_retries: int
     random_seed: int
     max_workers: int
-    threshold: int
+    threshold: float
     p_data_include_kid: bool
 
 

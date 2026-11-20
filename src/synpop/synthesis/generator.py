@@ -68,7 +68,7 @@ class Generator:
         max_retries: int = 10,
         random_seed: int | None = None,
         max_workers: int | None = None,
-        threshold: int = 0
+        threshold: float = 0.0
     ) -> tuple[pd.DataFrame, pd.DataFrame]:
         h_blueprint = self.simulate_household(num_households, random_seed=random_seed)
         demands, valid_blueprint = self.generate_evidence_batches(h_blueprint)
@@ -224,7 +224,7 @@ class Generator:
     def allocate_households(
         self,
         total_population: int,
-        threshold: int,
+        threshold: float,
         candidate_pool: CandidatePool,
         h_blueprint: pd.DataFrame,
     ) -> tuple[list[dict[str, Any]], set[Any]]:

@@ -24,7 +24,7 @@ def _add_age_category(
     """
     df = p_df.copy()
     if bin is None:
-        bin = [-1, 5, 17, 29, 39, 49, 59, 69, 79, float("inf")]
+        bin = [-1, 5, 14, 17, 29, 39, 49, 59, 69, 79, float("inf")]
     labels = list(range(len(bin) - 1))
     # if the age info is existing category, extract the left age from the interval.
     if is_string_dtype(df[age_col]) or is_object_dtype(df[age_col]):

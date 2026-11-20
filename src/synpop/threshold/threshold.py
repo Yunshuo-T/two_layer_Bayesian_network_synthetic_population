@@ -85,12 +85,13 @@ def export_dataframe_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,join
     )
     if not (ColumnNames.AGE_CATE in p_df.columns):
         joined_df = _add_age_category(joined_df,age_col)
-    joint_attributes.append(ColumnNames.AGE_CATE)
-    joint_attributes.remove(age_col)
+        joint_attributes.append(ColumnNames.AGE_CATE)
+        joint_attributes.remove(age_col)
+    print(joint_attributes)
     return joined_df[joint_attributes].value_counts(normalize=True).reset_index(name='prob')
     
 
 if __name__ == "__main__":
     bundle = io.load_bn_bundle(r'output\bn_bundle.pkl')
     df = export_model_joint_distribution(h_model=bundle['h_model'],p_model=bundle['p_model'])
-    df.to_csv(r"output/refacotr_bn_joint.csv")
+    df.to_csv(r"output/model_distribution.csv")

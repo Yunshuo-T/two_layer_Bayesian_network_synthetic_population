@@ -12,7 +12,7 @@ class CandidatePool:
     def take_candidate(
         self,
         h_dict,
-        threshold,
+        threshold:float,
         total_population,
         evidence_key,
         required_group,

@@ -180,5 +180,8 @@ class CalibrationMatrixBuilder:
             if marginals[attr][category] != 0
         ]
         if unsupported:
-            logger.info("Dropping empty %s columns with zero targets: %s", empty_cols)
+            logger.warning(
+                "Dropping empty columns with non-zero targets: %s",
+                unsupported,
+            )
         return counts.drop(columns=empty_cols)
