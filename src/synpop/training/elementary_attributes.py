@@ -1,19 +1,18 @@
 import pandas as pd
 from pandas.api.types import is_string_dtype, is_object_dtype
 import numpy as np
-from synpop.schema import ColumnNames
+from synpop.schema import GlobleVariables
 
 
 def _add_age_category(
     p_df: pd.DataFrame,
     age_col: str,
-    bin: list | None = None,
+    age_bin: list | None = None,
 ) -> pd.DataFrame:
     """
     Classify the age of household members into age categories.
-    The age information of the original dataframe can be integers or existing 
-    age categories. If you want to use existing age categories, you still need to 
-    give the age category bin. 
+    The age information of the original dataframe can be integers or intervals. 
+    If you want to use existing intervals, you need to add them to age_bin parameter. 
     Args:
         p_df (pd.DataFrame): The dataframe of household members.
         age_col (str): The column name indicating the member age.
@@ -23,19 +22,18 @@ def _add_age_category(
         pd.DataFrame: _description_
     """
     df = p_df.copy()
-    if bin is None:
-        bin = [-1, 5, 14, 17, 29, 39, 49, 59, 69, 79, float("inf")]
-    labels = list(range(len(bin) - 1))
-    # if the age info is existing category, extract the left age from the interval.
+    if age_bin is None:
+        age_bin = [-1, 5, 17, 29, 39, 49, 59, 69, 79, float("inf")]
+    labels = list(range(len(age_bin) - 1))
+    # if existing age intervals are provided, extract the left age from the interval.
     if is_string_dtype(df[age_col]) or is_object_dtype(df[age_col]):
         df[age_col] = df[age_col].astype(str).str.extract(r'(\d+)')[0]
     df[age_col] = df[age_col].astype(int)
-    df[ColumnNames.AGE_CATE] = pd.cut(
+    df[GlobleVariables.AGE_CATE] = pd.cut(
         df[age_col],
-        bins=bin,
+        bins=age_bin,
         labels=labels,
     ).astype(int)
-
     return df
 
 
@@ -49,7 +47,7 @@ def _add_member_rank(
         [h_id_col, age_col],
         ascending=[True, False],
     ).copy()
-    p_df[ColumnNames.MEMBER_RANK] = p_df.groupby(h_id_col, observed=True).cumcount()
+    p_df[GlobleVariables.MEMBER_RANK] = p_df.groupby(h_id_col, observed=True).cumcount()
     return p_df
 
 
@@ -61,8 +59,8 @@ def _add_head_attributes(
 
     p_df = p_df.copy()
     grouped = p_df.groupby(h_id_col)
-    p_df[ColumnNames.HEAD_AGE] = grouped[ColumnNames.AGE_CATE].transform("first")
-    p_df[ColumnNames.HEAD_GENDER] = grouped[gender_col].transform("first")
+    p_df[GlobleVariables.HEAD_AGE] = grouped[GlobleVariables.AGE_CATE].transform("first")
+    p_df[GlobleVariables.HEAD_GENDER] = grouped[gender_col].transform("first")
     return p_df
 
 
@@ -81,9 +79,9 @@ def _calculate_household_composition(
     indicators = pd.DataFrame(
         {
             h_id_col: p_df[h_id_col],
-            ColumnNames.ADULTS: (p_df[ColumnNames.AGE_CATE] >= 2).astype(int),
-            ColumnNames.MINORS: (p_df[ColumnNames.AGE_CATE] == 1).astype(int),
-            ColumnNames.KIDS: (p_df[ColumnNames.AGE_CATE] == 0).astype(int),
+            GlobleVariables.ADULTS: (p_df[GlobleVariables.AGE_CATE] >= 2).astype(int),
+            GlobleVariables.MINORS: (p_df[GlobleVariables.AGE_CATE] == 1).astype(int),
+            GlobleVariables.KIDS: (p_df[GlobleVariables.AGE_CATE] == 0).astype(int),
         }
     )
     
@@ -128,29 +126,29 @@ def _add_household_type(
     # Determine the Adult Prefix
     prefix = np.select(
         [
-            comp[ColumnNames.ADULTS] == 1,
-            comp[ColumnNames.ADULTS] == 2,
-            comp[ColumnNames.ADULTS] > 2,
+            comp[GlobleVariables.ADULTS] == 1,
+            comp[GlobleVariables.ADULTS] == 2,
+            comp[GlobleVariables.ADULTS] > 2,
         ],
         ["single", "couple", "only_adults"],
         default="other",
     )
     # Determine the Child Suffix
-    has_kids = comp[ColumnNames.KIDS] > 0
-    has_minors = comp[ColumnNames.MINORS] > 0
+    has_kids = comp[GlobleVariables.KIDS] > 0
+    has_minors = comp[GlobleVariables.MINORS] > 0
     suffix = np.select(
         [has_kids & has_minors, has_kids, has_minors],
         ["_with_children", "_with_kid", "_with_minor"],
         default="",
     )
-    comp[ColumnNames.H_TYPE] = prefix + suffix
+    comp[GlobleVariables.H_TYPE] = prefix + suffix
     # change 'adults' to 'only_adults'
     merge_cols = [
         h_id_col,
-        ColumnNames.H_TYPE,
-        ColumnNames.ADULTS,
-        ColumnNames.MINORS,
-        ColumnNames.KIDS,
+        GlobleVariables.H_TYPE,
+        GlobleVariables.ADULTS,
+        GlobleVariables.MINORS,
+        GlobleVariables.KIDS,
     ]
     return p_df.drop(columns=merge_cols[1:], errors="ignore").merge(
         comp[merge_cols], how="left", on=h_id_col, validate="many_to_one"
@@ -163,7 +161,7 @@ def _sync_household_attributes(
     h_id_col: str,
 ) -> pd.DataFrame:
     """Extracts household-level attributes from p_df and merges them into h_df."""
-    cols = [c for c in ColumnNames.HOUSEHOLD_COLS]
+    cols = [c for c in GlobleVariables.HOUSEHOLD_COLS]
     h_features = p_df[[h_id_col] + cols].drop_duplicates(subset=[h_id_col])
     return h_df.drop(columns=cols, errors="ignore").merge(
         h_features, on=h_id_col, how="left", validate="many_to_one"
@@ -187,7 +185,7 @@ def add_elementary_attributes(
     """
 
     processed_p_df = (
-        raw_p_df.pipe(_add_age_category, age_col=age_col, bin=age_bin)
+        raw_p_df.pipe(_add_age_category, age_col=age_col, age_bin=age_bin)
         .pipe(_add_member_rank, h_id_col=h_id_col, age_col=age_col)
         .pipe(_add_head_attributes, h_id_col=h_id_col, gender_col=gender_col)
         .pipe(

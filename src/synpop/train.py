@@ -24,6 +24,7 @@ def run_training(config_path: str = r"config\config.yaml"):
         expert_knowledge=cfg.train.expert_knowledge,
         age_bin=cfg.train.age_bin,
         composition_cols=cfg.train.composition_cols,
+        kid_max_age=cfg.train.kid_max_age
     )
 
     model_train = trainer.Trainer(config=train_bundle.config)

@@ -5,9 +5,8 @@ import pandas as pd
 from dataclasses import dataclass
 from pgmpy.estimators import ExpertKnowledge, HillClimbSearch
 from pgmpy.models import DiscreteBayesianNetwork
-
 from synpop.training import elementary_attributes
-from synpop.schema import ColumnNames, ModelSchema
+from synpop.schema import GlobleVariables, ModelSchema
 from synpop.utils import encoding
 
 logger = logging.getLogger("pgmpy")
@@ -192,14 +191,29 @@ class Trainer:
 def _construct_config(
     processed_h_df: pd.DataFrame,
     processed_p_df: pd.DataFrame,
-    gender_col,
-    h_id_col,
+    gender_col:str,
+    h_id_col:str,
+    kid_max_age: int,
+    age_bin: list
+    
 ):
-    cate_code_cols = [col for col in ColumnNames.CATE_CODE_COLS] + [gender_col]
+    cate_code_cols = [col for col in GlobleVariables.CATE_CODE_COLS] + [gender_col]
     code_to_attr, attr_to_code = encoding.cate_codes(processed_p_df, cate_code_cols)
     p_mapped = encoding.map_dataframe(attr_to_code, processed_p_df).astype("category")
     h_mapped = encoding.map_dataframe(attr_to_code, processed_h_df).astype("category")
-    config = ModelSchema(code_to_attr, attr_to_code, gender_col, h_id_col)
+    age_states_by_group = encoding.build_age_group_by_bin(
+        age_bin=age_bin,
+        kid_max_age=kid_max_age,
+        code_to_attr=code_to_attr
+    )
+
+    config = ModelSchema(
+        code_to_attr=code_to_attr, 
+        attr_to_code=attr_to_code, 
+        gender_col=gender_col, 
+        h_id_col=h_id_col, 
+        age_states_by_group=age_states_by_group
+    )
     return p_mapped, h_mapped, config
 
 
@@ -238,7 +252,7 @@ def _build_expert_knowledge(
     user_expert_knowledge: dict,
 ):
     forbidden_edges = itertools.product(
-        [*p_nodes, ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE],
+        [*p_nodes, GlobleVariables.MEMBER_RANK, GlobleVariables.AGE_CATE],
         elementary_attributes["H"],
     )
     person_expert_knowledge = ExpertKnowledge(
@@ -272,8 +286,9 @@ class TrainingBundle:
         age_col: str,
         gender_col: str,
         h_id_col: str,
+        kid_max_age: int,
         expert_knowledge: dict,
-        age_bin: list | None = None,
+        age_bin: list,
         composition_cols: dict[str, str] | None = None,
     ):
         processed_h_df, processed_p_df = (
@@ -292,6 +307,8 @@ class TrainingBundle:
             processed_p_df=processed_p_df,
             gender_col=gender_col,
             h_id_col=h_id_col,
+            kid_max_age=kid_max_age,
+            age_bin = age_bin
         )
         h_model_nodes = _resolve_model_nodes(h_nodes, config.elementary_attributes["H"])
         p_model_nodes = _resolve_model_nodes(p_nodes, config.elementary_attributes["P"])

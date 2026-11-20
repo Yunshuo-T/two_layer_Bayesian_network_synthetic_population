@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from synpop.schema import ColumnNames
+from synpop.schema import GlobleVariables
 from synpop.training.elementary_attributes import (
     _add_age_category,
     _add_member_rank,
@@ -18,9 +18,9 @@ AGE = "age"
 GENDER = "gender"
 
 COMPOSITION_COLS = {
-    ColumnNames.ADULTS: "adult_count",
-    ColumnNames.MINORS: "minor_count",
-    ColumnNames.KIDS: "kid_count",
+    GlobleVariables.ADULTS: "adult_count",
+    GlobleVariables.MINORS: "minor_count",
+    GlobleVariables.KIDS: "kid_count",
 }
 
 
@@ -50,7 +50,7 @@ def composition_data():
 
     people = pd.DataFrame({
         H_ID: [10, 20, 20],
-        ColumnNames.AGE_CATE: [2, 2, 2],
+        GlobleVariables.AGE_CATE: [2, 2, 2],
     })
 
     return households, people
@@ -79,16 +79,16 @@ class TestAgeCategory:
 
         result = _add_age_category(df, AGE)
 
-        assert result[ColumnNames.AGE_CATE].iloc[0] == expected
+        assert result[GlobleVariables.AGE_CATE].iloc[0] == expected
 
     def test_custom_bins(self):
         df = pd.DataFrame({AGE: [0, 10, 11, 20]})
 
         result = _add_age_category(
-            df, AGE, bin=[-1, 10, 20]
+            df, AGE, age_bin=[-1, 10, 20]
         )
 
-        assert result[ColumnNames.AGE_CATE].tolist() == [
+        assert result[GlobleVariables.AGE_CATE].tolist() == [
             0, 0, 1, 1
         ]
 
@@ -99,7 +99,7 @@ class TestAgeCategory:
 
         result = _add_age_category(df, AGE)
 
-        assert result[ColumnNames.AGE_CATE].tolist() == [
+        assert result[GlobleVariables.AGE_CATE].tolist() == [
             0, 1, 2, 3
         ]
 
@@ -128,7 +128,7 @@ class TestMemberAttributes:
         for h_id, ranks in expected.items():
             actual = result.loc[
                 result[H_ID] == h_id,
-                ColumnNames.MEMBER_RANK,
+                GlobleVariables.MEMBER_RANK,
             ].tolist()
             assert actual == ranks
 
@@ -139,7 +139,7 @@ class TestMemberAttributes:
     def test_head_attributes(self):
         people = pd.DataFrame({
             H_ID: [10, 10, 20, 20],
-            ColumnNames.AGE_CATE: [5, 2, 4, 1],
+            GlobleVariables.AGE_CATE: [5, 2, 4, 1],
             GENDER: ["F", "M", "M", "F"],
         })
 
@@ -147,10 +147,10 @@ class TestMemberAttributes:
             people, H_ID, GENDER
         )
 
-        assert result[ColumnNames.HEAD_AGE].tolist() == [
+        assert result[GlobleVariables.HEAD_AGE].tolist() == [
             5, 5, 4, 4
         ]
-        assert result[ColumnNames.HEAD_GENDER].tolist() == [
+        assert result[GlobleVariables.HEAD_GENDER].tolist() == [
             "F", "F", "M", "M"
         ]
 
@@ -170,7 +170,7 @@ class TestHouseholdComposition:
     def test_inferred_counts(self, ages, expected):
         people = pd.DataFrame({
             H_ID: [10] * len(ages),
-            ColumnNames.AGE_CATE: ages,
+            GlobleVariables.AGE_CATE: ages,
         })
 
         result = _calculate_household_composition(
@@ -180,9 +180,9 @@ class TestHouseholdComposition:
         actual = tuple(
             result.loc[0, col]
             for col in (
-                ColumnNames.ADULTS,
-                ColumnNames.MINORS,
-                ColumnNames.KIDS,
+                GlobleVariables.ADULTS,
+                GlobleVariables.MINORS,
+                GlobleVariables.KIDS,
             )
         )
 
@@ -202,9 +202,9 @@ class TestHouseholdComposition:
 
         expected = pd.DataFrame({
             H_ID: [10, 20],
-            ColumnNames.ADULTS: [1, 2],
-            ColumnNames.MINORS: [0, 1],
-            ColumnNames.KIDS: [2, 3],
+            GlobleVariables.ADULTS: [1, 2],
+            GlobleVariables.MINORS: [0, 1],
+            GlobleVariables.KIDS: [2, 3],
         })
 
         assert_frame_equal(result, expected)
@@ -257,25 +257,25 @@ class TestHouseholdType:
     def test_household_types(self, ages, expected):
         people = pd.DataFrame({
             H_ID: [10] * len(ages),
-            ColumnNames.AGE_CATE: ages,
+            GlobleVariables.AGE_CATE: ages,
         })
 
         result = _add_household_type(people, H_ID)
 
-        assert result[ColumnNames.H_TYPE].eq(expected).all()
+        assert result[GlobleVariables.H_TYPE].eq(expected).all()
 
     def test_replaces_existing_features(self):
         people = pd.DataFrame({
             H_ID: [10],
-            ColumnNames.AGE_CATE: [2],
-            ColumnNames.H_TYPE: ["stale"],
-            ColumnNames.ADULTS: [99],
+            GlobleVariables.AGE_CATE: [2],
+            GlobleVariables.H_TYPE: ["stale"],
+            GlobleVariables.ADULTS: [99],
         })
 
         result = _add_household_type(people, H_ID)
 
-        assert result[ColumnNames.H_TYPE].iloc[0] == "single"
-        assert result[ColumnNames.ADULTS].iloc[0] == 1
+        assert result[GlobleVariables.H_TYPE].iloc[0] == "single"
+        assert result[GlobleVariables.ADULTS].iloc[0] == 1
         assert not any(
             col.endswith(("_x", "_y"))
             for col in result.columns
@@ -300,28 +300,28 @@ class TestElementaryAttributesIntegration:
         ]
 
         assert person_20[AGE].tolist() == [40, 12, 4]
-        assert person_20[ColumnNames.MEMBER_RANK].tolist() == [
+        assert person_20[GlobleVariables.MEMBER_RANK].tolist() == [
             0, 1, 2
         ]
-        assert person_20[ColumnNames.HEAD_AGE].tolist() == [
+        assert person_20[GlobleVariables.HEAD_AGE].tolist() == [
             4, 4, 4
         ]
-        assert person_20[ColumnNames.HEAD_GENDER].tolist() == [
+        assert person_20[GlobleVariables.HEAD_GENDER].tolist() == [
             "F", "F", "F"
         ]
 
         household_20 = processed_h.set_index(H_ID).loc[20]
 
-        assert household_20[ColumnNames.H_TYPE] == (
+        assert household_20[GlobleVariables.H_TYPE] == (
             "single_with_children"
         ) # type: ignore
 
         assert [
             household_20[col]
             for col in (
-                ColumnNames.ADULTS,
-                ColumnNames.MINORS,
-                ColumnNames.KIDS,
+                GlobleVariables.ADULTS,
+                GlobleVariables.MINORS,
+                GlobleVariables.KIDS,
             )
         ] == [1, 1, 1]
 
@@ -355,12 +355,12 @@ class TestElementaryAttributesIntegration:
         for h_id, expected_type in expected_types.items():
             assert processed_h.loc[
                 processed_h[H_ID] == h_id,
-                ColumnNames.H_TYPE,
+                GlobleVariables.H_TYPE,
             ].iloc[0] == expected_type
 
             assert processed_p.loc[
                 processed_p[H_ID] == h_id,
-                ColumnNames.H_TYPE,
+                GlobleVariables.H_TYPE,
             ].eq(expected_type).all()
 
     def test_inputs_not_modified(self, sample_data: tuple[pd.DataFrame, pd.DataFrame]):
@@ -383,7 +383,7 @@ class TestElementaryAttributesIntegration:
             households, people, AGE, GENDER, H_ID
         )
 
-        features = list(ColumnNames.HOUSEHOLD_COLS)
+        features = list(GlobleVariables.HOUSEHOLD_COLS)
 
         person_features = (
             processed_p[[H_ID, *features]]

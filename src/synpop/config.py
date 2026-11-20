@@ -44,6 +44,7 @@ class TrainConfig:
     p_nodes: list[str]
     age_col: str
     age_bin: list
+    kid_max_age: int
     gender_col: str
     h_id_col: str
     score: str

@@ -41,8 +41,8 @@ def run_synthesize(
         threshold=cfg.synthesis.threshold
     )
 
-    io.save_csv(h_bn, cfg.paths.output_dir, "h_bn_t0")
-    io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_t0")
+    io.save_csv(h_bn, cfg.paths.output_dir, "h_bn_t05")
+    io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_t05")
 
     if calibration:
         calibration_input = CalibrationInput(

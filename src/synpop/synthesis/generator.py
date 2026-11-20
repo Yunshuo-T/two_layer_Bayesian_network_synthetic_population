@@ -7,7 +7,7 @@ from pgmpy.sampling import BayesianModelSampling
 from pgmpy.models import DiscreteBayesianNetwork
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from synpop.threshold.threshold import make_probability_lookup
-from synpop.schema import ColumnNames, ModelSchema
+from synpop.schema import GlobleVariables, ModelSchema
 from synpop.synthesis.evidence import PersonSimulationKey
 from synpop.synthesis.candidate import CandidatePool
 from synpop.utils import encoding,seeding
@@ -33,13 +33,13 @@ class Generator:
         self.p_model = p_model
         self.config = config
         self.head_age_to_person_age = encoding.make_code_crosswalk(
-            ColumnNames.HEAD_AGE,
-            ColumnNames.AGE_CATE,
+            GlobleVariables.HEAD_AGE,
+            GlobleVariables.AGE_CATE,
             self.config.code_to_attr,
             self.config.attr_to_code,
         )
         self.head_gender_to_person_gender = encoding.make_code_crosswalk(
-            ColumnNames.HEAD_GENDER,
+            GlobleVariables.HEAD_GENDER,
             self.config.gender_col,
             self.config.code_to_attr,
             self.config.attr_to_code,
@@ -79,7 +79,7 @@ class Generator:
         realizations, failed_h_ids = self.allocate_households(
             total_population=total_population,
             threshold=threshold,
-            candidate_pool=CandidatePool(candidate_pool, ColumnNames.AGE_CATE), 
+            candidate_pool=CandidatePool(candidate_pool, GlobleVariables.AGE_CATE), 
             h_blueprint=valid_blueprint
         )
         remaining = valid_blueprint[
@@ -95,7 +95,7 @@ class Generator:
             )
             retry_realizations, failed_h_ids = self.allocate_households(
                 threshold=threshold,
-                candidate_pool=CandidatePool(retry_pool, ColumnNames.AGE_CATE), 
+                candidate_pool=CandidatePool(retry_pool, GlobleVariables.AGE_CATE), 
                 h_blueprint=remaining_bp,
                 total_population=total_population
             )
@@ -261,10 +261,10 @@ class Generator:
             for rank in range(h_size):
                 required_group = self._required_group(rank, adults, minors)
                 evidence_key = PersonSimulationKey.make_evidence_key(
-                    h_type=h_dict[ColumnNames.H_TYPE],
+                    h_type=h_dict[GlobleVariables.H_TYPE],
                     rank=rank,
-                    head_age=h_dict[ColumnNames.HEAD_AGE],
-                    head_gender=h_dict[ColumnNames.HEAD_GENDER],
+                    head_age=h_dict[GlobleVariables.HEAD_AGE],
+                    head_gender=h_dict[GlobleVariables.HEAD_GENDER],
                     required_group=required_group,
                     head_age_to_person_age=self.head_age_to_person_age,
                     head_gender_to_person_gender=self.head_gender_to_person_gender,
@@ -280,6 +280,7 @@ class Generator:
                     previous_age=previous_assigned_age,
                     probabilities=self.probabilities,
                     attributes=self.probability_attributes,
+                    age_states_by_group=self.config.age_states_by_group,
                     p_data_include_kid=self.p_data_include_kid,
                 )
                 
@@ -288,7 +289,7 @@ class Generator:
                     valid_household = False
                     logger.warning(
                         "Allocation failed for household type %s at rank %d, required_group %s. Pool state: %s",
-                        h_dict[ColumnNames.H_TYPE],
+                        h_dict[GlobleVariables.H_TYPE],
                         rank,
                         required_group,
                         candidate_pool._age_distribution(evidence_key),
@@ -297,7 +298,7 @@ class Generator:
                 candidate[self.config.h_id_col] = h_id
                 temp_persons.append(candidate)
                 used_candidates.append((evidence_key, candidate, self.config.h_id_col))
-                previous_assigned_age = int(candidate[ColumnNames.AGE_CATE])
+                previous_assigned_age = int(candidate[GlobleVariables.AGE_CATE])
 
             if valid_household:
                 realizations.extend(temp_persons)
@@ -310,9 +311,9 @@ class Generator:
     def _get_values_from_h_blueprint(
         self, h_dict
     ) -> tuple[Any, Any, Any, int, int, int, int]:
-        h_type = h_dict[ColumnNames.H_TYPE]
-        head_age = h_dict[ColumnNames.HEAD_AGE]
-        head_gender = h_dict[ColumnNames.HEAD_GENDER]
+        h_type = h_dict[GlobleVariables.H_TYPE]
+        head_age = h_dict[GlobleVariables.HEAD_AGE]
+        head_gender = h_dict[GlobleVariables.HEAD_GENDER]
         adults, minors, kids, h_size = self._count_member(h_dict)
         return (h_type, head_age, head_gender, adults, minors, kids, h_size)
 
@@ -320,8 +321,8 @@ class Generator:
         return list(
             map(
                 int,
-                p_model.get_cpds(ColumnNames.MEMBER_RANK).state_names[
-                    ColumnNames.MEMBER_RANK
+                p_model.get_cpds(GlobleVariables.MEMBER_RANK).state_names[
+                    GlobleVariables.MEMBER_RANK
                 ],  # type: ignore
             )  # type ignore
         )
@@ -331,9 +332,9 @@ class Generator:
         Return the number of adults, minor, kids within the household
         and the household size.
         """
-        adults = int(h_dict[ColumnNames.ADULTS])
-        minors = int(h_dict[ColumnNames.MINORS])
-        kids = int(h_dict[ColumnNames.KIDS])
+        adults = int(h_dict[GlobleVariables.ADULTS])
+        minors = int(h_dict[GlobleVariables.MINORS])
+        kids = int(h_dict[GlobleVariables.KIDS])
         if not self.p_data_include_kid:
             h_size = adults + minors
         else:
@@ -348,9 +349,9 @@ class Generator:
         max_size = max_rank + 1
 
         h_size = (
-            h_blueprint[ColumnNames.ADULTS]
-            + h_blueprint[ColumnNames.MINORS]
-            + h_blueprint[ColumnNames.KIDS]
+            h_blueprint[GlobleVariables.ADULTS]
+            + h_blueprint[GlobleVariables.MINORS]
+            + h_blueprint[GlobleVariables.KIDS]
         )
 
         valid_mask = h_size <= max_size
@@ -383,10 +384,10 @@ def _batch_sample_persons(
     h_type, rank, head_age, head_gender, p_age, p_gender = key
     # Build evidence
     partial = {
-        ColumnNames.H_TYPE: h_type,
-        ColumnNames.MEMBER_RANK: rank,
-        ColumnNames.HEAD_AGE: head_age,
-        ColumnNames.HEAD_GENDER: head_gender,
+        GlobleVariables.H_TYPE: h_type,
+        GlobleVariables.MEMBER_RANK: rank,
+        GlobleVariables.HEAD_AGE: head_age,
+        GlobleVariables.HEAD_GENDER: head_gender,
     }
     batch_size = count * pool_multiplier
 
@@ -394,7 +395,7 @@ def _batch_sample_persons(
         partial[config.gender_col] = p_gender
 
     if p_age is not None:
-        partial[ColumnNames.AGE_CATE] = p_age
+        partial[GlobleVariables.AGE_CATE] = p_age
         # Create a batch
 
     evidence_df = pd.DataFrame([partial] * batch_size)

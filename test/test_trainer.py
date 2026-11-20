@@ -1,5 +1,5 @@
 from synpop.training import trainer
-from synpop.schema import ColumnNames
+from synpop.schema import GlobleVariables
 import pytest
 import itertools
 import pandas as pd
@@ -15,7 +15,7 @@ GENDER = "gender"
 def elementary_attrs():
     return {
         "H": {"household_type", "household_size"},
-        "P": {ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE},
+        "P": {GlobleVariables.MEMBER_RANK, GlobleVariables.AGE_CATE},
     }
 
 @pytest.fixture
@@ -71,7 +71,7 @@ class TestBundleConstruction:
         self, p_nodes, elementary_attrs, default_expert_knowledge
     ):
         default_expert_knowledge["person"]["required_edges"] = [
-            [ColumnNames.AGE_CATE, "education"]
+            [GlobleVariables.AGE_CATE, "education"]
         ]
         _, person_knowledge = trainer._build_expert_knowledge(
             p_nodes=p_nodes,
@@ -80,7 +80,7 @@ class TestBundleConstruction:
         )
 
         assert person_knowledge.required_edges == {
-            (ColumnNames.AGE_CATE, "education")
+            (GlobleVariables.AGE_CATE, "education")
         }
 
     def test_malformed_configured_edge_is_rejected(
@@ -110,7 +110,7 @@ class TestBundleConstruction:
         user_expert_knowledge=default_expert_knowledge,
         )
         expected_person_forbidden = set(itertools.product(
-        [*p_nodes, ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE],
+        [*p_nodes, GlobleVariables.MEMBER_RANK, GlobleVariables.AGE_CATE],
         elementary_attrs["H"],
         ))
         
@@ -130,7 +130,7 @@ class TestBundleConstruction:
             elementary_nodes=elementary_attrs["P"]
         )
         
-        assert nodes == ["education", "occupation",ColumnNames.MEMBER_RANK, ColumnNames.AGE_CATE]
+        assert nodes == ["education", "occupation",GlobleVariables.MEMBER_RANK, GlobleVariables.AGE_CATE]
     
     def test_construct_config(self, data_frame,monkeypatch):
         data_frame = data_frame

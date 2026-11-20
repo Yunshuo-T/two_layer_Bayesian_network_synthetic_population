@@ -1,5 +1,5 @@
 import pandas as pd
-
+from synpop.schema import GlobleVariables
 
 def cate_codes(df: pd.DataFrame, attributes: list, explicit_orders: dict = None):  # type: ignore
     df = df.copy()
@@ -66,3 +66,64 @@ def make_code_crosswalk(
         mapping[source_code] = attr_to_code[target_attr][semantic_value]
 
     return mapping
+
+
+def build_age_group_by_bin(
+    age_bin: list,
+    code_to_attr: dict[str, dict[str, int]],
+    kid_max_age: int = 5,
+    ) -> dict[str, list[int]]:
+    """Classify each age interval as a kid, minor, or adult group.
+
+    Age intervals are interpreted as ``(lower, upper]`` and are expected to
+    align with the kid and adult group boundaries.  An interval that crosses
+    a boundary raises ``ValueError``.
+
+    Args:
+        age_bin: Ordered age-bin boundaries. Consecutive values define the
+            intervals to classify.
+        kid_max_age: Maximum age included in the ``"kid"`` group.
+
+    Returns:
+        A mapping from each interval's zero-based index to its group name.
+
+    Raises:
+        ValueError: If ``kid_max_age`` is outside the range 0 through 17 or
+            an interval crosses a group boundary.
+    """
+
+    if not isinstance(kid_max_age, int) or not 0 <= kid_max_age < 18:
+        raise ValueError("kid_max_age must be an integer from 0 to 17.")
+
+    group_by_bin = {}
+
+    for bin_id, (lower, upper) in enumerate(
+        zip(age_bin, age_bin[1:])
+    ):
+        if upper <= kid_max_age:
+            group = "kid"
+
+        elif lower >= GlobleVariables.ADULT_MIN_AGE - 1:
+            group = "adult"
+
+        elif lower >= kid_max_age and upper < GlobleVariables.ADULT_MIN_AGE:
+            group = "minor"
+
+        else:
+            raise ValueError(
+                f"Age interval ({lower}, {upper}] "
+                "crosses a group boundary."
+            )
+        group_by_bin[bin_id] = group
+    age_states_by_group = {
+        "kid": [],
+        "minor": [],
+        "adult": [],
+    }
+
+    for state, bin_id in code_to_attr[GlobleVariables.AGE_CATE].items():
+        group = group_by_bin[bin_id]
+        age_states_by_group[group].append(state)
+
+
+    return age_states_by_group

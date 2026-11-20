@@ -5,7 +5,7 @@ from pgmpy.factors.discrete import DiscreteFactor
 import pandas as pd
 from collections.abc import Mapping
 from typing import Any
-from synpop.schema import ColumnNames
+from synpop.schema import GlobleVariables
 from synpop.training.elementary_attributes import _add_age_category
 
 
@@ -47,10 +47,10 @@ def _factor_to_dataframe(factor:DiscreteFactor, value_col:str ="probability") ->
 
 
 def export_model_joint_distribution(h_model:DiscreteBayesianNetwork,p_model:DiscreteBayesianNetwork) -> pd.DataFrame:
-    ele_attributes = (ColumnNames.HEAD_AGE,ColumnNames.HEAD_GENDER,ColumnNames.H_TYPE,)
+    ele_attributes = (GlobleVariables.HEAD_AGE,GlobleVariables.HEAD_GENDER,GlobleVariables.H_TYPE,)
     
-    h_exclude = (ColumnNames.ADULTS,ColumnNames.MINORS,ColumnNames.KIDS,)
-    p_exclude = (ColumnNames.MEMBER_RANK,)
+    h_exclude = (GlobleVariables.ADULTS,GlobleVariables.MINORS,GlobleVariables.KIDS,)
+    p_exclude = (GlobleVariables.MEMBER_RANK,)
     
     h_keep = [node for node in h_model.nodes if node not in set(h_exclude)]
     p_keep = [node for node in p_model.nodes if node not in set(p_exclude)]
@@ -83,15 +83,16 @@ def export_dataframe_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,join
         how='outer',
         on='H_ID'
     )
-    if not (ColumnNames.AGE_CATE in p_df.columns):
+    if not (GlobleVariables.AGE_CATE in p_df.columns):
         joined_df = _add_age_category(joined_df,age_col)
-        joint_attributes.append(ColumnNames.AGE_CATE)
+        joint_attributes.append(GlobleVariables.AGE_CATE)
         joint_attributes.remove(age_col)
     print(joint_attributes)
-    return joined_df[joint_attributes].value_counts(normalize=True).reset_index(name='prob')
+    return joined_df[joint_attributes].value_counts(normalize=True).reset_index(name='probability')
     
 
 if __name__ == "__main__":
     bundle = io.load_bn_bundle(r'output\bn_bundle.pkl')
     df = export_model_joint_distribution(h_model=bundle['h_model'],p_model=bundle['p_model'])
-    df.to_csv(r"output/model_distribution.csv")
+    df = df[df['probability']>0]
+    df.to_csv(r"src/synpop/threshold/individual_distribution/model_distribution.csv")

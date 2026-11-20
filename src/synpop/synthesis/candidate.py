@@ -19,6 +19,7 @@ class CandidatePool:
         previous_age,
         probabilities,
         attributes,
+        age_states_by_group,  
         p_data_include_kid=True
     ) -> dict[str, Any] | None:
         """
@@ -28,7 +29,11 @@ class CandidatePool:
         for i, candidate in enumerate(candidates):
             person_age = int(candidate[self._age_attr])
             if self._matches(
-                required_group, person_age, previous_age, p_data_include_kid
+                required_group=required_group,
+                age=person_age,
+                previous_age=previous_age,
+                age_states_by_group=age_states_by_group,
+                p_data_include_kid=p_data_include_kid,
             ):
                 prob = lookup(probabilities, attributes, h_dict, candidate)
                 if prob < threshold * (1/total_population):
@@ -55,18 +60,18 @@ class CandidatePool:
         required_group: str,
         age: int,
         previous_age: int | None,
+        age_states_by_group,
         p_data_include_kid: bool = True,
     ) -> bool:
         # Members are assigned in descending age order.
         if previous_age is not None and age > previous_age:
             return False
 
-        minor_age = 1 if p_data_include_kid else 0
-        if required_group == "adult":
-            return age > minor_age
-        if required_group == "minor":
-            return age == minor_age
-        return p_data_include_kid and age == 0
+        if required_group == "kid" and not p_data_include_kid:
+            return False
+
+        # Accept any age state belonging to the required group.
+        return age in age_states_by_group[required_group]
 
     def _age_distribution(self, evidence_key) -> dict[int, int]:
         candidates = self._pool.get(evidence_key, [])

@@ -5,9 +5,9 @@ The configurations for the pipeline.
 from dataclasses import dataclass
 
 
-class ColumnNames:
+class GlobleVariables:
     HEAD_COLS = ("Head_age", "Head_gender")
-
+    ADULT_MIN_AGE = 18
     AGE_CATE = "age_cate"
     MEMBER_RANK = "Member_rank"
     HEAD_AGE = "Head_age"
@@ -33,24 +33,25 @@ class ModelSchema:
     attr_to_code: dict
     gender_col: str
     h_id_col: str
+    age_states_by_group:dict
 
     @property
     def elementary_attributes(self) -> dict[str, set[str]]:
         return {
             "H": {
-                ColumnNames.H_TYPE,
-                ColumnNames.HEAD_AGE,
-                ColumnNames.HEAD_GENDER,
-                ColumnNames.ADULTS,
-                ColumnNames.MINORS,
-                ColumnNames.KIDS,
+                GlobleVariables.H_TYPE,
+                GlobleVariables.HEAD_AGE,
+                GlobleVariables.HEAD_GENDER,
+                GlobleVariables.ADULTS,
+                GlobleVariables.MINORS,
+                GlobleVariables.KIDS,
             },
             "P": {
-                ColumnNames.H_TYPE,
-                ColumnNames.HEAD_AGE,
-                ColumnNames.HEAD_GENDER,
-                ColumnNames.MEMBER_RANK,
-                ColumnNames.AGE_CATE,
+                GlobleVariables.H_TYPE,
+                GlobleVariables.HEAD_AGE,
+                GlobleVariables.HEAD_GENDER,
+                GlobleVariables.MEMBER_RANK,
+                GlobleVariables.AGE_CATE,
                 self.gender_col,
             },
         }
