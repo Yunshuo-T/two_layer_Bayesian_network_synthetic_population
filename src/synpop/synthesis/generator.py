@@ -1,5 +1,6 @@
 import logging
 import pandas as pd
+import numpy as np
 from typing import Any
 from collections import Counter
 from pgmpy.sampling import BayesianModelSampling
@@ -9,7 +10,7 @@ from synpop.threshold.threshold import make_probability_lookup
 from synpop.schema import ColumnNames, ModelSchema
 from synpop.synthesis.evidence import PersonSimulationKey
 from synpop.synthesis.candidate import CandidatePool
-from synpop.utils import encoding, seeding
+from synpop.utils import encoding,seeding
 from pathlib import Path
 logger = logging.getLogger(__name__)
 
@@ -200,21 +201,32 @@ class Generator:
         Returns:
             Candidate person records grouped by evidence key.
         """
-
+        seed_rng = np.random.default_rng(random_seed)
         candidate_pool = {}
         with ProcessPoolExecutor(max_workers=max_workers) as ex:
-            futures = [
-                ex.submit(
-                    _batch_sample_persons,
-                    key,
-                    count,
-                    pool_multiplier,
-                    self.p_model,
-                    self.config,
-                    seeding.random_seeds(random_seed),
+            futures = []
+            for key, count in demands.items():
+                task_seed = (
+                    None
+                    if random_seed is None
+                    else int(
+                        seed_rng.integers(
+                            0,
+                            np.iinfo(np.uint32).max,
+                        )
+                    )
                 )
-                for key, count in demands.items()
-            ]
+                futures.append(
+                    ex.submit(
+                        _batch_sample_persons,
+                        key,
+                        count,
+                        pool_multiplier,
+                        self.p_model,
+                        self.config,
+                        task_seed,
+                    )
+                )
             for future in as_completed(futures):
                 key, records = future.result()
                 candidate_pool[key] = records
