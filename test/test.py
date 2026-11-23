@@ -64,7 +64,13 @@ def schema():
         attr: {value: code for code, value in values.items()}
         for attr, values in code_to_attr.items()
     }
-    return ModelSchema(code_to_attr, attr_to_code, "gender", "household_id")
+    return ModelSchema(
+        code_to_attr,
+        attr_to_code,
+        "gender",
+        "household_id",
+        {"kid": [0], "minor": [1], "adult": list(range(2, 9))},
+    )
 
 
 def _independent_model(states):
@@ -185,13 +191,15 @@ class TestEncoding:
 
 class TestEvidenceAndCandidates:
     @pytest.mark.parametrize(
-        ("rank", "group", "age", "gender"),
-        [(0, "adult", 5, 1), (1, "adult", None, None),
-         (1, "minor", 1, None), (2, "kid", 0, None)],
+        ("rank", "group", "age_states", "gender"),
+        [(0, "adult", (5,), 1), (1, "adult", tuple(range(2, 9)), None),
+         (1, "minor", (1,), None), (2, "kid", (0,), None)],
     )
-    def test_evidence_constraints(self, rank, group, age, gender):
-        key = PersonSimulationKey.make_evidence_key(3, rank, 0, 0, group, {0: 5}, {0: 1})
-        assert key == PersonSimulationKey(3, rank, 0, 0, age, gender)
+    def test_evidence_constraints(self, schema, rank, group, age_states, gender):
+        key = PersonSimulationKey.make_evidence_key(
+            3, rank, 0, 0, group, {0: 5}, {0: 1}, schema.age_states_by_group
+        )
+        assert key == PersonSimulationKey(3, rank, 0, 0, age_states, gender)
         assert {key: 2}[key] == 2
 
     @pytest.mark.parametrize(
@@ -201,34 +209,60 @@ class TestEvidenceAndCandidates:
          ("minor", 1, 2, True), ("minor", 0, None, False),
          ("kid", 0, 1, True), ("kid", 1, None, False)],
     )
-    def test_candidate_age_constraints(self, group, age, previous_age, expected):
-        assert CandidatePool._matches(group, age, previous_age) is expected
+    def test_candidate_age_constraints(self, schema, group, age, previous_age, expected):
+        assert CandidatePool._matches(
+            group, age, previous_age, schema.age_states_by_group
+        ) is expected
 
     @pytest.mark.parametrize(
         ("group", "age", "previous_age", "expected"),
-        [("adult", 1, None, True), ("adult", 0, None, False),
-         ("minor", 0, 1, True), ("minor", 1, None, False),
-         ("minor", 0, -1, False), ("kid", 0, None, False)],
+        [("adult", 2, None, True), ("adult", 1, None, False),
+         ("minor", 1, 2, True), ("minor", 0, None, False),
+         ("minor", 1, 0, False), ("kid", 0, None, False)],
     )
     def test_candidate_age_constraints_without_kids(
-        self, group, age, previous_age, expected
+        self, schema, group, age, previous_age, expected
     ):
-        assert CandidatePool._matches(group, age, previous_age, False) is expected
+        assert CandidatePool._matches(
+            group, age, previous_age, schema.age_states_by_group, False
+        ) is expected
 
-    def test_candidates_are_taken_oldest_first_and_consumed(self):
+    def test_candidates_preserve_sampling_order_and_are_consumed(self, schema):
         pool = CandidatePool({"key": [{"age": 2}, {"age": 6}, {"age": 4}]}, "age")
-        assert pool.take_candidate("key", "adult", None) == {"age": 6}
-        assert pool.take_candidate("key", "adult", 3) == {"age": 2}
-        assert pool.take_candidate("key", "adult", 3) is None
-        assert pool.take_candidate("missing", "adult", None) is None
-        assert pool._age_distribution("key") == {4: 1}
+        arguments = {
+            "h_dict": {},
+            "threshold": 0,
+            "total_population": 10,
+            "evidence_key": "key",
+            "required_group": "adult",
+            "probabilities": {},
+            "attributes": [],
+            "age_states_by_group": schema.age_states_by_group,
+        }
+        assert pool.take_candidate(previous_age=None, **arguments) == {"age": 2}
+        assert pool.take_candidate(previous_age=5, **arguments) == {"age": 4}
+        assert pool.take_candidate(previous_age=3, **arguments) is None
+        arguments["evidence_key"] = "missing"
+        assert pool.take_candidate(previous_age=None, **arguments) is None
+        assert pool._age_distribution("key") == {6: 1}
 
-    def test_rollback_restores_candidate_and_removes_household_id(self):
+    def test_rollback_restores_candidate_and_removes_household_id(self, schema):
         pool = CandidatePool({"key": [{"age": 4}]}, "age")
-        candidate = pool.take_candidate("key", "adult", None)
+        arguments = {
+            "h_dict": {},
+            "threshold": 0,
+            "total_population": 10,
+            "evidence_key": "key",
+            "required_group": "adult",
+            "previous_age": None,
+            "probabilities": {},
+            "attributes": [],
+            "age_states_by_group": schema.age_states_by_group,
+        }
+        candidate = pool.take_candidate(**arguments)
         candidate["household_id"] = 10
         pool.roll_back([("key", candidate, "household_id")])
-        assert pool.take_candidate("key", "adult", None) == {"age": 4}
+        assert pool.take_candidate(**arguments) == {"age": 4}
 
 
 class TestGenerator:
@@ -242,9 +276,9 @@ class TestGenerator:
         demands, valid = generator.generate_evidence_batches(blueprint)
         assert_frame_equal(valid, blueprint)
         assert demands == {
-            PersonSimulationKey(0, 0, 0, 0, 5, 1): 2,
-            PersonSimulationKey(0, 1, 0, 0, 1, None): 2,
-            PersonSimulationKey(0, 2, 0, 0, 0, None): 2,
+            PersonSimulationKey(0, 0, 0, 0, (5,), 1): 2,
+            PersonSimulationKey(0, 1, 0, 0, (1,), None): 2,
+            PersonSimulationKey(0, 2, 0, 0, (0,), None): 2,
         }
 
     def test_oversized_households_are_filtered(self, generator, blueprint, caplog):
@@ -264,7 +298,7 @@ class TestGenerator:
         assert Generator._required_group(rank, adults=2, minors=1) == expected
 
     def test_person_sampling_applies_evidence_and_seed(self, generator):
-        key = PersonSimulationKey(0, 0, 0, 0, 5, 1)
+        key = PersonSimulationKey(0, 0, 0, 0, (5,), 1)
         args = (key, 2, 3, generator.p_model, generator.config, 42)
         returned_key, records = _batch_sample_persons(*args)
         assert returned_key == key
@@ -277,19 +311,24 @@ class TestGenerator:
 
     @pytest.mark.parametrize(
         ("include_kids", "expected_ages"),
-        [(True, [5, 1, 0]), (False, [5, 0])],
+        [(True, [5, 1, 0]), (False, [5, 1])],
     )
     def test_successful_allocation_assigns_members_to_households(
         self, generator, blueprint, include_kids, expected_ages
     ):
         generator.p_data_include_kid = include_kids
+        generator.probabilities = {}
+        generator.probability_attributes = []
         demands, _ = generator.generate_evidence_batches(blueprint)
         candidates = {
-            key: [{GlobleVariables.AGE_CATE: key.p_age} for _ in range(count)]
+            key: [{GlobleVariables.AGE_CATE: key.p_age_states[0]} for _ in range(count)]
             for key, count in demands.items()
         }
         people, failed = generator.allocate_households(
-            CandidatePool(candidates, GlobleVariables.AGE_CATE), blueprint
+            total_population=10,
+            threshold=0,
+            candidate_pool=CandidatePool(candidates, GlobleVariables.AGE_CATE),
+            h_blueprint=blueprint,
         )
         assert failed == set()
         assert len(people) == 2 * len(expected_ages)
@@ -298,12 +337,29 @@ class TestGenerator:
             assert [person[GlobleVariables.AGE_CATE] for person in members] == expected_ages
 
     def test_failed_allocation_rolls_back_partial_household(self, generator, blueprint):
-        key = PersonSimulationKey(0, 0, 0, 0, 5, 1)
+        generator.probabilities = {}
+        generator.probability_attributes = []
+        key = PersonSimulationKey(0, 0, 0, 0, (5,), 1)
         pool = CandidatePool({key: [{GlobleVariables.AGE_CATE: 5}]}, GlobleVariables.AGE_CATE)
-        people, failed = generator.allocate_households(pool, blueprint.iloc[:1])
+        people, failed = generator.allocate_households(
+            total_population=10,
+            threshold=0,
+            candidate_pool=pool,
+            h_blueprint=blueprint.iloc[:1],
+        )
         assert people == []
         assert failed == {10}
-        assert pool.take_candidate(key, "adult", None) == {GlobleVariables.AGE_CATE: 5}
+        assert pool.take_candidate(
+            h_dict={},
+            threshold=0,
+            total_population=10,
+            evidence_key=key,
+            required_group="adult",
+            previous_age=None,
+            probabilities={},
+            attributes=[],
+            age_states_by_group=generator.config.age_states_by_group,
+        ) == {GlobleVariables.AGE_CATE: 5}
 
 
 class TestCalibration:

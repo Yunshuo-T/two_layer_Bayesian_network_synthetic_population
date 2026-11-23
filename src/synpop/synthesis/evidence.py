@@ -8,7 +8,7 @@ class PersonSimulationKey(NamedTuple):
     rank: int
     head_age: Any
     head_gender: Any
-    p_age: int | None
+    p_age_states: tuple[int, ...]
     p_gender: Any
 
     @classmethod
@@ -21,27 +21,28 @@ class PersonSimulationKey(NamedTuple):
         required_group: str,
         head_age_to_person_age: dict,
         head_gender_to_person_gender: dict,
-        p_data_include_kid: bool = True,
-    ):
-        """Construct an EvidenceKey for simulating individuals"""
-        p_age = None
-        p_gender = None
-
+        age_states_by_group: dict[str, list[int] | tuple[int, ...]],
+    ) -> "PersonSimulationKey":
+        """Keep the head's exact age, or allow every state in a member group."""
         if rank == 0:
-            p_age = head_age_to_person_age[head_age]
+            p_age_states = (head_age_to_person_age[head_age],)
             p_gender = head_gender_to_person_gender[head_gender]
+        else:
+            p_age_states = tuple(
+                sorted(set(age_states_by_group[required_group]))
+            )
+            p_gender = None
 
-        elif required_group == "minor":
-            p_age = 1 if p_data_include_kid else 0
-
-        elif required_group == "kid":
-            p_age = 0
+        if not p_age_states:
+            raise ValueError(
+                f"No supported age states for group {required_group!r}."
+            )
 
         return cls(
             h_type,
             rank,
             head_age,
             head_gender,
-            p_age,
+            p_age_states,
             p_gender,
         )

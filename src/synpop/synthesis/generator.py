@@ -133,7 +133,8 @@ class Generator:
         return h_blueprint
 
     def generate_evidence_batches(
-        self, h_blueprint: pd.DataFrame
+        self,
+        h_blueprint: pd.DataFrame,
     ) -> tuple[Counter[PersonSimulationKey], pd.DataFrame]:
         """
         Aggregate person-sampling requirements from simulated household records.
@@ -151,7 +152,7 @@ class Generator:
         h_blueprint = self._check_blueprint(h_blueprint, max_rank)
         # count the unique combinations of household elementary attributes.
         unique_blueprints = (
-            h_blueprint[list(self.config.elementary_attributes["H"])]
+            h_blueprint[sorted(self.config.elementary_attributes["H"])]
             .value_counts()
             .reset_index(name="demand_count")
         )
@@ -174,7 +175,7 @@ class Generator:
                     self._required_group(rank, adults, minors),
                     self.head_age_to_person_age,
                     self.head_gender_to_person_gender,
-                    self.p_data_include_kid,
+                    self.config.age_states_by_group,
                 )
 
                 demands[key] += demand_count
@@ -194,7 +195,7 @@ class Generator:
         Args:
             p_model: Fitted person Bayesian network.
             demands: Required people per evidence combination.
-            pool_multiplier: Candidate draws per required person.
+            pool_multiplier: Proposal draws per required person, before age filtering.
             random_seed: Optional master seed.
             max_workers: Maximum process-worker count.
 
@@ -268,7 +269,7 @@ class Generator:
                     required_group=required_group,
                     head_age_to_person_age=self.head_age_to_person_age,
                     head_gender_to_person_gender=self.head_gender_to_person_gender,
-                    p_data_include_kid=self.p_data_include_kid,
+                    age_states_by_group=self.config.age_states_by_group,
                 )
 
                 candidate = candidate_pool.take_candidate(
@@ -351,8 +352,9 @@ class Generator:
         h_size = (
             h_blueprint[GlobleVariables.ADULTS]
             + h_blueprint[GlobleVariables.MINORS]
-            + h_blueprint[GlobleVariables.KIDS]
         )
+        if self.p_data_include_kid:
+            h_size = h_size + h_blueprint[GlobleVariables.KIDS]
 
         valid_mask = h_size <= max_size
         invalid_count = (~valid_mask).sum()
@@ -380,8 +382,17 @@ class Generator:
 def _batch_sample_persons(
     key, count, pool_multiplier, p_model, config, random_seed
 ) -> tuple[PersonSimulationKey, list[dict[str, Any]]]:
+    """Draw one proposal batch, retaining only the key's allowed age states."""
+    p_age_states = key.p_age_states
+    if not p_age_states:
+        raise ValueError("A person-sampling key must allow at least one age state.")
+
+    batch_size = count * pool_multiplier
+    if batch_size <= 0:
+        return key, []
+
     sampler = BayesianModelSampling(p_model)
-    h_type, rank, head_age, head_gender, p_age, p_gender = key
+    h_type, rank, head_age, head_gender, _, p_gender = key
     # Build evidence
     partial = {
         GlobleVariables.H_TYPE: h_type,
@@ -389,14 +400,11 @@ def _batch_sample_persons(
         GlobleVariables.HEAD_AGE: head_age,
         GlobleVariables.HEAD_GENDER: head_gender,
     }
-    batch_size = count * pool_multiplier
-
     if p_gender is not None:
         partial[config.gender_col] = p_gender
 
-    if p_age is not None:
-        partial[GlobleVariables.AGE_CATE] = p_age
-        # Create a batch
+    if len(p_age_states) == 1:
+        partial[GlobleVariables.AGE_CATE] = p_age_states[0]
 
     evidence_df = pd.DataFrame([partial] * batch_size)
     # Sample
@@ -406,5 +414,9 @@ def _batch_sample_persons(
         show_progress=False,
         seed=random_seed,
     )
+
+    batch_samples = batch_samples.loc[
+        batch_samples[GlobleVariables.AGE_CATE].isin(p_age_states)
+    ]
 
     return key, batch_samples.to_dict("records")  # type: ignore # Return (key, list_of_records)

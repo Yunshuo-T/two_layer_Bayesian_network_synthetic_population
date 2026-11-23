@@ -3,11 +3,11 @@ from typing import Any
 from synpop.threshold.threshold import lookup
 
 class CandidatePool:
-    """A dictionary of individuals synthesized by Person Bayesian model. {set(combination of household values): pd.Dataframe(Individuals)}"""
+    """Candidate records grouped by evidence, preserving their sampled order."""
 
     def __init__(self, candidate_pool, age_attr) -> None:
         self._age_attr = age_attr
-        self._pool = self._sort_age(candidate_pool)
+        self._pool = {key: list(records) for key, records in candidate_pool.items()}
 
     def take_candidate(
         self,
@@ -48,12 +48,6 @@ class CandidatePool:
         for key, candidate, h_id in used_candidates:
             candidate.pop(h_id, None)
             self._pool[key].append(candidate)
-
-    def _sort_age(self, candidate_pool) -> dict[Any, list[dict[str, Any]]]:
-        return {
-            k: sorted(v, key=lambda s: int(s[self._age_attr]), reverse=True)
-            for k, v in candidate_pool.items()
-        }
 
     @staticmethod
     def _matches(
