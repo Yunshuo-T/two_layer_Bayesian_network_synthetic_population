@@ -1,0 +1,82 @@
+train:
+  raw_h_df: "C:/Users/tang/database/SynPop/synthetic_populations/input/H_sample_5%.xlsx"
+  raw_p_df: "C:/Users/tang/database/SynPop/synthetic_populations/input/P_sample_5%.xlsx"
+  h_nodes: ["H_motor_v", "H_venr_bike"] # Excluding the count of members even though they might be in the household dataframe 
+  p_nodes: ["P_gender", "P_work", "P_education", "driver_license", "prepaid_tickets"] # Exclude the origin age column
+  age_col: "P_age"
+  age_bin: [-1, 5, 14, 17, 29, 39, 49, 59, 69, .inf]
+  kid_max_age: 5
+  gender_col: "P_gender"
+  h_id_col: "H_ID"
+  score: "aic-d"
+  composition_cols: {"adults":"H_persons_1899","minors":"H_persons_0617","kids":"H_persons_0005"} # User can provide the columns name of member count, if their dataset has the data. In the order of adults, minor and children, one or more cols can be supplied
+  # User can provide their own forbidden and required edges for household and person DAGs, in a format list[[(node,node)],[(node,node)]], such as  [("lung", "smoke")].
+  expert_knowledge: {"household":{"forbidden_edges":null,"required_edges":null},"person":{"forbidden_edges":null,"required_edges":[['age_cate','P_work'],['P_education','P_work'],['age_cate','P_education'],['age_cate','driver_license']]}}
+
+synthesis:
+  total_population: 21938
+  num_households: 9261
+  pool_multiplier: 100
+  max_retries: 5
+  random_seed: 4
+  max_workers: 4
+  threshold: 0.5
+  p_data_include_kid: false
+
+calibration:
+  max_iterations: 5000
+  tolerance: 1.0e-6
+  p_marginals: {
+    "P_age": {"6-14":2549,"15-17": 790, "18-29": 2736,"30-39":3270,"40-49":3702,"50-59":2813,"60-69":3139,"70+":2939}, 
+    "P_gender": {"male": 10553, "female": 11385}, 
+    "P_education": {
+      "higher vocational": 519, 
+      "primary school": 2290, 
+      "secondary education: high school diploma": 7071, 
+      "secondary education: vocational certificate": 6470, 
+      "Unfinished Elementary School": 2785,
+      "university":2803
+    }, 
+    "P_work": {
+    "employee, employer, self-employed or assisting": 10616,
+    "household member, preschool child, other dependents": 260,
+    "non-working pensioner": 5216,
+    "other unemployed": 358,
+    "person with own source of income, on parental leave": 226,
+    "primary school pupil": 2639,
+    "secondary school student": 859,
+    "unemployed seeking first job": 91,
+    "university student": 383,
+    "woman on maternity leave": 583,
+    "working pensioner": 493,
+    "working secondary school student or apprentice": 89,
+    "working university student": 125
+    },
+    "driver_license": {"1": 13303, "0": 8635},
+    "prepaid_tickets": {"0": 14752, "1": 7186}
+    }
+  h_marginals: {
+    "H_motor_v": {"0":2593,"1": 4505, "2": 1560, "3": 603}, 
+    "H_venr_bike": {"0": 4289, "1": 1576, "2": 1667, "3": 1729}
+    }
+  p_attributes: [
+      "P_gender",
+      "P_age",
+      "P_education",
+      "P_work",
+      "driver_license",
+      "prepaid_tickets",
+    ]
+  h_attributes: ["H_motor_v", "H_venr_bike"]
+  kwargs:
+    method: "logit" #'linear', 'raking', or 'logit'
+    bounds: [0.01, 100]  # Logit weight multiplier bounds
+    alpha: 0 # For CrossEntropy 
+paths:
+  output_dir: "output"
+  dags_dir: "${paths.output_dir}/dags"
+
+  person_dag: "${paths.dags_dir}/person"
+  household_dag: "${paths.dags_dir}/household"
+  
+  bundle_file: "${paths.output_dir}/bn_bundle.pkl"

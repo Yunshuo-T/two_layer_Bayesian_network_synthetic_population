@@ -1,0 +1,676 @@
+,P_gender,age_cate,P_education,P_work,driver_license,prepaid_tickets,H_motor_v,H_venr_bike,prob
+0,0,0,Unfinished Elementary School,primary school pupil,0,0,2,3,0.011214953271028037
+1,0,6,primary school,non-working pensioner,0,0,0,0,0.010280373831775701
+2,1,0,Unfinished Elementary School,primary school pupil,0,0,2,3,0.010280373831775701
+3,1,6,secondary education: vocational certificate,non-working pensioner,1,0,1,0,0.009345794392523364
+4,1,0,Unfinished Elementary School,primary school pupil,0,1,2,3,0.009345794392523364
+5,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,3,0.008411214953271028
+6,0,5,secondary education: vocational certificate,non-working pensioner,1,0,1,0,0.007476635514018692
+7,1,6,secondary education: vocational certificate,non-working pensioner,0,0,0,0,0.0065420560747663555
+8,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,3,0.005607476635514018
+9,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,3,0.005607476635514018
+10,0,6,secondary education: vocational certificate,non-working pensioner,0,1,0,0,0.005607476635514018
+11,0,0,Unfinished Elementary School,primary school pupil,0,0,1,3,0.005607476635514018
+12,1,0,Unfinished Elementary School,primary school pupil,0,1,1,3,0.005607476635514018
+13,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,3,0.005607476635514018
+14,1,5,secondary education: vocational certificate,non-working pensioner,1,0,1,0,0.005607476635514018
+15,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.005607476635514018
+16,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,3,0.004672897196261682
+17,0,5,primary school,non-working pensioner,0,0,0,0,0.004672897196261682
+18,1,6,secondary education: high school diploma,non-working pensioner,1,0,1,0,0.004672897196261682
+19,0,5,secondary education: high school diploma,non-working pensioner,0,0,1,0,0.004672897196261682
+20,0,6,secondary education: vocational certificate,non-working pensioner,1,0,1,0,0.004672897196261682
+21,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,3,0.004672897196261682
+22,0,6,secondary education: vocational certificate,non-working pensioner,0,0,0,0,0.004672897196261682
+23,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.004672897196261682
+24,0,0,Unfinished Elementary School,primary school pupil,0,0,1,0,0.004672897196261682
+25,0,0,Unfinished Elementary School,primary school pupil,0,0,0,0,0.004672897196261682
+26,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.004672897196261682
+27,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,3,0.003738317757009346
+28,1,5,secondary education: vocational certificate,non-working pensioner,1,0,1,2,0.003738317757009346
+29,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,2,0.003738317757009346
+30,1,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.003738317757009346
+31,0,0,Unfinished Elementary School,primary school pupil,0,0,1,2,0.003738317757009346
+32,0,0,Unfinished Elementary School,primary school pupil,0,1,2,3,0.003738317757009346
+33,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,3,0.003738317757009346
+34,1,0,Unfinished Elementary School,primary school pupil,0,0,1,3,0.003738317757009346
+35,1,5,secondary education: vocational certificate,non-working pensioner,0,0,0,0,0.003738317757009346
+36,1,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,0,0.003738317757009346
+37,1,5,secondary education: vocational certificate,non-working pensioner,1,0,0,0,0.003738317757009346
+38,1,5,secondary education: high school diploma,non-working pensioner,1,0,1,0,0.003738317757009346
+39,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,0,0.003738317757009346
+40,1,6,secondary education: vocational certificate,non-working pensioner,1,1,1,0,0.003738317757009346
+41,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,3,0.003738317757009346
+42,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,3,0.003738317757009346
+43,1,4,university,"employee, employer, self-employed or assisting",1,0,2,3,0.003738317757009346
+44,0,0,Unfinished Elementary School,primary school pupil,0,1,1,3,0.003738317757009346
+45,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.003738317757009346
+46,0,1,secondary education: high school diploma,university student,1,1,0,1,0.003738317757009346
+47,0,6,secondary education: high school diploma,non-working pensioner,0,1,0,0,0.002803738317757009
+48,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.002803738317757009
+49,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,2,0.002803738317757009
+50,0,6,primary school,non-working pensioner,0,0,1,2,0.002803738317757009
+51,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,2,0.002803738317757009
+52,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,3,0.002803738317757009
+53,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,3,0.002803738317757009
+54,0,1,secondary education: high school diploma,woman on maternity leave,1,0,1,0,0.002803738317757009
+55,0,6,secondary education: vocational certificate,non-working pensioner,0,1,0,1,0.002803738317757009
+56,1,3,university,"employee, employer, self-employed or assisting",1,0,2,3,0.002803738317757009
+57,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.002803738317757009
+58,1,5,secondary education: vocational certificate,non-working pensioner,1,0,1,1,0.002803738317757009
+59,0,6,secondary education: high school diploma,non-working pensioner,1,1,1,0,0.002803738317757009
+60,0,5,secondary education: vocational certificate,non-working pensioner,0,0,1,0,0.002803738317757009
+61,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,1,0.002803738317757009
+62,0,5,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.002803738317757009
+63,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,2,0.002803738317757009
+64,1,0,Unfinished Elementary School,primary school pupil,0,0,1,2,0.002803738317757009
+65,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,0,0.002803738317757009
+66,1,6,secondary education: vocational certificate,non-working pensioner,1,0,1,2,0.002803738317757009
+67,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,3,0.002803738317757009
+68,1,6,secondary education: vocational certificate,non-working pensioner,1,0,1,1,0.002803738317757009
+69,0,5,secondary education: high school diploma,non-working pensioner,0,0,0,0,0.002803738317757009
+70,0,4,university,"employee, employer, self-employed or assisting",1,1,1,3,0.002803738317757009
+71,1,6,secondary education: vocational certificate,non-working pensioner,1,0,0,1,0.002803738317757009
+72,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.002803738317757009
+73,1,0,Unfinished Elementary School,primary school pupil,0,0,2,0,0.002803738317757009
+74,0,6,primary school,non-working pensioner,0,0,0,1,0.002803738317757009
+75,0,6,primary school,non-working pensioner,0,0,1,1,0.002803738317757009
+76,0,0,Unfinished Elementary School,primary school pupil,0,0,2,2,0.002803738317757009
+77,0,3,university,"employee, employer, self-employed or assisting",1,0,2,3,0.002803738317757009
+78,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.002803738317757009
+79,0,4,university,"employee, employer, self-employed or assisting",1,0,2,3,0.002803738317757009
+80,1,2,university,"employee, employer, self-employed or assisting",1,0,2,0,0.002803738317757009
+81,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,3,0.002803738317757009
+82,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,3,0.002803738317757009
+83,1,0,Unfinished Elementary School,primary school pupil,0,1,0,0,0.002803738317757009
+84,1,4,university,"employee, employer, self-employed or assisting",1,0,3,2,0.001869158878504673
+85,0,5,secondary education: vocational certificate,non-working pensioner,0,0,0,1,0.001869158878504673
+86,0,5,secondary education: vocational certificate,non-working pensioner,0,0,0,0,0.001869158878504673
+87,1,4,university,"employee, employer, self-employed or assisting",1,1,1,3,0.001869158878504673
+88,1,4,university,"employee, employer, self-employed or assisting",1,0,1,3,0.001869158878504673
+89,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,2,0.001869158878504673
+90,1,2,higher vocational,"employee, employer, self-employed or assisting",1,0,1,3,0.001869158878504673
+91,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,1,0,0.001869158878504673
+92,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,3,0.001869158878504673
+93,0,5,secondary education: vocational certificate,non-working pensioner,0,1,0,1,0.001869158878504673
+94,0,5,secondary education: vocational certificate,non-working pensioner,1,0,1,2,0.001869158878504673
+95,0,5,secondary education: vocational certificate,non-working pensioner,1,0,1,1,0.001869158878504673
+96,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,3,0.001869158878504673
+97,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,0,0.001869158878504673
+98,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,3,0.001869158878504673
+99,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,1,0.001869158878504673
+100,1,3,university,"employee, employer, self-employed or assisting",1,0,1,0,0.001869158878504673
+101,0,5,secondary education: high school diploma,non-working pensioner,1,0,1,0,0.001869158878504673
+102,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,1,0.001869158878504673
+103,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.001869158878504673
+104,0,5,secondary education: high school diploma,non-working pensioner,0,0,0,1,0.001869158878504673
+105,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,1,0.001869158878504673
+106,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,0,0,0.001869158878504673
+107,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,3,0.001869158878504673
+108,0,3,university,"employee, employer, self-employed or assisting",1,1,2,3,0.001869158878504673
+109,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,0,0,0.001869158878504673
+110,0,5,primary school,non-working pensioner,0,0,1,0,0.001869158878504673
+111,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,1,0.001869158878504673
+112,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,2,0.001869158878504673
+113,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,2,0.001869158878504673
+114,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.001869158878504673
+115,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,2,0.001869158878504673
+116,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,1,0.001869158878504673
+117,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,0,0,0.001869158878504673
+118,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,1,1,0.001869158878504673
+119,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,2,1,0.001869158878504673
+120,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,2,2,0.001869158878504673
+121,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,3,0.001869158878504673
+122,0,5,secondary education: high school diploma,non-working pensioner,1,1,2,2,0.001869158878504673
+123,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.001869158878504673
+124,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,2,0.001869158878504673
+125,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,1,0.001869158878504673
+126,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,2,0.001869158878504673
+127,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,2,0.001869158878504673
+128,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,2,0.001869158878504673
+129,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,0,0.001869158878504673
+130,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,1,0.001869158878504673
+131,0,5,secondary education: high school diploma,non-working pensioner,1,0,2,2,0.001869158878504673
+132,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,1,0.001869158878504673
+133,1,3,university,"employee, employer, self-employed or assisting",1,0,3,2,0.001869158878504673
+134,1,3,university,"employee, employer, self-employed or assisting",1,0,1,2,0.001869158878504673
+135,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,1,0.001869158878504673
+136,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,1,3,0.001869158878504673
+137,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,2,1,0.001869158878504673
+138,1,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,2,0.001869158878504673
+139,0,1,secondary education: high school diploma,university student,1,1,2,3,0.001869158878504673
+140,0,1,secondary education: high school diploma,university student,1,1,0,0,0.001869158878504673
+141,1,1,primary school,"employee, employer, self-employed or assisting",0,0,0,0,0.001869158878504673
+142,0,6,university,working pensioner,1,1,1,0,0.001869158878504673
+143,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,2,0.001869158878504673
+144,1,6,primary school,non-working pensioner,0,0,0,0,0.001869158878504673
+145,0,1,secondary education: high school diploma,university student,0,1,0,0,0.001869158878504673
+146,0,1,secondary education: high school diploma,university student,1,0,3,0,0.001869158878504673
+147,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.001869158878504673
+148,0,1,primary school,secondary school student,0,1,1,3,0.001869158878504673
+149,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,3,0.001869158878504673
+150,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,3,0.001869158878504673
+151,0,6,secondary education: vocational certificate,non-working pensioner,0,0,1,1,0.001869158878504673
+152,0,6,secondary education: vocational certificate,non-working pensioner,0,0,1,0,0.001869158878504673
+153,0,1,secondary education: vocational certificate,secondary school student,0,1,2,3,0.001869158878504673
+154,1,5,secondary education: vocational certificate,non-working pensioner,1,1,1,0,0.001869158878504673
+155,1,0,Unfinished Elementary School,primary school pupil,0,0,0,0,0.001869158878504673
+156,0,1,primary school,secondary school student,0,0,1,3,0.001869158878504673
+157,1,1,secondary education: high school diploma,university student,1,1,2,3,0.001869158878504673
+158,0,0,primary school,primary school pupil,0,0,1,3,0.001869158878504673
+159,1,0,Unfinished Elementary School,primary school pupil,0,1,3,3,0.001869158878504673
+160,0,0,Unfinished Elementary School,primary school pupil,0,0,1,1,0.001869158878504673
+161,0,0,Unfinished Elementary School,primary school pupil,0,0,3,2,0.001869158878504673
+162,0,0,Unfinished Elementary School,primary school pupil,0,0,3,3,0.001869158878504673
+163,0,0,Unfinished Elementary School,primary school pupil,0,1,0,0,0.001869158878504673
+164,0,0,Unfinished Elementary School,primary school pupil,0,1,2,1,0.001869158878504673
+165,1,0,Unfinished Elementary School,primary school pupil,0,1,1,0,0.001869158878504673
+166,0,1,primary school,"employee, employer, self-employed or assisting",0,0,0,0,0.001869158878504673
+167,1,0,primary school,secondary school student,0,1,2,3,0.001869158878504673
+168,0,0,primary school,secondary school student,0,0,2,3,0.001869158878504673
+169,0,0,primary school,secondary school student,0,1,0,1,0.001869158878504673
+170,0,0,primary school,secondary school student,0,1,2,3,0.001869158878504673
+171,1,0,Unfinished Elementary School,primary school pupil,0,0,2,2,0.001869158878504673
+172,1,6,secondary education: vocational certificate,non-working pensioner,0,1,0,0,0.001869158878504673
+173,0,6,secondary education: high school diploma,non-working pensioner,1,0,1,2,0.001869158878504673
+174,1,2,university,"employee, employer, self-employed or assisting",1,1,1,2,0.001869158878504673
+175,1,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,2,0.001869158878504673
+176,0,5,university,non-working pensioner,0,1,0,1,0.001869158878504673
+177,0,6,primary school,non-working pensioner,0,1,0,0,0.001869158878504673
+178,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.001869158878504673
+179,1,5,secondary education: high school diploma,working pensioner,1,0,1,0,0.001869158878504673
+180,0,6,secondary education: high school diploma,non-working pensioner,0,0,0,0,0.001869158878504673
+181,0,2,primary school,"employee, employer, self-employed or assisting",0,1,0,0,0.001869158878504673
+182,0,6,secondary education: high school diploma,non-working pensioner,0,0,1,1,0.001869158878504673
+183,0,6,secondary education: high school diploma,non-working pensioner,0,0,2,3,0.001869158878504673
+184,1,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,1,0.001869158878504673
+185,1,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,3,0.001869158878504673
+186,1,5,secondary education: vocational certificate,non-working pensioner,1,0,2,0,0.001869158878504673
+187,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,1,0.001869158878504673
+188,1,5,secondary education: vocational certificate,non-working pensioner,1,0,0,1,0.001869158878504673
+189,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,2,3,0.001869158878504673
+190,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,2,0.001869158878504673
+191,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,1,2,0.0009345794392523365
+192,1,0,primary school,working secondary school student or apprentice,0,1,2,3,0.0009345794392523365
+193,1,2,primary school,"employee, employer, self-employed or assisting",1,0,1,1,0.0009345794392523365
+194,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+195,1,2,secondary education: vocational certificate,"household member, preschool child, other dependents",0,1,0,2,0.0009345794392523365
+196,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,1,0,0.0009345794392523365
+197,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,0,1,0.0009345794392523365
+198,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,0,2,0.0009345794392523365
+199,1,1,secondary education: vocational certificate,secondary school student,0,1,1,3,0.0009345794392523365
+200,1,0,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,1,0,0.0009345794392523365
+201,1,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,3,0.0009345794392523365
+202,1,1,university,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+203,1,2,university,"employee, employer, self-employed or assisting",1,1,2,3,0.0009345794392523365
+204,1,1,university,university student,1,0,3,2,0.0009345794392523365
+205,1,2,university,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+206,1,0,primary school,secondary school student,0,1,1,0,0.0009345794392523365
+207,1,2,university,"employee, employer, self-employed or assisting",1,0,1,3,0.0009345794392523365
+208,1,2,university,"employee, employer, self-employed or assisting",1,0,1,2,0.0009345794392523365
+209,1,1,university,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+210,1,2,university,"employee, employer, self-employed or assisting",1,0,1,1,0.0009345794392523365
+211,1,1,university,"employee, employer, self-employed or assisting",1,0,1,1,0.0009345794392523365
+212,1,2,university,"employee, employer, self-employed or assisting",0,1,0,1,0.0009345794392523365
+213,1,2,university,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+214,1,2,higher vocational,"employee, employer, self-employed or assisting",1,0,1,2,0.0009345794392523365
+215,1,0,primary school,secondary school student,0,1,1,2,0.0009345794392523365
+216,1,0,primary school,secondary school student,0,1,1,3,0.0009345794392523365
+217,1,1,secondary education: vocational certificate,secondary school student,1,0,1,0,0.0009345794392523365
+218,1,2,primary school,"employee, employer, self-employed or assisting",0,1,0,0,0.0009345794392523365
+219,1,1,higher vocational,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+220,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+221,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,2,0.0009345794392523365
+222,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,3,0.0009345794392523365
+223,1,1,university,other unemployed,1,0,0,3,0.0009345794392523365
+224,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+225,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,3,0.0009345794392523365
+226,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,0,2,0.0009345794392523365
+227,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,2,0.0009345794392523365
+228,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,1,0.0009345794392523365
+229,1,1,secondary education: high school diploma,"household member, preschool child, other dependents",0,1,1,1,0.0009345794392523365
+230,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,1,0.0009345794392523365
+231,1,1,secondary education: high school diploma,university student,0,1,1,0,0.0009345794392523365
+232,1,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,1,0.0009345794392523365
+233,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,0,0.0009345794392523365
+234,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,3,0.0009345794392523365
+235,1,1,secondary education: high school diploma,university student,1,1,1,0,0.0009345794392523365
+236,1,1,secondary education: high school diploma,university student,1,1,2,2,0.0009345794392523365
+237,1,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,0,0.0009345794392523365
+238,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,0,3,0.0009345794392523365
+239,1,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,3,0.0009345794392523365
+240,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,1,3,0.0009345794392523365
+241,1,1,secondary education: vocational certificate,other unemployed,0,1,0,0,0.0009345794392523365
+242,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,0,2,0.0009345794392523365
+243,1,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+244,1,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,1,0.0009345794392523365
+245,1,1,primary school,working secondary school student or apprentice,0,0,2,3,0.0009345794392523365
+246,1,1,secondary education: vocational certificate,secondary school student,0,1,0,0,0.0009345794392523365
+247,1,1,primary school,secondary school student,1,1,3,2,0.0009345794392523365
+248,1,1,primary school,secondary school student,1,1,1,3,0.0009345794392523365
+249,1,1,primary school,secondary school student,1,1,1,0,0.0009345794392523365
+250,1,1,primary school,secondary school student,0,0,1,2,0.0009345794392523365
+251,1,1,primary school,"employee, employer, self-employed or assisting",0,1,2,3,0.0009345794392523365
+252,1,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+253,1,1,higher vocational,"employee, employer, self-employed or assisting",1,0,3,3,0.0009345794392523365
+254,1,1,university,"employee, employer, self-employed or assisting",1,1,1,0,0.0009345794392523365
+255,0,0,Unfinished Elementary School,"household member, preschool child, other dependents",0,0,0,0,0.0009345794392523365
+256,1,2,university,"employee, employer, self-employed or assisting",1,1,3,1,0.0009345794392523365
+257,1,5,secondary education: vocational certificate,working pensioner,1,0,3,0,0.0009345794392523365
+258,1,5,secondary education: vocational certificate,non-working pensioner,1,1,1,1,0.0009345794392523365
+259,1,5,secondary education: vocational certificate,non-working pensioner,1,1,1,2,0.0009345794392523365
+260,1,5,secondary education: vocational certificate,non-working pensioner,1,1,2,3,0.0009345794392523365
+261,1,5,secondary education: vocational certificate,working pensioner,0,0,0,0,0.0009345794392523365
+262,1,5,secondary education: vocational certificate,working pensioner,1,0,1,0,0.0009345794392523365
+263,1,5,secondary education: vocational certificate,working pensioner,1,0,2,2,0.0009345794392523365
+264,1,5,secondary education: vocational certificate,working pensioner,1,1,2,2,0.0009345794392523365
+265,1,3,Unfinished Elementary School,"employee, employer, self-employed or assisting",1,0,2,3,0.0009345794392523365
+266,1,5,university,"employee, employer, self-employed or assisting",1,0,1,2,0.0009345794392523365
+267,1,5,university,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+268,1,5,university,"employee, employer, self-employed or assisting",1,1,1,1,0.0009345794392523365
+269,1,5,university,"employee, employer, self-employed or assisting",1,1,2,0,0.0009345794392523365
+270,1,5,university,"employee, employer, self-employed or assisting",1,1,2,2,0.0009345794392523365
+271,1,5,university,non-working pensioner,1,0,1,0,0.0009345794392523365
+272,1,5,secondary education: vocational certificate,non-working pensioner,1,0,2,3,0.0009345794392523365
+273,1,5,secondary education: vocational certificate,non-working pensioner,1,0,2,2,0.0009345794392523365
+274,1,5,secondary education: vocational certificate,non-working pensioner,1,0,2,1,0.0009345794392523365
+275,1,5,secondary education: vocational certificate,non-working pensioner,0,1,0,3,0.0009345794392523365
+276,1,5,secondary education: vocational certificate,non-working pensioner,0,1,0,0,0.0009345794392523365
+277,1,5,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,1,1,0.0009345794392523365
+278,1,5,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,3,0.0009345794392523365
+279,1,5,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,1,0.0009345794392523365
+280,1,5,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+281,1,5,secondary education: high school diploma,working pensioner,1,0,3,3,0.0009345794392523365
+282,1,5,secondary education: high school diploma,non-working pensioner,1,1,1,2,0.0009345794392523365
+283,1,5,secondary education: high school diploma,non-working pensioner,1,1,0,0,0.0009345794392523365
+284,1,5,secondary education: high school diploma,non-working pensioner,1,0,1,2,0.0009345794392523365
+285,1,5,secondary education: high school diploma,non-working pensioner,1,0,1,1,0.0009345794392523365
+286,1,5,secondary education: high school diploma,non-working pensioner,0,0,1,0,0.0009345794392523365
+287,1,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+288,1,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+289,1,5,university,non-working pensioner,1,0,2,0,0.0009345794392523365
+290,1,5,university,non-working pensioner,1,0,2,2,0.0009345794392523365
+291,1,5,university,non-working pensioner,1,1,0,0,0.0009345794392523365
+292,1,6,secondary education: high school diploma,working pensioner,1,0,0,0,0.0009345794392523365
+293,1,6,university,non-working pensioner,1,1,1,1,0.0009345794392523365
+294,1,6,university,non-working pensioner,1,0,1,0,0.0009345794392523365
+295,1,6,university,non-working pensioner,0,0,3,2,0.0009345794392523365
+296,1,6,secondary education: vocational certificate,non-working pensioner,1,1,2,3,0.0009345794392523365
+297,1,6,secondary education: vocational certificate,non-working pensioner,1,1,1,1,0.0009345794392523365
+298,1,6,secondary education: vocational certificate,non-working pensioner,1,1,0,2,0.0009345794392523365
+299,1,6,secondary education: vocational certificate,non-working pensioner,1,1,0,1,0.0009345794392523365
+300,1,6,secondary education: vocational certificate,non-working pensioner,1,0,2,0,0.0009345794392523365
+301,1,6,secondary education: vocational certificate,non-working pensioner,1,0,1,3,0.0009345794392523365
+302,1,6,secondary education: vocational certificate,non-working pensioner,0,1,1,1,0.0009345794392523365
+303,1,6,secondary education: vocational certificate,non-working pensioner,0,1,1,0,0.0009345794392523365
+304,1,6,secondary education: vocational certificate,non-working pensioner,0,1,0,1,0.0009345794392523365
+305,1,6,secondary education: high school diploma,working pensioner,1,1,1,0,0.0009345794392523365
+306,1,6,secondary education: high school diploma,working pensioner,1,1,0,0,0.0009345794392523365
+307,1,6,secondary education: high school diploma,non-working pensioner,1,1,1,1,0.0009345794392523365
+308,1,5,university,non-working pensioner,1,1,1,0,0.0009345794392523365
+309,1,6,secondary education: high school diploma,non-working pensioner,1,1,1,0,0.0009345794392523365
+310,1,6,secondary education: high school diploma,non-working pensioner,1,1,0,0,0.0009345794392523365
+311,1,6,secondary education: high school diploma,non-working pensioner,1,0,3,1,0.0009345794392523365
+312,1,6,secondary education: high school diploma,non-working pensioner,1,0,2,3,0.0009345794392523365
+313,1,6,secondary education: high school diploma,non-working pensioner,1,0,2,0,0.0009345794392523365
+314,1,6,secondary education: high school diploma,non-working pensioner,1,0,1,1,0.0009345794392523365
+315,1,6,secondary education: high school diploma,non-working pensioner,1,0,0,1,0.0009345794392523365
+316,1,6,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+317,1,6,primary school,non-working pensioner,1,1,1,1,0.0009345794392523365
+318,1,6,primary school,non-working pensioner,1,0,1,1,0.0009345794392523365
+319,1,6,primary school,non-working pensioner,0,0,2,3,0.0009345794392523365
+320,1,6,higher vocational,non-working pensioner,1,0,1,1,0.0009345794392523365
+321,1,5,university,working pensioner,1,1,2,2,0.0009345794392523365
+322,1,5,university,working pensioner,1,0,1,3,0.0009345794392523365
+323,1,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,3,0.0009345794392523365
+324,1,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+325,1,5,primary school,working pensioner,0,0,0,0,0.0009345794392523365
+326,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,3,0.0009345794392523365
+327,1,3,university,"employee, employer, self-employed or assisting",1,1,0,1,0.0009345794392523365
+328,1,3,university,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+329,1,0,primary school,secondary school student,0,0,1,0,0.0009345794392523365
+330,1,3,university,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+331,1,3,secondary education: vocational certificate,"person with own source of income, on parental leave",1,0,3,3,0.0009345794392523365
+332,1,3,secondary education: vocational certificate,other unemployed,1,0,1,0,0.0009345794392523365
+333,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+334,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,3,0.0009345794392523365
+335,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+336,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,2,0.0009345794392523365
+337,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,1,0.0009345794392523365
+338,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,0,1,0.0009345794392523365
+339,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,3,0.0009345794392523365
+340,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,1,0.0009345794392523365
+341,1,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+342,1,4,primary school,"employee, employer, self-employed or assisting",0,1,1,2,0.0009345794392523365
+343,1,3,secondary education: high school diploma,unemployed seeking first job,1,0,1,2,0.0009345794392523365
+344,1,3,secondary education: high school diploma,"person with own source of income, on parental leave",1,0,1,3,0.0009345794392523365
+345,1,3,secondary education: high school diploma,"household member, preschool child, other dependents",1,0,1,1,0.0009345794392523365
+346,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,2,3,0.0009345794392523365
+347,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,2,0,0.0009345794392523365
+348,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,1,0.0009345794392523365
+349,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,0,3,0.0009345794392523365
+350,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,0,1,0.0009345794392523365
+351,1,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,0,1,0.0009345794392523365
+352,1,3,primary school,other unemployed,0,0,0,0,0.0009345794392523365
+353,1,3,primary school,non-working pensioner,0,0,2,2,0.0009345794392523365
+354,1,3,primary school,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+355,1,3,primary school,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+356,1,3,higher vocational,"employee, employer, self-employed or assisting",1,0,1,2,0.0009345794392523365
+357,1,3,university,"employee, employer, self-employed or assisting",1,1,0,3,0.0009345794392523365
+358,1,4,primary school,"employee, employer, self-employed or assisting",1,0,1,1,0.0009345794392523365
+359,1,5,primary school,non-working pensioner,1,0,0,1,0.0009345794392523365
+360,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,0,2,0.0009345794392523365
+361,1,5,primary school,non-working pensioner,1,0,0,0,0.0009345794392523365
+362,1,5,primary school,non-working pensioner,0,1,0,0,0.0009345794392523365
+363,1,5,primary school,non-working pensioner,0,0,1,1,0.0009345794392523365
+364,1,5,primary school,"employee, employer, self-employed or assisting",0,0,3,3,0.0009345794392523365
+365,1,5,higher vocational,"employee, employer, self-employed or assisting",1,0,2,3,0.0009345794392523365
+366,1,5,Unfinished Elementary School,"household member, preschool child, other dependents",0,0,3,0,0.0009345794392523365
+367,1,4,university,"employee, employer, self-employed or assisting",1,1,0,2,0.0009345794392523365
+368,1,4,university,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+369,1,4,university,"employee, employer, self-employed or assisting",1,0,1,2,0.0009345794392523365
+370,1,4,secondary education: vocational certificate,working pensioner,1,1,1,3,0.0009345794392523365
+371,1,4,secondary education: vocational certificate,other unemployed,1,0,0,1,0.0009345794392523365
+372,1,4,secondary education: vocational certificate,non-working pensioner,0,0,1,3,0.0009345794392523365
+373,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,2,0,0.0009345794392523365
+374,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,1,0,0.0009345794392523365
+375,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,3,0.0009345794392523365
+376,1,4,primary school,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+377,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,1,0.0009345794392523365
+378,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+379,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,0,0,0.0009345794392523365
+380,1,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,1,0.0009345794392523365
+381,1,4,secondary education: high school diploma,non-working pensioner,1,1,1,0,0.0009345794392523365
+382,1,4,secondary education: high school diploma,non-working pensioner,0,1,1,0,0.0009345794392523365
+383,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,2,3,0.0009345794392523365
+384,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+385,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,2,0.0009345794392523365
+386,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,3,0.0009345794392523365
+387,1,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+388,1,4,primary school,unemployed seeking first job,1,0,1,0,0.0009345794392523365
+389,1,4,primary school,other unemployed,1,0,1,0,0.0009345794392523365
+390,1,4,primary school,"employee, employer, self-employed or assisting",1,0,2,3,0.0009345794392523365
+391,1,0,primary school,secondary school student,0,1,0,2,0.0009345794392523365
+392,0,6,secondary education: high school diploma,non-working pensioner,0,0,3,2,0.0009345794392523365
+393,1,0,primary school,primary school pupil,0,1,3,3,0.0009345794392523365
+394,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,2,0.0009345794392523365
+395,0,2,secondary education: high school diploma,woman on maternity leave,1,0,1,3,0.0009345794392523365
+396,0,2,secondary education: high school diploma,woman on maternity leave,1,1,3,1,0.0009345794392523365
+397,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+398,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,3,0.0009345794392523365
+399,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,1,2,0.0009345794392523365
+400,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+401,0,2,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,2,0.0009345794392523365
+402,0,2,secondary education: high school diploma,woman on maternity leave,1,0,0,0,0.0009345794392523365
+403,0,2,secondary education: vocational certificate,"household member, preschool child, other dependents",1,0,1,0,0.0009345794392523365
+404,0,2,secondary education: vocational certificate,other unemployed,0,1,0,0,0.0009345794392523365
+405,0,2,secondary education: vocational certificate,other unemployed,0,1,1,0,0.0009345794392523365
+406,0,2,secondary education: vocational certificate,woman on maternity leave,0,1,1,0,0.0009345794392523365
+407,0,2,secondary education: vocational certificate,woman on maternity leave,1,0,2,2,0.0009345794392523365
+408,0,2,university,"employee, employer, self-employed or assisting",0,1,1,0,0.0009345794392523365
+409,0,2,secondary education: high school diploma,woman on maternity leave,1,0,1,1,0.0009345794392523365
+410,0,2,secondary education: high school diploma,unemployed seeking first job,1,0,2,2,0.0009345794392523365
+411,0,2,higher vocational,"employee, employer, self-employed or assisting",1,1,2,3,0.0009345794392523365
+412,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+413,0,2,higher vocational,woman on maternity leave,1,0,2,2,0.0009345794392523365
+414,0,2,higher vocational,woman on maternity leave,1,1,1,2,0.0009345794392523365
+415,0,2,primary school,other unemployed,0,0,0,0,0.0009345794392523365
+416,0,2,primary school,"person with own source of income, on parental leave",0,0,0,0,0.0009345794392523365
+417,0,2,primary school,woman on maternity leave,0,0,2,0,0.0009345794392523365
+418,0,2,primary school,woman on maternity leave,1,0,2,3,0.0009345794392523365
+419,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,2,3,0.0009345794392523365
+420,0,2,secondary education: high school diploma,"person with own source of income, on parental leave",1,0,3,3,0.0009345794392523365
+421,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,2,3,0.0009345794392523365
+422,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,3,2,0.0009345794392523365
+423,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,0,2,0.0009345794392523365
+424,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,1,0.0009345794392523365
+425,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,0,3,0.0009345794392523365
+426,0,2,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,3,3,0.0009345794392523365
+427,0,2,university,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+428,0,2,university,"employee, employer, self-employed or assisting",1,0,2,3,0.0009345794392523365
+429,0,2,university,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+430,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+431,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,0,0,0.0009345794392523365
+432,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,0,2,0.0009345794392523365
+433,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,1,0,0.0009345794392523365
+434,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,1,3,0.0009345794392523365
+435,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,0,3,0.0009345794392523365
+436,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,2,0.0009345794392523365
+437,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,1,0.0009345794392523365
+438,0,2,university,"employee, employer, self-employed or assisting",1,1,1,0,0.0009345794392523365
+439,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,2,0.0009345794392523365
+440,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+441,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+442,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,0,3,0.0009345794392523365
+443,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,0,0.0009345794392523365
+444,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,3,0.0009345794392523365
+445,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,1,2,0.0009345794392523365
+446,0,3,primary school,working pensioner,0,0,0,0,0.0009345794392523365
+447,0,3,primary school,non-working pensioner,1,1,2,3,0.0009345794392523365
+448,0,3,primary school,"household member, preschool child, other dependents",0,0,1,0,0.0009345794392523365
+449,0,3,primary school,"employee, employer, self-employed or assisting",1,0,2,1,0.0009345794392523365
+450,0,3,higher vocational,woman on maternity leave,1,0,3,3,0.0009345794392523365
+451,0,3,higher vocational,"employee, employer, self-employed or assisting",1,0,2,3,0.0009345794392523365
+452,0,3,higher vocational,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+453,0,2,university,woman on maternity leave,1,1,1,0,0.0009345794392523365
+454,0,2,university,woman on maternity leave,1,0,1,2,0.0009345794392523365
+455,0,2,university,woman on maternity leave,1,0,1,1,0.0009345794392523365
+456,0,2,university,woman on maternity leave,0,0,1,2,0.0009345794392523365
+457,0,2,university,"person with own source of income, on parental leave",1,0,3,2,0.0009345794392523365
+458,0,2,university,other unemployed,1,1,0,1,0.0009345794392523365
+459,0,2,university,"employee, employer, self-employed or assisting",1,1,1,3,0.0009345794392523365
+460,0,2,university,"employee, employer, self-employed or assisting",1,1,1,2,0.0009345794392523365
+461,0,2,university,"employee, employer, self-employed or assisting",1,1,1,1,0.0009345794392523365
+462,0,2,higher vocational,woman on maternity leave,1,0,2,0,0.0009345794392523365
+463,0,2,higher vocational,"employee, employer, self-employed or assisting",1,1,1,1,0.0009345794392523365
+464,1,0,primary school,primary school pupil,0,0,1,3,0.0009345794392523365
+465,0,1,primary school,working secondary school student or apprentice,0,1,2,3,0.0009345794392523365
+466,0,1,Unfinished Elementary School,primary school pupil,0,1,2,0,0.0009345794392523365
+467,0,1,higher vocational,"employee, employer, self-employed or assisting",1,1,3,3,0.0009345794392523365
+468,0,1,primary school,"employee, employer, self-employed or assisting",0,1,2,3,0.0009345794392523365
+469,0,1,primary school,"person with own source of income, on parental leave",1,0,0,0,0.0009345794392523365
+470,0,1,primary school,secondary school student,0,0,1,0,0.0009345794392523365
+471,0,1,primary school,university student,0,1,1,2,0.0009345794392523365
+472,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+473,0,0,primary school,secondary school student,1,1,1,2,0.0009345794392523365
+474,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,1,0,0.0009345794392523365
+475,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,0,0,0.0009345794392523365
+476,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,0,2,0.0009345794392523365
+477,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,1,3,0.0009345794392523365
+478,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+479,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+480,0,0,primary school,secondary school student,1,1,2,3,0.0009345794392523365
+481,0,0,primary school,secondary school student,0,1,3,3,0.0009345794392523365
+482,0,2,higher vocational,"employee, employer, self-employed or assisting",1,0,3,3,0.0009345794392523365
+483,0,0,Unfinished Elementary School,primary school pupil,0,1,1,2,0.0009345794392523365
+484,0,0,Unfinished Elementary School,"household member, preschool child, other dependents",0,0,2,3,0.0009345794392523365
+485,0,0,Unfinished Elementary School,primary school pupil,0,0,0,3,0.0009345794392523365
+486,0,0,Unfinished Elementary School,primary school pupil,0,0,2,0,0.0009345794392523365
+487,0,0,Unfinished Elementary School,primary school pupil,0,0,2,1,0.0009345794392523365
+488,0,0,Unfinished Elementary School,primary school pupil,0,1,1,0,0.0009345794392523365
+489,0,0,Unfinished Elementary School,primary school pupil,0,1,1,1,0.0009345794392523365
+490,0,0,primary school,primary school pupil,0,1,1,0,0.0009345794392523365
+491,0,0,primary school,secondary school student,0,1,1,3,0.0009345794392523365
+492,0,0,primary school,primary school pupil,0,1,1,3,0.0009345794392523365
+493,0,0,primary school,primary school pupil,0,1,2,3,0.0009345794392523365
+494,0,0,primary school,secondary school student,0,0,1,1,0.0009345794392523365
+495,0,0,primary school,secondary school student,0,1,0,3,0.0009345794392523365
+496,0,0,primary school,secondary school student,0,1,1,0,0.0009345794392523365
+497,0,0,primary school,secondary school student,0,1,1,2,0.0009345794392523365
+498,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+499,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,0,2,0.0009345794392523365
+500,0,1,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,2,1,0.0009345794392523365
+501,0,1,university,"employee, employer, self-employed or assisting",0,1,2,3,0.0009345794392523365
+502,0,1,secondary education: vocational certificate,"person with own source of income, on parental leave",0,0,0,1,0.0009345794392523365
+503,0,1,secondary education: vocational certificate,"person with own source of income, on parental leave",1,0,2,0,0.0009345794392523365
+504,0,1,secondary education: vocational certificate,secondary school student,1,0,3,3,0.0009345794392523365
+505,0,1,secondary education: vocational certificate,unemployed seeking first job,0,0,0,0,0.0009345794392523365
+506,0,1,secondary education: vocational certificate,woman on maternity leave,0,0,1,0,0.0009345794392523365
+507,0,1,secondary education: vocational certificate,woman on maternity leave,0,1,0,0,0.0009345794392523365
+508,0,1,university,"employee, employer, self-employed or assisting",1,0,0,3,0.0009345794392523365
+509,0,1,secondary education: high school diploma,other unemployed,0,1,0,0,0.0009345794392523365
+510,0,1,university,"employee, employer, self-employed or assisting",1,1,1,0,0.0009345794392523365
+511,0,1,university,"person with own source of income, on parental leave",1,1,1,0,0.0009345794392523365
+512,0,1,university,unemployed seeking first job,0,0,0,1,0.0009345794392523365
+513,0,1,university,university student,1,1,1,2,0.0009345794392523365
+514,0,1,university,woman on maternity leave,1,0,2,3,0.0009345794392523365
+515,0,2,higher vocational,"employee, employer, self-employed or assisting",0,0,1,3,0.0009345794392523365
+516,0,1,secondary education: vocational certificate,other unemployed,0,0,0,0,0.0009345794392523365
+517,0,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,3,0.0009345794392523365
+518,0,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,3,0.0009345794392523365
+519,0,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,0,3,0.0009345794392523365
+520,0,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,2,2,0.0009345794392523365
+521,0,1,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+522,0,1,secondary education: high school diploma,working university student,1,0,3,3,0.0009345794392523365
+523,0,1,secondary education: high school diploma,working university student,0,1,0,2,0.0009345794392523365
+524,0,1,secondary education: high school diploma,woman on maternity leave,1,0,3,3,0.0009345794392523365
+525,0,1,secondary education: high school diploma,woman on maternity leave,1,0,3,0,0.0009345794392523365
+526,0,1,secondary education: high school diploma,woman on maternity leave,0,0,1,2,0.0009345794392523365
+527,0,1,secondary education: high school diploma,university student,1,0,2,3,0.0009345794392523365
+528,0,1,secondary education: high school diploma,university student,1,0,1,3,0.0009345794392523365
+529,0,1,secondary education: high school diploma,university student,0,1,1,0,0.0009345794392523365
+530,0,1,secondary education: high school diploma,unemployed seeking first job,1,0,1,2,0.0009345794392523365
+531,0,1,secondary education: high school diploma,unemployed seeking first job,0,0,0,0,0.0009345794392523365
+532,0,1,secondary education: high school diploma,"person with own source of income, on parental leave",1,0,2,0,0.0009345794392523365
+533,0,3,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,3,3,0.0009345794392523365
+534,0,3,secondary education: high school diploma,"person with own source of income, on parental leave",1,0,1,3,0.0009345794392523365
+535,0,3,secondary education: high school diploma,"person with own source of income, on parental leave",1,0,3,3,0.0009345794392523365
+536,0,5,university,"employee, employer, self-employed or assisting",1,0,1,3,0.0009345794392523365
+537,0,5,secondary education: vocational certificate,non-working pensioner,1,0,0,0,0.0009345794392523365
+538,0,5,secondary education: vocational certificate,non-working pensioner,1,0,2,2,0.0009345794392523365
+539,0,5,secondary education: vocational certificate,non-working pensioner,1,0,2,3,0.0009345794392523365
+540,0,5,secondary education: vocational certificate,non-working pensioner,1,1,1,0,0.0009345794392523365
+541,0,5,secondary education: vocational certificate,working pensioner,0,0,0,0,0.0009345794392523365
+542,0,5,secondary education: vocational certificate,working pensioner,0,0,1,0,0.0009345794392523365
+543,0,5,university,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+544,0,5,secondary education: vocational certificate,non-working pensioner,0,1,1,2,0.0009345794392523365
+545,0,5,university,non-working pensioner,1,0,1,2,0.0009345794392523365
+546,0,5,university,non-working pensioner,1,1,0,1,0.0009345794392523365
+547,0,5,university,non-working pensioner,1,1,2,3,0.0009345794392523365
+548,0,6,primary school,non-working pensioner,0,0,1,0,0.0009345794392523365
+549,0,6,primary school,non-working pensioner,0,0,2,1,0.0009345794392523365
+550,0,6,primary school,non-working pensioner,0,1,1,1,0.0009345794392523365
+551,0,5,secondary education: vocational certificate,non-working pensioner,0,1,2,1,0.0009345794392523365
+552,0,5,secondary education: vocational certificate,non-working pensioner,0,1,1,0,0.0009345794392523365
+553,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,0,3,0.0009345794392523365
+554,0,5,secondary education: high school diploma,non-working pensioner,1,1,1,3,0.0009345794392523365
+555,0,5,secondary education: high school diploma,non-working pensioner,0,0,2,0,0.0009345794392523365
+556,0,5,secondary education: high school diploma,non-working pensioner,0,0,2,3,0.0009345794392523365
+557,0,5,secondary education: high school diploma,non-working pensioner,1,0,1,2,0.0009345794392523365
+558,0,5,secondary education: high school diploma,non-working pensioner,1,0,2,1,0.0009345794392523365
+559,0,5,secondary education: high school diploma,non-working pensioner,1,1,0,0,0.0009345794392523365
+560,0,5,secondary education: high school diploma,non-working pensioner,1,1,1,2,0.0009345794392523365
+561,0,5,secondary education: high school diploma,working pensioner,1,0,1,0,0.0009345794392523365
+562,0,5,secondary education: vocational certificate,non-working pensioner,0,1,0,3,0.0009345794392523365
+563,0,5,secondary education: high school diploma,working pensioner,1,1,1,0,0.0009345794392523365
+564,0,5,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,0,0.0009345794392523365
+565,0,5,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,2,3,0.0009345794392523365
+566,0,5,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,0,0,0.0009345794392523365
+567,0,5,secondary education: vocational certificate,non-working pensioner,0,0,1,2,0.0009345794392523365
+568,0,5,secondary education: vocational certificate,non-working pensioner,0,1,0,0,0.0009345794392523365
+569,0,6,primary school,non-working pensioner,1,0,1,1,0.0009345794392523365
+570,0,6,primary school,non-working pensioner,1,1,0,1,0.0009345794392523365
+571,0,6,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,0,0,0.0009345794392523365
+572,0,6,university,working pensioner,1,1,1,1,0.0009345794392523365
+573,0,6,secondary education: vocational certificate,non-working pensioner,1,1,1,0,0.0009345794392523365
+574,0,6,secondary education: vocational certificate,working pensioner,0,1,0,1,0.0009345794392523365
+575,0,6,secondary education: vocational certificate,working pensioner,1,1,1,1,0.0009345794392523365
+576,0,6,university,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+577,0,6,university,non-working pensioner,1,0,1,1,0.0009345794392523365
+578,0,6,university,non-working pensioner,1,1,2,3,0.0009345794392523365
+579,1,0,Unfinished Elementary School,"household member, preschool child, other dependents",0,0,3,3,0.0009345794392523365
+580,0,0,Unfinished Elementary School,"household member, preschool child, other dependents",0,0,1,0,0.0009345794392523365
+581,1,0,Unfinished Elementary School,primary school pupil,0,0,0,3,0.0009345794392523365
+582,1,0,Unfinished Elementary School,primary school pupil,0,0,1,0,0.0009345794392523365
+583,1,0,Unfinished Elementary School,primary school pupil,0,0,3,3,0.0009345794392523365
+584,1,0,Unfinished Elementary School,primary school pupil,0,1,0,3,0.0009345794392523365
+585,1,0,Unfinished Elementary School,primary school pupil,0,1,1,1,0.0009345794392523365
+586,1,0,Unfinished Elementary School,primary school pupil,0,1,1,2,0.0009345794392523365
+587,0,6,secondary education: vocational certificate,non-working pensioner,1,1,0,1,0.0009345794392523365
+588,0,6,secondary education: vocational certificate,non-working pensioner,1,0,0,1,0.0009345794392523365
+589,0,6,secondary education: vocational certificate,non-working pensioner,1,0,0,0,0.0009345794392523365
+590,0,6,secondary education: vocational certificate,non-working pensioner,0,1,2,3,0.0009345794392523365
+591,0,6,secondary education: vocational certificate,non-working pensioner,0,1,2,2,0.0009345794392523365
+592,0,6,secondary education: vocational certificate,non-working pensioner,0,1,1,1,0.0009345794392523365
+593,0,6,secondary education: vocational certificate,non-working pensioner,0,1,1,0,0.0009345794392523365
+594,0,6,secondary education: vocational certificate,non-working pensioner,0,0,2,3,0.0009345794392523365
+595,0,6,secondary education: vocational certificate,non-working pensioner,0,0,2,0,0.0009345794392523365
+596,0,6,secondary education: vocational certificate,non-working pensioner,0,0,0,1,0.0009345794392523365
+597,0,6,secondary education: high school diploma,working pensioner,1,0,2,0,0.0009345794392523365
+598,0,6,secondary education: high school diploma,non-working pensioner,1,1,1,1,0.0009345794392523365
+599,0,6,secondary education: high school diploma,non-working pensioner,1,1,0,0,0.0009345794392523365
+600,0,6,secondary education: high school diploma,non-working pensioner,1,0,3,1,0.0009345794392523365
+601,0,6,secondary education: high school diploma,non-working pensioner,0,1,1,2,0.0009345794392523365
+602,0,6,secondary education: high school diploma,non-working pensioner,0,1,1,0,0.0009345794392523365
+603,0,6,secondary education: high school diploma,non-working pensioner,0,1,0,2,0.0009345794392523365
+604,0,5,secondary education: high school diploma,non-working pensioner,0,0,1,1,0.0009345794392523365
+605,0,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+606,0,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+607,0,3,university,"employee, employer, self-employed or assisting",1,1,2,1,0.0009345794392523365
+608,0,3,university,"employee, employer, self-employed or assisting",0,0,1,2,0.0009345794392523365
+609,0,3,university,"employee, employer, self-employed or assisting",0,1,1,2,0.0009345794392523365
+610,0,3,university,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+611,0,3,university,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+612,0,3,university,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+613,0,3,university,"employee, employer, self-employed or assisting",1,1,1,0,0.0009345794392523365
+614,0,3,university,"employee, employer, self-employed or assisting",1,1,2,2,0.0009345794392523365
+615,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,2,0.0009345794392523365
+616,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,2,0,0.0009345794392523365
+617,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,1,0,2,0.0009345794392523365
+618,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,0,1,0.0009345794392523365
+619,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+620,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,1,0.0009345794392523365
+621,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,2,2,0.0009345794392523365
+622,0,3,secondary education: vocational certificate,woman on maternity leave,1,0,2,3,0.0009345794392523365
+623,0,3,secondary education: vocational certificate,other unemployed,1,1,0,0,0.0009345794392523365
+624,0,3,secondary education: vocational certificate,other unemployed,1,0,0,1,0.0009345794392523365
+625,0,3,secondary education: vocational certificate,non-working pensioner,1,0,1,0,0.0009345794392523365
+626,0,3,secondary education: vocational certificate,"household member, preschool child, other dependents",1,1,0,2,0.0009345794392523365
+627,0,3,secondary education: vocational certificate,"household member, preschool child, other dependents",1,0,1,0,0.0009345794392523365
+628,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,1,2,0.0009345794392523365
+629,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,0,1,0.0009345794392523365
+630,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,3,0,0.0009345794392523365
+631,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,3,0.0009345794392523365
+632,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+633,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,1,2,0.0009345794392523365
+634,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,1,0,0.0009345794392523365
+635,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,0,1,0.0009345794392523365
+636,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,0,0,0.0009345794392523365
+637,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,3,0.0009345794392523365
+638,0,3,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,2,0.0009345794392523365
+639,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,0,3,0,0.0009345794392523365
+640,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,0,1,0.0009345794392523365
+641,0,5,secondary education: high school diploma,"employee, employer, self-employed or assisting",0,0,1,1,0.0009345794392523365
+642,0,5,Unfinished Elementary School,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+643,0,4,secondary education: vocational certificate,"household member, preschool child, other dependents",0,0,0,1,0.0009345794392523365
+644,0,4,secondary education: vocational certificate,non-working pensioner,0,0,0,0,0.0009345794392523365
+645,0,4,secondary education: vocational certificate,non-working pensioner,0,0,2,0,0.0009345794392523365
+646,0,4,university,"employee, employer, self-employed or assisting",0,1,0,2,0.0009345794392523365
+647,0,4,university,"employee, employer, self-employed or assisting",1,0,2,0,0.0009345794392523365
+648,0,4,university,"employee, employer, self-employed or assisting",1,1,1,1,0.0009345794392523365
+649,0,5,higher vocational,working pensioner,1,1,0,0,0.0009345794392523365
+650,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,0,0.0009345794392523365
+651,0,5,primary school,"employee, employer, self-employed or assisting",1,0,1,2,0.0009345794392523365
+652,0,5,primary school,non-working pensioner,0,0,0,1,0.0009345794392523365
+653,0,5,primary school,non-working pensioner,0,0,1,2,0.0009345794392523365
+654,0,5,primary school,non-working pensioner,1,1,1,0,0.0009345794392523365
+655,0,5,primary school,non-working pensioner,1,1,1,2,0.0009345794392523365
+656,0,5,primary school,working pensioner,0,1,0,0,0.0009345794392523365
+657,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,2,2,0.0009345794392523365
+658,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,1,0,0,0.0009345794392523365
+659,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,3,0.0009345794392523365
+660,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,2,2,0.0009345794392523365
+661,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,3,0.0009345794392523365
+662,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",1,0,1,0,0.0009345794392523365
+663,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,3,0,0.0009345794392523365
+664,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,2,0,0.0009345794392523365
+665,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,1,1,2,0.0009345794392523365
+666,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,2,3,0.0009345794392523365
+667,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,2,0.0009345794392523365
+668,0,4,secondary education: vocational certificate,"employee, employer, self-employed or assisting",0,0,1,1,0.0009345794392523365
+669,0,4,secondary education: high school diploma,other unemployed,1,0,1,2,0.0009345794392523365
+670,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,3,3,0.0009345794392523365
+671,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,2,0,0.0009345794392523365
+672,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,3,0.0009345794392523365
+673,0,4,secondary education: high school diploma,"employee, employer, self-employed or assisting",1,1,1,2,0.0009345794392523365
+674,1,6,university,non-working pensioner,1,1,2,3,0.0009345794392523365

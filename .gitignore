@@ -1,7 +1,4 @@
 # Data and generated results
-input/
-output/
-config/
 
 # Python builds and caches
 __pycache__/
