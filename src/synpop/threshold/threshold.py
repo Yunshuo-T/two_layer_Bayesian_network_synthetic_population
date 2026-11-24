@@ -106,6 +106,24 @@ def export_dataframe_joint_distribution(
         .reset_index(name="probability")
     )
 
+def maximum_threshold(df:pd.DataFrame) -> float:
+    """
+    Calculate the maximum threshold for model pruning.
+
+    Args:
+        df (pd.DataFrame): The dataframe of population distribution derived from two-layer
+        Bayesian model.
+    """
+    minimum_prob = 1
+    columns = df.columns.to_list()
+    columns.remove('probability')
+    for col in columns:
+        max_prob_per_category = df.groupby([col])['probability'].max()
+        prob = max_prob_per_category.min()
+        if prob<minimum_prob:
+            minimum_prob = prob
+    return minimum_prob
+
 
 if __name__ == "__main__":
     bundle = io.load_bn_bundle(r"output\bn_bundle.pkl")
