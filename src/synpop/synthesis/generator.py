@@ -10,8 +10,9 @@ from synpop.threshold.threshold import make_probability_lookup
 from synpop.schema import GlobleVariables, ModelSchema
 from synpop.synthesis.evidence import PersonSimulationKey
 from synpop.synthesis.candidate import CandidatePool
-from synpop.utils import encoding,seeding
+from synpop.utils import encoding, seeding
 from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,7 +70,7 @@ class Generator:
         max_retries: int = 10,
         random_seed: int | None = None,
         max_workers: int | None = None,
-        threshold: float = 0.0
+        threshold: float = 0.0,
     ) -> tuple[pd.DataFrame, pd.DataFrame]:
         h_blueprint = self.simulate_household(num_households, random_seed=random_seed)
         demands, valid_blueprint = self.generate_evidence_batches(h_blueprint)
@@ -79,8 +80,8 @@ class Generator:
         realizations, failed_h_ids = self.allocate_households(
             total_population=total_population,
             threshold=threshold,
-            candidate_pool=CandidatePool(candidate_pool, GlobleVariables.AGE_CATE), 
-            h_blueprint=valid_blueprint
+            candidate_pool=CandidatePool(candidate_pool, GlobleVariables.AGE_CATE),
+            h_blueprint=valid_blueprint,
         )
         remaining = valid_blueprint[
             valid_blueprint[self.config.h_id_col].isin(failed_h_ids)
@@ -95,9 +96,9 @@ class Generator:
             )
             retry_realizations, failed_h_ids = self.allocate_households(
                 threshold=threshold,
-                candidate_pool=CandidatePool(retry_pool, GlobleVariables.AGE_CATE), 
+                candidate_pool=CandidatePool(retry_pool, GlobleVariables.AGE_CATE),
                 h_blueprint=remaining_bp,
-                total_population=total_population
+                total_population=total_population,
             )
             realizations.extend(retry_realizations)
             remaining = remaining_bp[
@@ -284,7 +285,7 @@ class Generator:
                     age_states_by_group=self.config.age_states_by_group,
                     p_data_include_kid=self.p_data_include_kid,
                 )
-                
+
                 if candidate is None:
                     invalid_h_ids.add(h_id)
                     valid_household = False
@@ -350,8 +351,7 @@ class Generator:
         max_size = max_rank + 1
 
         h_size = (
-            h_blueprint[GlobleVariables.ADULTS]
-            + h_blueprint[GlobleVariables.MINORS]
+            h_blueprint[GlobleVariables.ADULTS] + h_blueprint[GlobleVariables.MINORS]
         )
         if self.p_data_include_kid:
             h_size = h_size + h_blueprint[GlobleVariables.KIDS]

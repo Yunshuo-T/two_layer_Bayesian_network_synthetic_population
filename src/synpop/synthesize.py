@@ -10,6 +10,7 @@ from synpop.synthesis import generator
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
+
 def run_synthesize(
     calibration: Literal["ipu", "gr", "hipf", "cross_entropy", None],
     config_path: str = r"config\config.yaml",
@@ -38,11 +39,11 @@ def run_synthesize(
         random_seed=cfg.synthesis.random_seed,
         pool_multiplier=cfg.synthesis.pool_multiplier,
         max_retries=cfg.synthesis.max_retries,
-        threshold=cfg.synthesis.threshold
+        threshold=cfg.synthesis.threshold,
     )
 
-    io.save_csv(h_bn, cfg.paths.output_dir, "h_bn_t05")
-    io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_t05")
+    io.save_csv(h_bn, cfg.paths.output_dir, "h_bn_t0")
+    io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_t0")
 
     if calibration:
         calibration_input = CalibrationInput(
@@ -66,15 +67,19 @@ def run_synthesize(
             **cfg.calibration.kwargs,
         )
         h_id = cfg.train.h_id_col
-        h_bn["weight"] = (
-            calibration_result.weights
-        ) 
-        p_bn["weight"] = p_bn[h_id].map(h_bn.set_index(h_id)["weight"])
+        h_bn["weight"] = calibration_result.weights
+        h_bn["convergence"] = calibration_result.is_converged
+
+        p_bn[["weight", "convergence"]] = (
+            h_bn.set_index(h_id)[["weight", "convergence"]]
+            .reindex(p_bn[h_id])
+            .to_numpy()
+        )
+
         io.save_csv(h_bn, cfg.paths.output_dir, "h_calibrated")
         io.save_csv(p_bn, cfg.paths.output_dir, "p_bn_calibrated")
         return calibration_result
 
+
 if __name__ == "__main__":
-    run_synthesize(
-        calibration=None
-    )
+    run_synthesize(calibration=None)

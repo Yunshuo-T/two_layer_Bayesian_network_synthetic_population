@@ -1,6 +1,7 @@
 import pandas as pd
 from synpop.schema import GlobleVariables
 
+
 def cate_codes(df: pd.DataFrame, attributes: list, explicit_orders: dict = None):  # type: ignore
     df = df.copy()
     attr_to_code = {}
@@ -72,7 +73,7 @@ def build_age_group_by_bin(
     age_bin: list,
     code_to_attr: dict[str, dict[str, int]],
     kid_max_age: int = 5,
-    ) -> dict[str, list[int]]:
+) -> dict[str, list[int]]:
     """Classify each age interval as a kid, minor, or adult group.
 
     Age intervals are interpreted as ``(lower, upper]`` and are expected to
@@ -97,9 +98,7 @@ def build_age_group_by_bin(
 
     group_by_bin = {}
 
-    for bin_id, (lower, upper) in enumerate(
-        zip(age_bin, age_bin[1:])
-    ):
+    for bin_id, (lower, upper) in enumerate(zip(age_bin, age_bin[1:])):
         if upper <= kid_max_age:
             group = "kid"
 
@@ -111,8 +110,7 @@ def build_age_group_by_bin(
 
         else:
             raise ValueError(
-                f"Age interval ({lower}, {upper}] "
-                "crosses a group boundary."
+                f"Age interval ({lower}, {upper}] " "crosses a group boundary."
             )
         group_by_bin[bin_id] = group
     age_states_by_group = {
@@ -124,6 +122,5 @@ def build_age_group_by_bin(
     for state, bin_id in code_to_attr[GlobleVariables.AGE_CATE].items():
         group = group_by_bin[bin_id]
         age_states_by_group[group].append(state)
-
 
     return age_states_by_group

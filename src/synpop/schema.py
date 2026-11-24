@@ -33,7 +33,7 @@ class ModelSchema:
     attr_to_code: dict
     gender_col: str
     h_id_col: str
-    age_states_by_group:dict
+    age_states_by_group: dict
 
     @property
     def elementary_attributes(self) -> dict[str, set[str]]:

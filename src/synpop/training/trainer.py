@@ -191,28 +191,25 @@ class Trainer:
 def _construct_config(
     processed_h_df: pd.DataFrame,
     processed_p_df: pd.DataFrame,
-    gender_col:str,
-    h_id_col:str,
+    gender_col: str,
+    h_id_col: str,
     kid_max_age: int,
-    age_bin: list
-    
+    age_bin: list,
 ):
     cate_code_cols = [col for col in GlobleVariables.CATE_CODE_COLS] + [gender_col]
     code_to_attr, attr_to_code = encoding.cate_codes(processed_p_df, cate_code_cols)
     p_mapped = encoding.map_dataframe(attr_to_code, processed_p_df).astype("category")
     h_mapped = encoding.map_dataframe(attr_to_code, processed_h_df).astype("category")
     age_states_by_group = encoding.build_age_group_by_bin(
-        age_bin=age_bin,
-        kid_max_age=kid_max_age,
-        code_to_attr=code_to_attr
+        age_bin=age_bin, kid_max_age=kid_max_age, code_to_attr=code_to_attr
     )
 
     config = ModelSchema(
-        code_to_attr=code_to_attr, 
-        attr_to_code=attr_to_code, 
-        gender_col=gender_col, 
-        h_id_col=h_id_col, 
-        age_states_by_group=age_states_by_group
+        code_to_attr=code_to_attr,
+        attr_to_code=attr_to_code,
+        gender_col=gender_col,
+        h_id_col=h_id_col,
+        age_states_by_group=age_states_by_group,
     )
     return p_mapped, h_mapped, config
 
@@ -258,11 +255,17 @@ def _build_expert_knowledge(
     person_expert_knowledge = ExpertKnowledge(
         forbidden_edges=list(forbidden_edges)
         + _configured_edges(user_expert_knowledge, "person", "forbidden_edges"),
-        required_edges=_configured_edges(user_expert_knowledge, "person", "required_edges"),
+        required_edges=_configured_edges(
+            user_expert_knowledge, "person", "required_edges"
+        ),
     )
     household_expert_knowledge = ExpertKnowledge(
-        forbidden_edges=_configured_edges(user_expert_knowledge, "household", "forbidden_edges"),
-        required_edges=_configured_edges(user_expert_knowledge, "household", "required_edges"),
+        forbidden_edges=_configured_edges(
+            user_expert_knowledge, "household", "forbidden_edges"
+        ),
+        required_edges=_configured_edges(
+            user_expert_knowledge, "household", "required_edges"
+        ),
     )
 
     return household_expert_knowledge, person_expert_knowledge
@@ -308,7 +311,7 @@ class TrainingBundle:
             gender_col=gender_col,
             h_id_col=h_id_col,
             kid_max_age=kid_max_age,
-            age_bin = age_bin
+            age_bin=age_bin,
         )
         h_model_nodes = _resolve_model_nodes(h_nodes, config.elementary_attributes["H"])
         p_model_nodes = _resolve_model_nodes(p_nodes, config.elementary_attributes["P"])

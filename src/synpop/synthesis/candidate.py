@@ -2,6 +2,7 @@ from collections import Counter
 from typing import Any
 from synpop.threshold.threshold import lookup
 
+
 class CandidatePool:
     """Candidate records grouped by evidence, preserving their sampled order."""
 
@@ -12,15 +13,15 @@ class CandidatePool:
     def take_candidate(
         self,
         h_dict,
-        threshold:float,
+        threshold: float,
         total_population,
         evidence_key,
         required_group,
         previous_age,
         probabilities,
         attributes,
-        age_states_by_group,  
-        p_data_include_kid=True
+        age_states_by_group,
+        p_data_include_kid=True,
     ) -> dict[str, Any] | None:
         """
         Take one individual candidate from the pool, according to the evidence key requirement.
@@ -36,7 +37,7 @@ class CandidatePool:
                 p_data_include_kid=p_data_include_kid,
             ):
                 prob = lookup(probabilities, attributes, h_dict, candidate)
-                if prob < threshold * (1/total_population):
+                if prob < threshold * (1 / total_population):
                     continue
                 return candidates.pop(i)
         return None

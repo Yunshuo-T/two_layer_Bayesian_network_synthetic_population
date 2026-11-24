@@ -54,10 +54,10 @@ class CalibrationInput:
 class CalibrationMatrixBuilder:
     @classmethod
     def build(
-        cls, 
-        inputs: CalibrationInput, 
+        cls,
+        inputs: CalibrationInput,
         joint_attributes: list | None = None,
-        weight_col: str| None = None
+        weight_col: str | None = None,
     ) -> CalibrationMatrix:
         """Convert the sample data and marginal data into n-dimension array.
         Concatenate household and individual array to one single array.For two-layer
@@ -66,20 +66,22 @@ class CalibrationMatrixBuilder:
         h_marginal_attributes = inputs.h_marginals
         p_marginal_attributes = inputs.p_marginals
         total_households = cls._marginal_consistency(inputs.h_marginals, inputs.h_attrs)
-        total_individuals = cls._marginal_consistency(inputs.p_marginals, inputs.p_attrs)
-        
+        total_individuals = cls._marginal_consistency(
+            inputs.p_marginals, inputs.p_attrs
+        )
+
         h_df, h_cols = cls._sample_convert(
             inputs.h_df, h_marginal_attributes, inputs.h_id_col, joint_attributes
         )
         p_df, p_cols = cls._sample_convert(
             inputs.p_df, p_marginal_attributes, inputs.h_id_col, joint_attributes
         )
-        
+
         if not h_df.index.equals(p_df.index):
             raise ValueError(
                 "Household and individual datasets must have the same household IDs"
             )
-            
+
         h_m_ar = cls._marginal_to_array(inputs.h_marginals, h_cols)
         p_m_ar = cls._marginal_to_array(inputs.p_marginals, p_cols)
         x_h = h_df.to_numpy()
@@ -89,7 +91,7 @@ class CalibrationMatrixBuilder:
             w_initial = h_df[weight_col].to_numpy()
         else:
             w_initial = np.ones(len(h_df)) * (total_households / len(h_df))
-        
+
         return CalibrationMatrix(
             x_h,
             x_p,
@@ -147,13 +149,12 @@ class CalibrationMatrixBuilder:
 
     @staticmethod
     def _marginal_to_array(marginals: dict, columns: list) -> np.ndarray:
-        return np.array([
-            marginals[attribute][category]
-            for attribute, category in columns
-        ])
+        return np.array(
+            [marginals[attribute][category] for attribute, category in columns]
+        )
 
     @staticmethod
-    def _marginal_consistency(marginals:dict, attrs:list[str]):
+    def _marginal_consistency(marginals: dict, attrs: list[str]):
         reference = attrs[0]
         total = sum(marginals[reference].values())
 
@@ -165,10 +166,11 @@ class CalibrationMatrixBuilder:
                     f"but {reference!r} has totals {total}."
                 )
         return total
-    
+
     @staticmethod
     def _drop_empty_columns(
-        counts: pd.DataFrame, marginals: dict,
+        counts: pd.DataFrame,
+        marginals: dict,
     ) -> pd.DataFrame:
         empty_cols = counts.columns[counts.sum(axis=0).eq(0)].to_list()
         if not empty_cols:

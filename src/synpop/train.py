@@ -7,7 +7,7 @@ from synpop.training import trainer
 
 def run_training(config_path: str = r"config\config.yaml"):
     cfg = AppConfig.load(config_path)
-    if cfg.train.raw_h_df.endswith('.csv'):
+    if cfg.train.raw_h_df.endswith(".csv"):
         raw_h = pd.read_csv(cfg.train.raw_h_df, low_memory=False)
         raw_p = pd.read_csv(cfg.train.raw_p_df, low_memory=False)
     else:
@@ -24,7 +24,7 @@ def run_training(config_path: str = r"config\config.yaml"):
         expert_knowledge=cfg.train.expert_knowledge,
         age_bin=cfg.train.age_bin,
         composition_cols=cfg.train.composition_cols,
-        kid_max_age=cfg.train.kid_max_age
+        kid_max_age=cfg.train.kid_max_age,
     )
 
     model_train = trainer.Trainer(config=train_bundle.config)
@@ -49,6 +49,7 @@ def run_training(config_path: str = r"config\config.yaml"):
         config=train_bundle.config,
         path=cfg.paths.bundle_file,
     )
+
 
 if __name__ == "__main__":
     run_training()

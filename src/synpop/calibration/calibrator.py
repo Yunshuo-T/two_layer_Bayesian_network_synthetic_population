@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 from synpop.calibration.matrix import CalibrationMatrix, CalibrationResult
-from scipy.optimize import minimize,brentq
+from scipy.optimize import minimize, brentq
 from scipy.special import logsumexp, softmax
 from abc import ABC, abstractmethod
 import numpy as np
@@ -182,6 +182,7 @@ class HIPF(BaseCalibrator):
         """
         super().__init__(data)
         self.f = 1
+
     def _update_by_marginals(self):
         for i in range(len(self.data.h_m_ar)):
             current_marginal = np.dot(self.data.x_h[:, i], self.w)
@@ -236,8 +237,8 @@ class HIPF(BaseCalibrator):
 
         def g(t: float) -> float:
             """Adjusted mean household size minus target mean."""
-            z = log_w + sizes * t # z_h = ln w_h + p_h * t
-            probabilities = np.exp(z - logsumexp(z)) # type: ignore
+            z = log_w + sizes * t  # z_h = ln w_h + p_h * t
+            probabilities = np.exp(z - logsumexp(z))  # type: ignore
             return float(np.dot(sizes, probabilities) - target_mean)
 
         # Find an interval for Brent's method.
@@ -340,7 +341,9 @@ class CrossEntropy(BaseCalibrator):
 
         if not result.success:
             logger.warning(
-                "CE optimizer stopped after %d iterations: %s", result.nit, result.message
+                "CE optimizer stopped after %d iterations: %s",
+                result.nit,
+                result.message,
             )
 
         self.is_converged = self.check_convergence(tolerance)

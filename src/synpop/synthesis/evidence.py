@@ -28,15 +28,11 @@ class PersonSimulationKey(NamedTuple):
             p_age_states = (head_age_to_person_age[head_age],)
             p_gender = head_gender_to_person_gender[head_gender]
         else:
-            p_age_states = tuple(
-                sorted(set(age_states_by_group[required_group]))
-            )
+            p_age_states = tuple(sorted(set(age_states_by_group[required_group])))
             p_gender = None
 
         if not p_age_states:
-            raise ValueError(
-                f"No supported age states for group {required_group!r}."
-            )
+            raise ValueError(f"No supported age states for group {required_group!r}.")
 
         return cls(
             h_type,

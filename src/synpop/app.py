@@ -4,7 +4,6 @@ from omegaconf import OmegaConf
 from synpop.train import run_training
 from synpop.synthesize import run_synthesize
 
-
 CONFIG_PATH = "config/config.yaml"
 
 
@@ -97,7 +96,7 @@ if st.button("Generate population"):
         run_synthesize(
             calibration=(
                 None if calibration_method == "None" else calibration_method
-            ), # type: ignore
+            ),  # type: ignore
             config_path=CONFIG_PATH,
         )
     st.success("Population generation completed.")

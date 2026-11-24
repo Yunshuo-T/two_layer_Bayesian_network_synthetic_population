@@ -20,7 +20,7 @@ synthesis:
   max_retries: 5
   random_seed: 4
   max_workers: 4
-  threshold: 0.5
+  threshold: 0
   p_data_include_kid: false
 
 calibration:

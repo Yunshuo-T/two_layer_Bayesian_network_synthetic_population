@@ -28,71 +28,89 @@ def make_probability_lookup(
     )
     return probabilities, attributes
 
-def lookup(probabilities, attributes, h_dict: Mapping[str, Any], candidate: Mapping[str, Any]) -> float:
+
+def lookup(
+    probabilities, attributes, h_dict: Mapping[str, Any], candidate: Mapping[str, Any]
+) -> float:
     values = {**h_dict, **candidate}
     key = tuple(values[attr] for attr in attributes)
     return float(probabilities.get(key, 0.0))
 
 
-
-def _factor_to_dataframe(factor:DiscreteFactor, value_col:str ="probability") -> pd.DataFrame:
+def _factor_to_dataframe(
+    factor: DiscreteFactor, value_col: str = "probability"
+) -> pd.DataFrame:
     """Convert a pgmpy DiscreteFactor into a pandas DataFrame."""
     states = [factor.state_names[var] for var in factor.variables]
     df = pd.MultiIndex.from_product(states, names=factor.variables).to_frame(
         index=False
     )
-    df[value_col] = factor.values.ravel() # type: ignore
-    
+    df[value_col] = factor.values.ravel()  # type: ignore
+
     return df
 
 
-def export_model_joint_distribution(h_model:DiscreteBayesianNetwork,p_model:DiscreteBayesianNetwork) -> pd.DataFrame:
-    ele_attributes = (GlobleVariables.HEAD_AGE,GlobleVariables.HEAD_GENDER,GlobleVariables.H_TYPE,)
-    
-    h_exclude = (GlobleVariables.ADULTS,GlobleVariables.MINORS,GlobleVariables.KIDS,)
+def export_model_joint_distribution(
+    h_model: DiscreteBayesianNetwork, p_model: DiscreteBayesianNetwork
+) -> pd.DataFrame:
+    ele_attributes = (
+        GlobleVariables.HEAD_AGE,
+        GlobleVariables.HEAD_GENDER,
+        GlobleVariables.H_TYPE,
+    )
+
+    h_exclude = (
+        GlobleVariables.ADULTS,
+        GlobleVariables.MINORS,
+        GlobleVariables.KIDS,
+    )
     p_exclude = (GlobleVariables.MEMBER_RANK,)
-    
+
     h_keep = [node for node in h_model.nodes if node not in set(h_exclude)]
     p_keep = [node for node in p_model.nodes if node not in set(p_exclude)]
-    
-    h_factor = VariableElimination(h_model).query(variables=h_keep,joint=True)
-    p_factor = VariableElimination(p_model).query(variables=p_keep,joint=True)
-    
-    joint_factor = h_factor * p_factor # type: ignore
-    joint_factor.marginalize(variables=list(ele_attributes), inplace=True)# type: ignore
-    joint_factor.normalize(inplace=True)# type: ignore
 
-    return _factor_to_dataframe(joint_factor)# type: ignore
+    h_factor = VariableElimination(h_model).query(variables=h_keep, joint=True)
+    p_factor = VariableElimination(p_model).query(variables=p_keep, joint=True)
 
-def export_dataframe_joint_distribution(h_df:pd.DataFrame,p_df:pd.DataFrame,joint_attributes:list,age_col:str)-> pd.DataFrame:
+    joint_factor = h_factor * p_factor  # type: ignore
+    joint_factor.marginalize(variables=list(ele_attributes), inplace=True)  # type: ignore
+    joint_factor.normalize(inplace=True)  # type: ignore
+
+    return _factor_to_dataframe(joint_factor)  # type: ignore
+
+
+def export_dataframe_joint_distribution(
+    h_df: pd.DataFrame, p_df: pd.DataFrame, joint_attributes: list, age_col: str
+) -> pd.DataFrame:
     """
     A helper function to export joint distribution of household and individual dataset.
 
     Args:
         h_df (pd.DataFrame): Household dataframe
-        p_df (pd.DataFrame): Individual dataframe 
+        p_df (pd.DataFrame): Individual dataframe
         joint_attributes (list): The attributes that need to be joint from the two datasets
         age_col (str): the column name of the individual age.
 
     Returns:
         pd.DataFrame: A dataframe containing the joint distribution
     """
-    joined_df = pd.merge(
-        p_df,
-        h_df,
-        how='outer',
-        on='H_ID'
-    )
+    joined_df = pd.merge(p_df, h_df, how="outer", on="H_ID")
     if not (GlobleVariables.AGE_CATE in p_df.columns):
-        joined_df = _add_age_category(joined_df,age_col)
+        joined_df = _add_age_category(joined_df, age_col)
         joint_attributes.append(GlobleVariables.AGE_CATE)
         joint_attributes.remove(age_col)
     print(joint_attributes)
-    return joined_df[joint_attributes].value_counts(normalize=True).reset_index(name='probability')
-    
+    return (
+        joined_df[joint_attributes]
+        .value_counts(normalize=True)
+        .reset_index(name="probability")
+    )
+
 
 if __name__ == "__main__":
-    bundle = io.load_bn_bundle(r'output\bn_bundle.pkl')
-    df = export_model_joint_distribution(h_model=bundle['h_model'],p_model=bundle['p_model'])
-    df = df[df['probability']>0]
+    bundle = io.load_bn_bundle(r"output\bn_bundle.pkl")
+    df = export_model_joint_distribution(
+        h_model=bundle["h_model"], p_model=bundle["p_model"]
+    )
+    df = df[df["probability"] > 0]
     df.to_csv(r"src/synpop/threshold/individual_distribution/model_distribution.csv")
