@@ -24,7 +24,7 @@ from synpop.calibration.matrix import (
 )
 from synpop.config import AppConfig, CalibrationConfig, TrainConfig
 from synpop.io import load_bn_bundle, save_bn_bundle, save_csv
-from synpop.schema import GlobleVariables, ModelSchema
+from synpop.schema import SchemaConstants, ModelSchema
 from synpop.synthesis.candidate import CandidatePool
 from synpop.synthesis.evidence import PersonSimulationKey
 from synpop.synthesis.generator import Generator, _batch_sample_persons
@@ -55,9 +55,9 @@ def raw_data():
 def schema():
     """Head and person encodings intentionally differ to exercise crosswalks."""
     code_to_attr = {
-        GlobleVariables.HEAD_AGE: {0: 5},
-        GlobleVariables.AGE_CATE: dict(enumerate(range(9))),
-        GlobleVariables.HEAD_GENDER: {0: "F"},
+        SchemaConstants.HEAD_AGE: {0: 5},
+        SchemaConstants.AGE_CATE: dict(enumerate(range(9))),
+        SchemaConstants.HEAD_GENDER: {0: "F"},
         "gender": {0: "M", 1: "F"},
     }
     attr_to_code = {
@@ -95,19 +95,19 @@ def _independent_model(states):
 @pytest.fixture
 def generator(schema):
     household_states = {
-        GlobleVariables.H_TYPE: [0],
-        GlobleVariables.HEAD_AGE: [0],
-        GlobleVariables.HEAD_GENDER: [0],
-        GlobleVariables.ADULTS: [1],
-        GlobleVariables.MINORS: [1],
-        GlobleVariables.KIDS: [1],
+        SchemaConstants.H_TYPE: [0],
+        SchemaConstants.HEAD_AGE: [0],
+        SchemaConstants.HEAD_GENDER: [0],
+        SchemaConstants.ADULTS: [1],
+        SchemaConstants.MINORS: [1],
+        SchemaConstants.KIDS: [1],
     }
     person_states = {
-        GlobleVariables.H_TYPE: [0],
-        GlobleVariables.HEAD_AGE: [0],
-        GlobleVariables.HEAD_GENDER: [0],
-        GlobleVariables.MEMBER_RANK: [0, 1, 2],
-        GlobleVariables.AGE_CATE: [0, 1, 5],
+        SchemaConstants.H_TYPE: [0],
+        SchemaConstants.HEAD_AGE: [0],
+        SchemaConstants.HEAD_GENDER: [0],
+        SchemaConstants.MEMBER_RANK: [0, 1, 2],
+        SchemaConstants.AGE_CATE: [0, 1, 5],
         "gender": [0, 1],
     }
     return Generator(
@@ -120,12 +120,12 @@ def blueprint():
     return pd.DataFrame(
         {
             "household_id": [10, 20],
-            GlobleVariables.H_TYPE: [0, 0],
-            GlobleVariables.HEAD_AGE: [0, 0],
-            GlobleVariables.HEAD_GENDER: [0, 0],
-            GlobleVariables.ADULTS: [1, 1],
-            GlobleVariables.MINORS: [1, 1],
-            GlobleVariables.KIDS: [1, 1],
+            SchemaConstants.H_TYPE: [0, 0],
+            SchemaConstants.HEAD_AGE: [0, 0],
+            SchemaConstants.HEAD_GENDER: [0, 0],
+            SchemaConstants.ADULTS: [1, 1],
+            SchemaConstants.MINORS: [1, 1],
+            SchemaConstants.KIDS: [1, 1],
         }
     )
 
@@ -177,7 +177,7 @@ class TestEncoding:
 
     def test_crosswalk_uses_semantic_values(self, schema):
         assert make_code_crosswalk(
-            GlobleVariables.HEAD_GENDER, "gender", schema.code_to_attr, schema.attr_to_code
+            SchemaConstants.HEAD_GENDER, "gender", schema.code_to_attr, schema.attr_to_code
         ) == {0: 1}
 
     def test_crosswalk_rejects_missing_target_category(self):
@@ -282,7 +282,7 @@ class TestGenerator:
         }
 
     def test_oversized_households_are_filtered(self, generator, blueprint, caplog):
-        blueprint.loc[1, GlobleVariables.ADULTS] = 2
+        blueprint.loc[1, SchemaConstants.ADULTS] = 2
         valid = generator._check_blueprint(blueprint, max_rank=2)
         assert valid["household_id"].tolist() == [10]
         assert "exceed maximum supported size" in caplog.text
@@ -290,7 +290,7 @@ class TestGenerator:
     @pytest.mark.parametrize(("include_kids", "expected_size"), [(True, 4), (False, 3)])
     def test_member_count_can_exclude_kids(self, generator, include_kids, expected_size):
         generator.p_data_include_kid = include_kids
-        counts = {GlobleVariables.ADULTS: 2, GlobleVariables.MINORS: 1, GlobleVariables.KIDS: 1}
+        counts = {SchemaConstants.ADULTS: 2, SchemaConstants.MINORS: 1, SchemaConstants.KIDS: 1}
         assert generator._count_member(counts) == (2, 1, 1, expected_size)
 
     @pytest.mark.parametrize(("rank", "expected"), [(0, "adult"), (1, "adult"), (2, "minor"), (3, "kid")])
@@ -305,9 +305,9 @@ class TestGenerator:
         assert len(records) == 6
         assert _batch_sample_persons(*args)[1] == records
         for person in records:
-            assert person[GlobleVariables.AGE_CATE] == 5
+            assert person[SchemaConstants.AGE_CATE] == 5
             assert person["gender"] == 1
-            assert person[GlobleVariables.MEMBER_RANK] == 0
+            assert person[SchemaConstants.MEMBER_RANK] == 0
 
     @pytest.mark.parametrize(
         ("include_kids", "expected_ages"),
@@ -321,26 +321,26 @@ class TestGenerator:
         generator.probability_attributes = []
         demands, _ = generator.generate_evidence_batches(blueprint)
         candidates = {
-            key: [{GlobleVariables.AGE_CATE: key.p_age_states[0]} for _ in range(count)]
+            key: [{SchemaConstants.AGE_CATE: key.p_age_states[0]} for _ in range(count)]
             for key, count in demands.items()
         }
         people, failed = generator.allocate_households(
             total_population=10,
             threshold=0,
-            candidate_pool=CandidatePool(candidates, GlobleVariables.AGE_CATE),
+            candidate_pool=CandidatePool(candidates, SchemaConstants.AGE_CATE),
             h_blueprint=blueprint,
         )
         assert failed == set()
         assert len(people) == 2 * len(expected_ages)
         for household_id in [10, 20]:
             members = [person for person in people if person["household_id"] == household_id]
-            assert [person[GlobleVariables.AGE_CATE] for person in members] == expected_ages
+            assert [person[SchemaConstants.AGE_CATE] for person in members] == expected_ages
 
     def test_failed_allocation_rolls_back_partial_household(self, generator, blueprint):
         generator.probabilities = {}
         generator.probability_attributes = []
         key = PersonSimulationKey(0, 0, 0, 0, (5,), 1)
-        pool = CandidatePool({key: [{GlobleVariables.AGE_CATE: 5}]}, GlobleVariables.AGE_CATE)
+        pool = CandidatePool({key: [{SchemaConstants.AGE_CATE: 5}]}, SchemaConstants.AGE_CATE)
         people, failed = generator.allocate_households(
             total_population=10,
             threshold=0,
@@ -359,7 +359,7 @@ class TestGenerator:
             probabilities={},
             attributes=[],
             age_states_by_group=generator.config.age_states_by_group,
-        ) == {GlobleVariables.AGE_CATE: 5}
+        ) == {SchemaConstants.AGE_CATE: 5}
 
 
 class TestCalibration:

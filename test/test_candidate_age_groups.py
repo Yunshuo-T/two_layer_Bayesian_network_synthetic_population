@@ -1,8 +1,8 @@
-from synpop.schema import GlobleVariables
+from synpop.schema import SchemaConstants
 from synpop.synthesis.candidate import CandidatePool
 
 
-AGE = GlobleVariables.AGE_CATE
+AGE = SchemaConstants.AGE_CATE
 AGE_GROUPS = {"kid": [], "minor": [0, 1], "adult": [2, 3]}
 
 

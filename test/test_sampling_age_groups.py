@@ -9,7 +9,7 @@ import pytest
 from pgmpy.factors.discrete import TabularCPD
 from pgmpy.models import DiscreteBayesianNetwork
 
-from synpop.schema import GlobleVariables, ModelSchema
+from synpop.schema import SchemaConstants, ModelSchema
 from synpop.synthesis import generator as sampling
 from synpop.synthesis.evidence import PersonSimulationKey
 
@@ -17,9 +17,9 @@ from synpop.synthesis.evidence import PersonSimulationKey
 @pytest.fixture
 def age_group_schema():
     code_to_attr = {
-        GlobleVariables.HEAD_AGE: {0: 3},
-        GlobleVariables.AGE_CATE: {0: 1, 1: 2, 2: 3},
-        GlobleVariables.HEAD_GENDER: {0: "F"},
+        SchemaConstants.HEAD_AGE: {0: 3},
+        SchemaConstants.AGE_CATE: {0: 1, 1: 2, 2: 3},
+        SchemaConstants.HEAD_GENDER: {0: "F"},
         "gender": {0: "M", 1: "F"},
     }
     attr_to_code = {
@@ -57,24 +57,24 @@ def _independent_model(states, probabilities=None):
 def age_group_models():
     household_model = _independent_model(
         {
-            GlobleVariables.H_TYPE: [0],
-            GlobleVariables.HEAD_AGE: [0],
-            GlobleVariables.HEAD_GENDER: [0],
-            GlobleVariables.ADULTS: [1],
-            GlobleVariables.MINORS: [1],
-            GlobleVariables.KIDS: [1],
+            SchemaConstants.H_TYPE: [0],
+            SchemaConstants.HEAD_AGE: [0],
+            SchemaConstants.HEAD_GENDER: [0],
+            SchemaConstants.ADULTS: [1],
+            SchemaConstants.MINORS: [1],
+            SchemaConstants.KIDS: [1],
         }
     )
     person_model = _independent_model(
         {
-            GlobleVariables.H_TYPE: [0],
-            GlobleVariables.HEAD_AGE: [0],
-            GlobleVariables.HEAD_GENDER: [0],
-            GlobleVariables.MEMBER_RANK: [0, 1],
-            GlobleVariables.AGE_CATE: [0, 1, 2],
+            SchemaConstants.H_TYPE: [0],
+            SchemaConstants.HEAD_AGE: [0],
+            SchemaConstants.HEAD_GENDER: [0],
+            SchemaConstants.MEMBER_RANK: [0, 1],
+            SchemaConstants.AGE_CATE: [0, 1, 2],
             "gender": [0, 1],
         },
-        {GlobleVariables.AGE_CATE: [0.2, 0.6, 0.2]},
+        {SchemaConstants.AGE_CATE: [0.2, 0.6, 0.2]},
     )
     return household_model, person_model
 
@@ -130,11 +130,11 @@ def test_member_sampling_preserves_weighted_age_distribution_and_seed(
     assert returned_key == key
     assert 0 < len(records) < 4000
     assert sampling._batch_sample_persons(*args)[1] == records
-    counts = Counter(person[GlobleVariables.AGE_CATE] for person in records)
+    counts = Counter(person[SchemaConstants.AGE_CATE] for person in records)
     assert set(counts) == {0, 1}
     assert counts[1] / len(records) == pytest.approx(0.75, abs=0.05)
     assert {person["gender"] for person in records} == {0, 1}
-    assert {person[GlobleVariables.MEMBER_RANK] for person in records} == {1}
+    assert {person[SchemaConstants.MEMBER_RANK] for person in records} == {1}
 
 
 def test_head_sampling_clamps_scalar_age_and_gender_for_full_proposal_budget(
@@ -149,9 +149,9 @@ def test_head_sampling_clamps_scalar_age_and_gender_for_full_proposal_budget(
 
     assert returned_key == key
     assert len(records) == 12
-    assert {person[GlobleVariables.AGE_CATE] for person in records} == {2}
+    assert {person[SchemaConstants.AGE_CATE] for person in records} == {2}
     assert {person["gender"] for person in records} == {1}
-    assert {person[GlobleVariables.MEMBER_RANK] for person in records} == {0}
+    assert {person[SchemaConstants.MEMBER_RANK] for person in records} == {0}
 
 
 def test_rejected_age_proposals_return_empty_without_refilling(
@@ -159,7 +159,7 @@ def test_rejected_age_proposals_return_empty_without_refilling(
 ):
     sampler = Mock()
     sampler.forward_sample.return_value = pd.DataFrame(
-        {GlobleVariables.AGE_CATE: [2] * 6}
+        {SchemaConstants.AGE_CATE: [2] * 6}
     )
     monkeypatch.setattr(sampling, "BayesianModelSampling", Mock(return_value=sampler))
     key = _key("minor")
@@ -172,7 +172,7 @@ def test_rejected_age_proposals_return_empty_without_refilling(
     arguments = sampler.forward_sample.call_args.kwargs
     assert arguments["size"] == 6
     assert arguments["seed"] == 17
-    assert GlobleVariables.AGE_CATE not in arguments["partial_samples"].columns
+    assert SchemaConstants.AGE_CATE not in arguments["partial_samples"].columns
 
 
 @pytest.mark.parametrize(("count", "multiplier"), [(0, 4), (3, 0)])
@@ -214,14 +214,14 @@ def test_synthesis_uses_multiple_minor_states_with_process_workers(age_group_gen
     assert len(people) == 120
     assert people.groupby("household_id").size().eq(2).all()
     assert set(people["household_id"]) == set(households["household_id"])
-    heads = people.loc[people[GlobleVariables.MEMBER_RANK].eq(0)]
-    minors = people.loc[people[GlobleVariables.MEMBER_RANK].eq(1)]
+    heads = people.loc[people[SchemaConstants.MEMBER_RANK].eq(0)]
+    minors = people.loc[people[SchemaConstants.MEMBER_RANK].eq(1)]
     assert len(heads) == len(minors) == 60
-    assert set(heads[GlobleVariables.AGE_CATE]) == {2}
+    assert set(heads[SchemaConstants.AGE_CATE]) == {2}
     assert set(heads["gender"]) == {1}
-    assert set(minors[GlobleVariables.AGE_CATE]) == {0, 1}
-    assert set(people[GlobleVariables.MEMBER_RANK]) == {0, 1}
-    assert households[GlobleVariables.KIDS].eq(1).all()
+    assert set(minors[SchemaConstants.AGE_CATE]) == {0, 1}
+    assert set(people[SchemaConstants.MEMBER_RANK]) == {0, 1}
+    assert households[SchemaConstants.KIDS].eq(1).all()
     assert (
-        households[GlobleVariables.ADULTS] + households[GlobleVariables.MINORS]
+        households[SchemaConstants.ADULTS] + households[SchemaConstants.MINORS]
     ).eq(2).all()

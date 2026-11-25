@@ -1,5 +1,5 @@
 import pandas as pd
-from synpop.schema import GlobleVariables
+from synpop.schema import SchemaConstants
 
 
 def cate_codes(df: pd.DataFrame, attributes: list, explicit_orders: dict = None):  # type: ignore
@@ -102,10 +102,10 @@ def build_age_group_by_bin(
         if upper <= kid_max_age:
             group = "kid"
 
-        elif lower >= GlobleVariables.ADULT_MIN_AGE - 1:
+        elif lower >= SchemaConstants.ADULT_MIN_AGE - 1:
             group = "adult"
 
-        elif lower >= kid_max_age and upper < GlobleVariables.ADULT_MIN_AGE:
+        elif lower >= kid_max_age and upper < SchemaConstants.ADULT_MIN_AGE:
             group = "minor"
 
         else:
@@ -119,7 +119,7 @@ def build_age_group_by_bin(
         "adult": [],
     }
 
-    for state, bin_id in code_to_attr[GlobleVariables.AGE_CATE].items():
+    for state, bin_id in code_to_attr[SchemaConstants.AGE_CATE].items():
         group = group_by_bin[bin_id]
         age_states_by_group[group].append(state)
 

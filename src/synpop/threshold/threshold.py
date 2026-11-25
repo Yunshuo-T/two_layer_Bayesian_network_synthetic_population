@@ -5,7 +5,7 @@ from pgmpy.factors.discrete import DiscreteFactor
 import pandas as pd
 from collections.abc import Mapping
 from typing import Any
-from synpop.schema import GlobleVariables
+from synpop.schema import SchemaConstants
 from synpop.training.elementary_attributes import _add_age_category
 
 
@@ -54,17 +54,17 @@ def export_model_joint_distribution(
     h_model: DiscreteBayesianNetwork, p_model: DiscreteBayesianNetwork
 ) -> pd.DataFrame:
     ele_attributes = (
-        GlobleVariables.HEAD_AGE,
-        GlobleVariables.HEAD_GENDER,
-        GlobleVariables.H_TYPE,
+        SchemaConstants.HEAD_AGE,
+        SchemaConstants.HEAD_GENDER,
+        SchemaConstants.H_TYPE,
     )
 
     h_exclude = (
-        GlobleVariables.ADULTS,
-        GlobleVariables.MINORS,
-        GlobleVariables.KIDS,
+        SchemaConstants.ADULTS,
+        SchemaConstants.MINORS,
+        SchemaConstants.KIDS,
     )
-    p_exclude = (GlobleVariables.MEMBER_RANK,)
+    p_exclude = (SchemaConstants.MEMBER_RANK,)
 
     h_keep = [node for node in h_model.nodes if node not in set(h_exclude)]
     p_keep = [node for node in p_model.nodes if node not in set(p_exclude)]
@@ -95,9 +95,9 @@ def export_dataframe_joint_distribution(
         pd.DataFrame: A dataframe containing the joint distribution
     """
     joined_df = pd.merge(p_df, h_df, how="outer", on="H_ID")
-    if not (GlobleVariables.AGE_CATE in p_df.columns):
+    if not (SchemaConstants.AGE_CATE in p_df.columns):
         joined_df = _add_age_category(joined_df, age_col)
-        joint_attributes.append(GlobleVariables.AGE_CATE)
+        joint_attributes.append(SchemaConstants.AGE_CATE)
         joint_attributes.remove(age_col)
     print(joint_attributes)
     return (

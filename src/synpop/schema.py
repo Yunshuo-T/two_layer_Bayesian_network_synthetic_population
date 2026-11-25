@@ -1,11 +1,11 @@
 """
-The configurations for the pipeline.
+The structure and naming conventions of the model
 """
 
 from dataclasses import dataclass
 
 
-class GlobleVariables:
+class SchemaConstants:
     HEAD_COLS = ("Head_age", "Head_gender")
     ADULT_MIN_AGE = 18
     AGE_CATE = "age_cate"
@@ -39,19 +39,19 @@ class ModelSchema:
     def elementary_attributes(self) -> dict[str, set[str]]:
         return {
             "H": {
-                GlobleVariables.H_TYPE,
-                GlobleVariables.HEAD_AGE,
-                GlobleVariables.HEAD_GENDER,
-                GlobleVariables.ADULTS,
-                GlobleVariables.MINORS,
-                GlobleVariables.KIDS,
+                SchemaConstants.H_TYPE,
+                SchemaConstants.HEAD_AGE,
+                SchemaConstants.HEAD_GENDER,
+                SchemaConstants.ADULTS,
+                SchemaConstants.MINORS,
+                SchemaConstants.KIDS,
             },
             "P": {
-                GlobleVariables.H_TYPE,
-                GlobleVariables.HEAD_AGE,
-                GlobleVariables.HEAD_GENDER,
-                GlobleVariables.MEMBER_RANK,
-                GlobleVariables.AGE_CATE,
+                SchemaConstants.H_TYPE,
+                SchemaConstants.HEAD_AGE,
+                SchemaConstants.HEAD_GENDER,
+                SchemaConstants.MEMBER_RANK,
+                SchemaConstants.AGE_CATE,
                 self.gender_col,
             },
         }

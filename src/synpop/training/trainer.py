@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pgmpy.estimators import ExpertKnowledge, HillClimbSearch
 from pgmpy.models import DiscreteBayesianNetwork
 from synpop.training import elementary_attributes
-from synpop.schema import GlobleVariables, ModelSchema
+from synpop.schema import SchemaConstants, ModelSchema
 from synpop.utils import encoding
 
 logger = logging.getLogger("pgmpy")
@@ -196,7 +196,7 @@ def _construct_config(
     kid_max_age: int,
     age_bin: list,
 ):
-    cate_code_cols = [col for col in GlobleVariables.CATE_CODE_COLS] + [gender_col]
+    cate_code_cols = [col for col in SchemaConstants.CATE_CODE_COLS] + [gender_col]
     code_to_attr, attr_to_code = encoding.cate_codes(processed_p_df, cate_code_cols)
     p_mapped = encoding.map_dataframe(attr_to_code, processed_p_df).astype("category")
     h_mapped = encoding.map_dataframe(attr_to_code, processed_h_df).astype("category")
@@ -249,7 +249,7 @@ def _build_expert_knowledge(
     user_expert_knowledge: dict,
 ):
     forbidden_edges = itertools.product(
-        [*p_nodes, GlobleVariables.MEMBER_RANK, GlobleVariables.AGE_CATE],
+        [*p_nodes, SchemaConstants.MEMBER_RANK, SchemaConstants.AGE_CATE],
         elementary_attributes["H"],
     )
     person_expert_knowledge = ExpertKnowledge(
