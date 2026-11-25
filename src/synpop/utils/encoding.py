@@ -71,7 +71,7 @@ def make_code_crosswalk(
 
 def build_age_group_by_bin(
     age_bin: list,
-    code_to_attr: dict[str, dict[str, int]],
+    code_to_attr: dict[str, dict[int, int]],
     kid_max_age: int = 5,
 ) -> dict[str, list[int]]:
     """Classify each age interval as a kid, minor, or adult group.

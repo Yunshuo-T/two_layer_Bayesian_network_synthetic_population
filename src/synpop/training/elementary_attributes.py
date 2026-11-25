@@ -68,9 +68,11 @@ def _add_head_attributes(
 
 def _calculate_household_composition(
     p_df: pd.DataFrame,
+    age_bins_by_group: dict,
     h_id_col: str = "H_ID",
     h_df: pd.DataFrame | None = None,
     composition_cols: dict[str, str] | None = None,
+    
 ) -> pd.DataFrame:
     """Use household counts when available in household dataframe, otherwise count person age categories in person dataframe.
 
@@ -78,15 +80,16 @@ def _calculate_household_composition(
     household source columns.
     """
 
+    age = p_df[SchemaConstants.AGE_CATE]
+
     indicators = pd.DataFrame(
         {
             h_id_col: p_df[h_id_col],
-            SchemaConstants.ADULTS: (p_df[SchemaConstants.AGE_CATE] >= 2).astype(int),
-            SchemaConstants.MINORS: (p_df[SchemaConstants.AGE_CATE] == 1).astype(int),
-            SchemaConstants.KIDS: (p_df[SchemaConstants.AGE_CATE] == 0).astype(int),
+            SchemaConstants.ADULTS: age.isin(age_bins_by_group["adult"]).astype(int),
+            SchemaConstants.MINORS: age.isin(age_bins_by_group["minor"]).astype(int),
+            SchemaConstants.KIDS: age.isin(age_bins_by_group["kid"]).astype(int),
         }
     )
-
     composition = indicators.groupby(h_id_col, observed=True).sum().reset_index()
 
     if composition_cols:
@@ -111,6 +114,7 @@ def _calculate_household_composition(
 
 def _add_household_type(
     p_df: pd.DataFrame,
+    age_bins_by_group:dict,
     h_id_col: str = "H_ID",
     h_df: pd.DataFrame | None = None,
     composition_cols: dict[str, str] | None = None,
@@ -118,7 +122,11 @@ def _add_household_type(
 
     # Aggregate counts per household
     comp = _calculate_household_composition(
-        p_df, h_id_col=h_id_col, h_df=h_df, composition_cols=composition_cols
+        p_df, 
+        age_bins_by_group=age_bins_by_group, 
+        h_id_col=h_id_col, 
+        h_df=h_df, 
+        composition_cols=composition_cols
     )
     # Determine the Adult Prefix
     prefix = np.select(
@@ -171,6 +179,7 @@ def add_elementary_attributes(
     age_col: str,
     gender_col: str,
     h_id_col: str,
+    age_bins_by_group:dict,
     age_bin: list | None = None,
     composition_cols: dict[str, str] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -188,6 +197,7 @@ def add_elementary_attributes(
         .pipe(
             _add_household_type,
             h_id_col=h_id_col,
+            age_bins_by_group = age_bins_by_group,
             h_df=raw_h_df,
             composition_cols=composition_cols,
         )

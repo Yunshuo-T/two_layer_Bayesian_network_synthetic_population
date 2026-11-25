@@ -175,7 +175,7 @@ class Generator:
                     self._required_group(rank, adults, minors),
                     self.head_age_to_person_age,
                     self.head_gender_to_person_gender,
-                    self.config.age_states_by_group,
+                    self.config.age_bins_by_group,
                 )
 
                 demands[key] += demand_count
@@ -269,7 +269,7 @@ class Generator:
                     required_group=required_group,
                     head_age_to_person_age=self.head_age_to_person_age,
                     head_gender_to_person_gender=self.head_gender_to_person_gender,
-                    age_states_by_group=self.config.age_states_by_group,
+                    age_states_by_group=self.config.age_bins_by_group,
                 )
 
                 candidate = candidate_pool.take_candidate(
@@ -281,7 +281,7 @@ class Generator:
                     previous_age=previous_assigned_age,
                     probabilities=self.probabilities,
                     attributes=self.probability_attributes,
-                    age_states_by_group=self.config.age_states_by_group,
+                    age_states_by_group=self.config.age_bins_by_group,
                     p_data_include_kid=self.p_data_include_kid,
                 )
 

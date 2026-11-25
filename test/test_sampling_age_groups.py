@@ -31,7 +31,7 @@ def age_group_schema():
         attr_to_code=attr_to_code,
         gender_col="gender",
         h_id_col="household_id",
-        age_states_by_group={"adult": [2], "minor": [1, 0, 1], "kid": []},
+        age_bins_by_group={"adult": [2], "minor": [1, 0, 1], "kid": []},
     )
 
 

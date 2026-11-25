@@ -209,7 +209,7 @@ def _construct_config(
         attr_to_code=attr_to_code,
         gender_col=gender_col,
         h_id_col=h_id_col,
-        age_states_by_group=age_states_by_group,
+        age_bins_by_group=age_states_by_group,
     )
     return p_mapped, h_mapped, config
 
@@ -294,10 +294,18 @@ class TrainingBundle:
         age_bin: list,
         composition_cols: dict[str, str] | None = None,
     ):
+        all_bins = pd.DataFrame({SchemaConstants.AGE_CATE: range(len(age_bin) - 1)})
+        code_to_attr, _ = encoding.cate_codes(all_bins, [age_col])
+        age_bins_by_group = encoding.build_age_group_by_bin(
+            age_bin=age_bin,
+            kid_max_age=kid_max_age,
+            code_to_attr=code_to_attr,
+        )
         processed_h_df, processed_p_df = (
             elementary_attributes.add_elementary_attributes(
                 raw_h_df=raw_h_df,
                 raw_p_df=raw_p_df,
+                age_bins_by_group=age_bins_by_group,
                 age_col=age_col,
                 gender_col=gender_col,
                 h_id_col=h_id_col,
