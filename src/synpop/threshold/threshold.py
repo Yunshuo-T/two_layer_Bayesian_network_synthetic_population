@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from typing import Any
 from synpop.schema import SchemaConstants
 from synpop.training.elementary_attributes import _add_age_category
-
+from pathlib import Path
 
 def make_probability_lookup(
     distribution: pd.DataFrame,
@@ -50,9 +50,24 @@ def _factor_to_dataframe(
     return df
 
 
-def export_model_joint_distribution(
+def model_joint_distribution(
     h_model: DiscreteBayesianNetwork, p_model: DiscreteBayesianNetwork
 ) -> pd.DataFrame:
+    """Compute and export the joint distribution of household and person attributes
+    from the trained two-layer Bayesian model.
+
+    Args:
+        h_model: Household Bayesian network.
+        p_model: Person Bayesian network.
+
+    Returns:
+        pd.DataFrame: Positive-probability attribute combinations, normalized to sum to one.
+
+    The household size counts and person member rank are excluded. The household
+    head's age, gender, and household type are marginalized out before the two
+    network distributions are combined. The resulting distribution is also saved
+    to ``individual_distribution/model_distribution.csv`` alongside this module.
+    """
     ele_attributes = (
         SchemaConstants.HEAD_AGE,
         SchemaConstants.HEAD_GENDER,
@@ -75,8 +90,17 @@ def export_model_joint_distribution(
     joint_factor = h_factor * p_factor  # type: ignore
     joint_factor.marginalize(variables=list(ele_attributes), inplace=True)  # type: ignore
     joint_factor.normalize(inplace=True)  # type: ignore
-
-    return _factor_to_dataframe(joint_factor)  # type: ignore
+    df = _factor_to_dataframe(joint_factor) # type: ignore
+    df = df[df["probability"] > 0]
+    csv_path = (
+        Path(__file__).resolve().parent
+        / "individual_distribution"
+        / "model_distribution.csv"
+    )
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(csv_path)
+    
+    return  df
 
 
 def export_dataframe_joint_distribution(
@@ -127,7 +151,7 @@ def maximum_threshold(df:pd.DataFrame) -> float:
 
 if __name__ == "__main__":
     bundle = io.load_bn_bundle(r"output\bn_bundle.pkl")
-    df = export_model_joint_distribution(
+    df = model_joint_distribution(
         h_model=bundle["h_model"], p_model=bundle["p_model"]
     )
     df = df[df["probability"] > 0]

@@ -54,7 +54,6 @@ class Generator:
             / "individual_distribution"
             / "model_distribution.csv"
         )
-        print(csv_path)
         distribution = pd.read_csv(csv_path, index_col=0)
 
         self.probabilities, self.probability_attributes = make_probability_lookup(

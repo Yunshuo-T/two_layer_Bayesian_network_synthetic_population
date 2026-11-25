@@ -3,7 +3,7 @@ import pandas as pd
 from synpop import io
 from synpop.config import AppConfig
 from synpop.training import trainer
-
+from synpop.threshold.threshold import model_joint_distribution, maximum_threshold
 
 def run_training(config_path: str = r"config\config.yaml"):
     cfg = AppConfig.load(config_path)
@@ -42,11 +42,14 @@ def run_training(config_path: str = r"config\config.yaml"):
         dag_path=cfg.paths.person_dag,
         score=cfg.train.score,
     )
-
+    model_distribution = model_joint_distribution(h_model=h_model,p_model=p_model)
+    max_threshold = maximum_threshold(model_distribution)
+    
     io.save_bn_bundle(
         h_model=h_model,
         p_model=p_model,
         config=train_bundle.config,
+        max_threshold=max_threshold,
         path=cfg.paths.bundle_file,
     )
 

@@ -9,12 +9,14 @@ def save_bn_bundle(
     h_model,
     p_model,
     config: ModelSchema,
+    max_threshold: float,
     path: str,
 ) -> None:
     bundle = {
         "h_model": h_model,
         "p_model": p_model,
         "config": config,
+       "max_threshold": max_threshold,
     }
 
     with open(path, "wb") as f:
